@@ -6,7 +6,7 @@
   <title>Random Character Stats</title>
   <style>
     body {
-      margin: 0;
+      margin: 5;
       overflow: hidden;
     }
     canvas {
@@ -17,9 +17,18 @@
       text-align: center;
       font-size: 20px;
     }
+    h2 {
+      font-size: 12px;
+    }
+    h3 {
+      font-size: 10px;
+    }
     .textContainer {
       font-size: 12px;
       margin: 10px;
+    }
+    #canvasContainer {
+      display: flex;
     }
   </style>
 </head>
@@ -43,19 +52,25 @@
         <option value=5>羽人</option>
         <option value=6>悪魔</option>
         <option value=7>魚人</option>
-        <option value=8>精霊</option>
+        <option value=8>妖精</option>
     </select>
     <button onclick="changeVariable()">決定＆再生成</button>
+    <br>
   </div>
-  <canvas id="characterCanvas"></canvas>
+  <div id="canvasContainer">
+    <canvas id="characterCanvas" width="310" height="620"></canvas>
+    <h2 id="generatedText"></h2>
+  </div>
+  <h3>hikaru 2023</h3>
 <script>
 var canvas = document.getElementById("characterCanvas");
 var ctx = canvas.getContext("2d");
 
 //入力欄*********************
-CharacterName = "名前を入力"; //キャラ名 
-CharacterSex = 0; //性別,0→女,1→男
-Characterspecies = 0; //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+CharacterName = getRandomValue(["ヒトガ・ゴ・ミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
+gndr = getRandomValue([0,1]); //性別,0→女,1→男
+race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+let text = "　名前を入力して性別と種族を選ぶ\n------------------------------\n　状態値：先天的特徴\n　気質：性格、人間性\n　基礎能力：戦闘能力の基準\n　属性：いい感じに解釈して(てきとう)\n\n　E→まるでダメ\n　D→ボチボチ\n　C→一般人\n　B→優秀\n　A→極めて優秀\n　S→ネ申\n------------------------------\n　評価：\n";
 
 stats = {
   fam: 0,
@@ -88,14 +103,14 @@ var chara = {};
 //種族固有値の行列
 var bias =[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
       [50,169,100,200,100,200,100,200,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300],
-      [55,169, 90,200,130,200, 90,200,170,169,60,100,70,250,30,100,40,200,70,250,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,50,300],
-      [60, 81,110,200,120,200,110,200,175,169,75,100,55,300,50,300,45,200,50,300,50,300,50,300,60,300,50,300,60,200,65,200,50,300,50,100,30,100,60,200,50,300,75,200,60,300,50,300],
-      [50,300,130,200, 30, 81,110,200,120,169,70,100,40,144,55,300,60,300,55,300,65,200,55,300,70,250,50,200,70,250,20, 36,60,300,30, 36,40,200,60,300,60,300,40,200,40,200,60,300],
-      [50,300,120,200,120,200,120,200,180,169,90,100,55,300,30,100,70,250,50,300,70,250,40,200,70,250,25, 64,70,250,70,250,30,100,65,100,70,250,80,144,30,100,30,100,10,  4,60,300],
-      [50,300, 90,200,100,200,130,200,170,169,75,100,65,200,55,300,35,100,50,300,60,300,50,300,40,200,50,300,45,200,60,200,55,300,70,100,75,200,30,100,40,100,40,200,40,100,70,250],
-      [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,70,250,50,300,80,144],
+      [55,169, 90,200,130,200, 90,200,170,169,60,100,70,250,30,100,40,200,70,250,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,60,300],
+      [60, 81,110,200,120,200,110,200,175,169,75,100,55,300,50,300,45,200,50,300,50,300,50,300,60,300,50,300,60,200,65,200,50,300,50,100,30,100,60,200,50,300,50,300,60,300,75,200],
+      [50,300,130,200, 30, 81,110,200,120,169,70,100,40,144,55,300,60,300,55,300,65,200,55,300,70,250,50,200,70,250,20, 36,60,300,30, 36,40,200,60,300,60,300,60,300,40,200,40,200],
+      [50,300,120,200,120,200,120,200,180,169,90,100,55,300,30,100,70,250,50,300,70,250,40,200,70,250,25, 64,70,250,70,250,30,100,65,100,70,250,80,200,30,100,30,100,10,  4,60,300],
+      [50,300, 90,200,100,200,130,200,170,169,75,100,65,200,55,300,35,100,50,300,60,300,50,300,40,200,50,300,45,200,60,200,55,300,70,100,75,200,30,100,40,100,70,250,65,300,40,200],
+      [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,80,144,50,300,80,144],
       [50,300,110,200,90 ,200,120,200,180,169,80,100,45,300,55,300,55,300,55,300,55,300,55,300,60,200,45,200,60,200,45,200,40,100,60,100,40,200,40,200,40,200,60,300,60,200,60,200],
-      [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,60,300,60,300,75,250]
+      [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,75,250,60,300,60,300]
 ];
 
 //描画
@@ -111,40 +126,39 @@ function drawCharacter(chara) {
     if (chara.hasOwnProperty(prop)) {
       ctx.fillStyle = 'black';
       ctx.globalAlpha = 1;
-      ctx.fillText(prop, 50, y);
-      ctx.fillText(chara[prop], 120, y);
+      ctx.fillText(prop, 10, y);
+      ctx.fillText(chara[prop], 80, y);
       if (!isNaN(chara[prop]) && y>100){
+        ctx.globalAlpha = 1;
         if(n>4 && (n<6 || n>10)){
           ctx.fillStyle = 'gray';
-          ctx.globalAlpha = 1/2;
-          if(chara[prop]<1){ctx.fillText("Z", 160, y);}
-          else if(chara[prop]<10){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 160, y);}
-          else if(chara[prop]<20){ctx.fillStyle = 'lightblue';ctx.fillText("E", 160, y);}
-          else if(chara[prop]<30){ctx.fillStyle = 'lightgreen';ctx.fillText("D-", 160, y);}
-          else if(chara[prop]<40){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 160, y);}
-          else if(chara[prop]<50){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 160, y);}
-          else if(chara[prop]<60){ctx.fillStyle = 'yellowgreen';ctx.fillText("C+", 160, y);}
-          else if(chara[prop]<65){ctx.fillStyle = 'gold';ctx.fillText("B-", 160, y);}
-          else if(chara[prop]<70){ctx.fillStyle = 'gold';ctx.fillText("B", 160, y);}
-          else if(chara[prop]<75){ctx.fillStyle = 'gold';ctx.fillText("B+", 160, y);}
-          else if(chara[prop]<80){ctx.fillStyle = 'crimson';ctx.fillText("A-", 160, y);}
-          else if(chara[prop]<85){ctx.fillStyle = 'crimson';ctx.fillText("A", 160, y);}
-          else if(chara[prop]<90){ctx.fillStyle = 'crimson';ctx.fillText("A+", 160, y);}
-          else if(chara[prop]<95){ctx.fillStyle = 'purple';ctx.fillText("S-", 160, y);}
-          else if(chara[prop]<100){ctx.fillStyle = 'purple';ctx.fillText("S", 160, y);}
-          else if(chara[prop]<105){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 160, y);}
-          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 160, y);}
+          if(chara[prop]<1){ctx.fillText("測定不能", 110, y);}
+          else if(chara[prop]<10){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 110, y);}
+          else if(chara[prop]<20){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
+          else if(chara[prop]<30){ctx.fillStyle = 'lightgreen';ctx.fillText("D-", 110, y);}
+          else if(chara[prop]<40){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 110, y);}
+          else if(chara[prop]<50){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 110, y);}
+          else if(chara[prop]<60){ctx.fillStyle = 'yellowgreen';ctx.fillText("C+", 110, y);}
+          else if(chara[prop]<65){ctx.fillStyle = 'gold';ctx.fillText("B-", 110, y);}
+          else if(chara[prop]<70){ctx.fillStyle = 'gold';ctx.fillText("B", 110, y);}
+          else if(chara[prop]<75){ctx.fillStyle = 'gold';ctx.fillText("B+", 110, y);}
+          else if(chara[prop]<80){ctx.fillStyle = 'crimson';ctx.fillText("A-", 110, y);}
+          else if(chara[prop]<85){ctx.fillStyle = 'crimson';ctx.fillText("A", 110, y);}
+          else if(chara[prop]<90){ctx.fillStyle = 'crimson';ctx.fillText("A+", 110, y);}
+          else if(chara[prop]<95){ctx.fillStyle = 'purple';ctx.fillText("S-", 110, y);}
+          else if(chara[prop]<100){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
+          else if(chara[prop]<105){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
+          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 110, y);}
         }
         else if(n<3){
-          ctx.globalAlpha = 1/2;
-          if(chara[prop]<75){ctx.fillStyle = 'lightblue';ctx.fillText("E", 160, y);}
-          else if(chara[prop]<90){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 160, y);}
-          else if(chara[prop]<105){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 160, y);}
-          else if(chara[prop]<120){ctx.fillStyle = 'gold';ctx.fillText("B", 160, y);}
-          else if(chara[prop]<130){ctx.fillStyle = 'crimson';ctx.fillText("A", 160, y);}
-          else if(chara[prop]<140){ctx.fillStyle = 'purple';ctx.fillText("S", 160, y);}
-          else if(chara[prop]<150){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 160, y);}
-          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 160, y);}
+          if(chara[prop]<75){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
+          else if(chara[prop]<90){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 110, y);}
+          else if(chara[prop]<105){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 110, y);}
+          else if(chara[prop]<120){ctx.fillStyle = 'gold';ctx.fillText("B", 110, y);}
+          else if(chara[prop]<130){ctx.fillStyle = 'crimson';ctx.fillText("A", 110, y);}
+          else if(chara[prop]<140){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
+          else if(chara[prop]<150){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
+          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 110, y);}
         }
       }
       else{n -= 1;}
@@ -152,9 +166,9 @@ function drawCharacter(chara) {
     }
   }
   //ダイアグラム１
-  var statusm = [bias[Characterspecies][24], bias[Characterspecies][26], bias[Characterspecies][30], bias[Characterspecies][34], bias[Characterspecies][32], bias[Characterspecies][28]];
+  var statusm = [bias[race][24], bias[race][26], bias[race][30], bias[race][34], bias[race][32], bias[race][28]];
   var status = [stats.str, stats.int, stats.mag, stats.spe, stats.dex, stats.dur];
-  var centerX = 270;
+  var centerX = 220; 
   var centerY = 400;
   var sides = statusm.length; // 頂点の数＝データの要素数
   var radius = 30;
@@ -227,9 +241,9 @@ function drawCharacter(chara) {
   ctx.stroke();
 
   //ダイアグラム２
-  var statusm = [bias[Characterspecies][2]/2, bias[Characterspecies][4]/2, bias[Characterspecies][12], bias[Characterspecies][8]/17*5, bias[Characterspecies][10]/13*10, bias[Characterspecies][6]/2];
+  var statusm = [bias[race][2]/2, bias[race][4]/2, bias[race][12], bias[race][8]/17*5, bias[race][10]/13*10, bias[race][6]/2];
   var status = [stats.hp/2, stats.mp/2, stats.chr, stats.hei/17*5, stats.wei/13*10, stats.sp/2];
-  var centerX = 270;
+  var centerX = 220; 
   var centerY = 120;
   var sides = statusm.length; // 頂点の数＝データの要素数
   var radius = 30;
@@ -303,9 +317,9 @@ function drawCharacter(chara) {
   ctx.stroke();
 
   //ダイアグラム3
-  var statusm = [bias[Characterspecies][36], bias[Characterspecies][38], bias[Characterspecies][40], bias[Characterspecies][46], bias[Characterspecies][44], bias[Characterspecies][42]];
+  var statusm = [bias[race][36], bias[race][38], bias[race][40], bias[race][46], bias[race][44], bias[race][42]];
   var status = [stats.div, stats.cha, stats.rep, stats.def, stats.ord, stats.abs];
-  var centerX = 270;
+  var centerX = 220; 
   var centerY = 540;
   var sides = statusm.length; // 頂点の数＝データの要素数
   var radius = 30;
@@ -378,9 +392,9 @@ function drawCharacter(chara) {
   ctx.stroke();
 
   //ダイアグラム4
-  var statusm = [bias[Characterspecies][14], bias[Characterspecies][16], bias[Characterspecies][18], bias[Characterspecies][20], bias[Characterspecies][22]];
+  var statusm = [bias[race][14], bias[race][16], bias[race][18], bias[race][20], bias[race][22]];
   var status = [stats.ext, stats.col, stats.ope, stats.dil, stats.cop];
-  var centerX = 270;
+  var centerX = 220; 
   var centerY = 260;
   var sides = statusm.length; // 頂点の数＝データの要素数
   var radius = 30;
@@ -453,55 +467,113 @@ function drawCharacter(chara) {
 }
 //キャラ生成、パラメータ決定
 function generateRandomCharacter() {
-  //種族
-  if(Characterspecies==0){species = "人間"}
-  else if(Characterspecies==1){species = "エルフ";}
-  else if(Characterspecies==2){species = "魔族";}
-  else if(Characterspecies==3){species = "ドワーフ";}
-  else if(Characterspecies==4){species = "竜人";}
-  else if(Characterspecies==5){species = "羽人";}
-  else if(Characterspecies==6){species = "悪魔";}
-  else if(Characterspecies==7){species = "魚人";}
-  else if(Characterspecies==8){species = "妖精";}
-  //地位
-  stats.fam=getRandomNumber(bias[Characterspecies][0], bias[Characterspecies][1]);
-  if(stats.fam<25){family_status="奴隷"}
-  else if(stats.fam<40){family_status="貧民"}
-  else if(stats.fam<65){family_status="平民"}
-  else if(stats.fam<70){family_status="富豪"}
-  else if(stats.fam<75){family_status="下級貴族"}
-  else if(stats.fam<80){family_status="貴族"}
-  else if(stats.fam<85){family_status="上級貴族"}
-  else{family_status="王家"}
-  //地位補正
-  bias[Characterspecies][26]+=(stats.fam-50)/5; bias[Characterspecies][12]+=(stats.fam-50)/5;
   //性別補正
-  if(CharacterSex==0){Sex = "♀";bias[Characterspecies][24]-=5;bias[Characterspecies][30]+=5;bias[Characterspecies][32]+=5;bias[Characterspecies][28]-=5;bias[Characterspecies][14]+=5;bias[Characterspecies][18]-=5;}
-  else{Sex = "♂";bias[Characterspecies][24]+=5;bias[Characterspecies][30]-=5;bias[Characterspecies][32]-=5;bias[Characterspecies][28]+=5;bias[Characterspecies][14]-=5;bias[Characterspecies][18]+=5;}
-  //最小値補正
-  stats.str=getRandomNumber(bias[Characterspecies][24], bias[Characterspecies][25]);if(stats.str<1){stats.str=1};
-  stats.int=getRandomNumber(bias[Characterspecies][26], bias[Characterspecies][27]);if(stats.int<1){stats.int=1};
-  stats.mag=getRandomNumber(bias[Characterspecies][30], bias[Characterspecies][31]);if(stats.mag<0){stats.mag=0};
-  stats.dur=getRandomNumber(bias[Characterspecies][28], bias[Characterspecies][29]);if(stats.dur<1){stats.dur=1};
-  stats.dex=getRandomNumber(bias[Characterspecies][32], bias[Characterspecies][33]);if(stats.dex<0){stats.dex=0};
-  stats.spe=getRandomNumber(bias[Characterspecies][34], bias[Characterspecies][35]);
-  stats.hp = getRandomNumber(bias[Characterspecies][2], bias[Characterspecies][3]);
-  stats.mp = getRandomNumber(bias[Characterspecies][4], bias[Characterspecies][5]);
-  stats.sp = getRandomNumber(bias[Characterspecies][6], bias[Characterspecies][7]);
-  stats.chr = getRandomNumber(bias[Characterspecies][12], bias[Characterspecies][13]);
-  stats.hei = getRandomNumber(bias[Characterspecies][8], bias[Characterspecies][9]);
-  stats.wei = getRandomNumber(bias[Characterspecies][10], bias[Characterspecies][11]);
-  stats.div=getRandomNumber(bias[Characterspecies][36], bias[Characterspecies][37]);if(stats.div<0){stats.div=0};
-  stats.cha=getRandomNumber(bias[Characterspecies][38], bias[Characterspecies][39]);if(stats.cha<0){stats.cha=0};
-  stats.rep=getRandomNumber(bias[Characterspecies][40], bias[Characterspecies][41]);if(stats.rep<0){stats.rep=0};
-  stats.abs=getRandomNumber(bias[Characterspecies][42], bias[Characterspecies][43]);if(stats.abs<0){stats.abs=0};
-  stats.ord=getRandomNumber(bias[Characterspecies][44], bias[Characterspecies][45]);if(stats.ord<0){stats.ord=0};
-  stats.def=getRandomNumber(bias[Characterspecies][46], bias[Characterspecies][47]);if(stats.def<0){stats.def=0};
-  stats.ext=getRandomNumber(bias[Characterspecies][14], bias[Characterspecies][15]);if(stats.ext<0){stats.ext=0};
-  stats.col=getRandomNumber(bias[Characterspecies][16], bias[Characterspecies][17]);if(stats.col<0){stats.col=0};
-  stats.ope=getRandomNumber(bias[Characterspecies][18], bias[Characterspecies][19]);if(stats.ope<0){stats.ope=0};
-  stats.dil=getRandomNumber(bias[Characterspecies][20], bias[Characterspecies][21]);if(stats.dil<0){stats.dil=0};
-  stats.cop=getRandomNumber(bias[Characterspecies][22], bias[Characterspecies][23]);if(stats.cop<0){stats.cop=0};
+  if(gndr==0){Sex = "♀";bias[race][24]-=5;bias[race][30]+=5;bias[race][32]+=5;bias[race][28]-=5;bias[race][14]+=5;bias[race][18]-=5;}
+  else{Sex = "♂";bias[race][24]+=5;bias[race][30]-=5;bias[race][32]-=5;bias[race][28]+=5;bias[race][14]-=5;bias[race][18]+=5;}
+  bias[race][26]+=(stats.fam-50)/5; bias[race][12]+=(stats.fam-50)/5;//地位補正
+  //ステータス生成
+  stats.str=getRandomNumber(bias[race][24], bias[race][25]);if(stats.str<1){stats.str=1};
+  stats.int=getRandomNumber(bias[race][26], bias[race][27]);if(stats.int<1){stats.int=1};
+  stats.mag=getRandomNumber(bias[race][30], bias[race][31]);if(stats.mag<0){stats.mag=0};
+  stats.dur=getRandomNumber(bias[race][28], bias[race][29]);if(stats.dur<1){stats.dur=1};
+  stats.dex=getRandomNumber(bias[race][32], bias[race][33]);if(stats.dex<0){stats.dex=0};
+  stats.spe=getRandomNumber(bias[race][34], bias[race][35]);
+  stats.hp = getRandomNumber(bias[race][2], bias[race][3]);
+  stats.mp = getRandomNumber(bias[race][4], bias[race][5]);
+  stats.sp = getRandomNumber(bias[race][6], bias[race][7]);
+  stats.chr = getRandomNumber(bias[race][12], bias[race][13]);
+  stats.hei = getRandomNumber(bias[race][8], bias[race][9]);
+  stats.wei = getRandomNumber(bias[race][10], bias[race][11]);
+  stats.div=getRandomNumber(bias[race][36], bias[race][37]);if(stats.div<0){stats.div=0};
+  stats.cha=getRandomNumber(bias[race][38], bias[race][39]);if(stats.cha<0){stats.cha=0};
+  stats.rep=getRandomNumber(bias[race][40], bias[race][41]);if(stats.rep<0){stats.rep=0};
+  stats.abs=getRandomNumber(bias[race][42], bias[race][43]);if(stats.abs<0){stats.abs=0};
+  stats.ord=getRandomNumber(bias[race][44], bias[race][45]);if(stats.ord<0){stats.ord=0};
+  stats.def=getRandomNumber(bias[race][46], bias[race][47]);if(stats.def<0){stats.def=0};
+  stats.ext=getRandomNumber(bias[race][14], bias[race][15]);if(stats.ext<0){stats.ext=0};
+  stats.col=getRandomNumber(bias[race][16], bias[race][17]);if(stats.col<0){stats.col=0};
+  stats.ope=getRandomNumber(bias[race][18], bias[race][19]);if(stats.ope<0){stats.ope=0};
+  stats.dil=getRandomNumber(bias[race][20], bias[race][21]);if(stats.dil<0){stats.dil=0};
+  stats.cop=getRandomNumber(bias[race][22], bias[race][23]);if(stats.cop<0){stats.cop=0};
+  stats.fam=getRandomNumber(bias[race][0], bias[race][1]);
+  
+  //種族
+  if(race==0){
+    species = "人間";
+    text+="　あなたは人間だ! ただの人間だ...\n";
+  }
+  else if(race==1){species = "エルフ";text+="　あなたはエルフだ！耳が尖ってて長い!\n";}
+  else if(race==2){species = "魔族";text+=getRandomValue(["　あなたは魔族だ!巻角が生えてるよ\n","　あなたは魔族だ!鋭い角が生えてるよ\n"])}
+  else if(race==3){species = "ドワーフ";text+=getRandomValue(["　あなたはドワーフだ! お酒が大好きだ!\n","　あなたはドワーフだ! お酒は好きでない...\n"])}
+  else if(race==4){species = "竜人";text+="　あなたは竜人だ! 角と飛膜が生えてて鱗もあるよ!\n"}
+  else if(race==5){species = "羽人";text+="　あなたは羽人だ! 翼が生えてて天使みたいだ!\n"}
+  else if(race==6){species = "悪魔";text+="　あなたは悪魔だ! 見た目を変えられる!\n"}
+  else if(race==7){species = "魚人";text+=getRandomValue(["　あなたは魚人だ! 人魚型で足がない...\n","　あなたは魚人だ! 鰓呼吸できる人型だ！\n","　あなたは魚人だ! ...エイリアンのようだ...\n"])}
+  else if(race==8){species = "妖精";text+="　あなたは妖精だ! 小さくて羽が生えている\n"}
+  //地位
+  if(stats.fam<25){family_status="奴隷";text+="　...奴隷のようだ...人は皆、何かの奴隷だ...\n"}
+  else if(stats.fam<40){family_status="貧民";text+=getRandomValue(["　貧しい生活ながらも頑張っている!\n","　...スラム街に住む乞食のようだ...\n"])}
+  else if(stats.fam<65){family_status="平民";text+=getRandomValue(["　普通の生活をしている\n","　ありふれた毎日を楽しんでいる\n"])}
+  else if(stats.fam<70){family_status="富豪";text+=getRandomValue(["　お金持ちのようだ！強盗に気をつけよう！\n","　札束でビンタするのが趣味のようだ！\n"])}
+  else if(stats.fam<75){family_status="下級貴族";text+=getRandomValue(["　特権階級様だ...男爵のようだ！\n","　貴種だね、子爵のようだ！\n"])}
+  else if(stats.fam<80){family_status="貴族";text+="　御貴族様だ！伯爵だ！\n"}
+  else if(stats.fam<85){family_status="上級貴族";text+=getRandomValue(["　御方は侯爵ですな！\n","　王家の次に偉いようだ！公爵ですな！\n"])}
+  else{family_status="王家";text+="　あなたは人の上に立つ者...王家の御方だ！\n"}
+  
+  //評価
+  text+="　性格：　"
+  if(stats.cop>60){
+    if(stats.dil>60){text+="頼りになり、"}else if(stats.dil<40){text+="謙虚で、"}
+    if(stats.ext>60){text+="極めて陽の者で、"}else if(stats.ext<40){text+="臆病で、"}
+    if(stats.col>60){text+="情に脆く、"}else if(stats.col<40){text+="リアリストで、"}
+    if(stats.ope>60){text+="気が利き、"}else if(stats.ope<40){text+="メンヘラで、"}
+  }
+  else if(stats.cop<40){
+    if(stats.dil>60){text+="頑固で、"}else if(stats.dil<40){text+="無謀で、"}
+    if(stats.ext>60){text+="傲慢で、"}else if(stats.ext<40){text+="無口で、"}
+    if(stats.col>60){text+="常にイライラしてて、"}else if(stats.col<40){text+="冷淡で、"}
+    if(stats.ope>60){text+="抜け目がなく、"}else if(stats.ope<40){text+="粗野で、"}
+  }
+  if(stats.dil>60){
+    if(stats.ext>60){text+="野心家で、"}else if(stats.ext<40){text+="用心深く、"}
+    if(stats.col>60){text+="几帳面で、"}else if(stats.col<40){text+="堅実で、"}
+    if(stats.ope>60){text+="情報通で、"}else if(stats.ope<40){text+="保守的で、"}
+  }
+  else if(stats.dil<40){
+    if(stats.ext>60){text+="わんぱくで、"}else if(stats.ext<40){text+="捻くれてて、"}
+    if(stats.col>60){text+="強引で、"}else if(stats.col<40){text+="控えめで、"}
+    if(stats.ope>60){text+="型破りで、"}else if(stats.ope<40){text+="見切り発車で、"}
+  }
+  if(stats.ext>60){
+    if(stats.col>60){text+="浮気しやすく、"}else if(stats.col<40){text+="意識高い系で、"}
+    if(stats.ope>60){text+="雄弁で、"}else if(stats.ope<40){text+="気取っていて、"}
+  }
+  else if(stats.ext<40){
+    if(stats.col>60){text+="用心深く、"}else if(stats.col<40){text+="落ち着いていて、"}
+    if(stats.ope>60){text+="陰の者で、"}else if(stats.ope<40){text+="極めて陰の者、"}
+  }
+  if(stats.col>60){
+    if(stats.ope>60){text+="官能的で、"}else if(stats.ope<40){text+="疑い深く、"}
+  }
+  else if(stats.col40){
+    if(stats.ope>60){text+="創造的で、"}else if(stats.ope<40){text+="鈍感で、"}
+  }
+  if (stats.ext>= stats.col&& stats.ext>= stats.ope&& stats.ext>= stats.dil&& stats.ext>= stats.cop) {
+    text+="陽キャである！"
+  } else if (stats.col>= stats.ext&& stats.col>= stats.ope&& stats.col>= stats.dil&& stats.col>= stats.cop) {
+    text+="メンヘラである！"
+  } else if (stats.ope>= stats.ext&& stats.ope>= stats.col&& stats.ope>= stats.dil&& stats.ope>= stats.cop) {
+    text+="感性豊かである！"
+  } else if (stats.dil>= stats.ext&& stats.dil>= stats.col&& stats.dil>= stats.ope&& stats.dil>= stats.cop) {
+    text+="とても誠実である！"
+  } else{text+="協調性が高い！"}
+  if(stats.ext<45 && stats.col<45 && stats.ope<45 && stats.ext<45 && stats.dil<45){text+="　ぶっちゃけカスである！"}
+
+  /*外向性: stats.ext,
+  神経質: stats.col,
+  開放性: stats.ope,
+  誠実性: stats.dil,
+  協調性: stats.cop,*/
 
   //入力
   chara = {
@@ -546,16 +618,17 @@ function generateRandomCharacter() {
 
 //初期化
 function initialize(){
+  text = "　名前を入力して性別と種族を選ぶ\n------------------------------\n　状態値：先天的特徴\n　気質：性格、人間性\n　基礎能力：戦闘能力の基準\n　属性：いい感じに解釈して(てきとう)\n\n　E→まるでダメ\n　D→ボチボチ\n　C→一般人\n　B→優秀\n　A→極めて優秀\n　S→ネ申\n------------------------------\n　評価：\n";
   bias =[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
     [50,169,100,200,100,200,100,200,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300],
-    [55,169, 90,200,130,200, 90,200,170,169,60,100,70,200,30,100,40,200,70,200,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,50,300],
-    [60, 81,110,200,120,200,110,200,175,169,75,100,55,300,50,300,45,200,50,300,50,300,50,300,60,300,50,300,60,200,65,200,50,300,50,100,30,100,60,200,50,300,75,200,60,300,50,300],
-    [50,300,130,200, 30, 81,110,200,120,169,70,100,40,144,55,300,60,300,55,300,65,200,55,300,70,250,50,200,70,250,20, 36,60,300,30, 36,40,200,60,300,60,300,40,200,40,200,60,300],
-    [50,300,120,200,120,200,120,200,180,169,90,100,55,300,30,100,70,200,50,300,70,200,40,200,70,250,25, 64,70,250,70,250,30,100,65,100,70,250,80,144,30,100,30,100,10,  4,60,300],
-    [50,300, 90,200,100,200,130,200,170,169,75,100,65,200,55,300,35,100,50,300,60,300,50,300,40,200,50,300,45,200,60,200,55,300,70,100,75,200,30,100,40,100,40,200,40,100,70,250],
-    [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,70,250,50,300,80,144],
+    [55,169, 90,200,130,200, 90,200,170,169,60,100,70,250,30,100,40,200,70,250,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,60,300],
+    [60, 81,110,200,120,200,110,200,175,169,75,100,55,300,50,300,45,200,50,300,50,300,50,300,60,300,50,300,60,200,65,200,50,300,50,100,30,100,60,200,50,300,50,300,60,300,75,200],
+    [50,300,130,200, 30, 81,110,200,120,169,70,100,40,144,55,300,60,300,55,300,65,200,55,300,70,250,50,200,70,250,20, 36,60,300,30, 36,40,200,60,300,60,300,60,300,40,200,40,200],
+    [50,300,120,200,120,200,120,200,180,169,90,100,55,300,30,100,70,250,50,300,70,250,40,200,70,250,25, 64,70,250,70,250,30,100,65,100,70,250,80,200,30,100,30,100,10,  4,60,300],
+    [50,300, 90,200,100,200,130,200,170,169,75,100,65,200,55,300,35,100,50,300,60,300,50,300,40,200,50,300,45,200,60,200,55,300,70,100,75,200,30,100,40,100,70,250,65,300,40,200],
+    [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,80,144,50,300,80,144],
     [50,300,110,200,90 ,200,120,200,180,169,80,100,45,300,55,300,55,300,55,300,55,300,55,300,60,200,45,200,60,200,45,200,40,100,60,100,40,200,40,200,40,200,60,300,60,200,60,200],
-    [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,60,300,60,300,75,250]
+    [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,75,250,60,300,60,300]
   ];
 }
 //文字列の中で等確率で要素を決定
@@ -587,22 +660,21 @@ function normalDistributionProbability(x, mean, variance) {
   const probabilityDensity = numerator / denominator;
   return probabilityDensity;
 }
-//canvasのサイズ合わせ
+//canvasのサイズ合わせ　→ しない
 function resizeCanvas() {
-  //キャンバスのサイズを設定
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
   //実行内容を更新
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');;
   drawCharacter(chara);
 }
 //変数入力
 function changeVariable(){
   CharacterName = document.getElementById('variableInput').value;
-  CharacterSex = document.getElementById('selectInput').value;
-  Characterspecies = document.getElementById('selectInput1').value;
+  gndr = document.getElementById('selectInput').value;
+  race = document.getElementById('selectInput1').value;
   initialize();
   generateRandomCharacter();
   drawCharacter(chara);
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');;
 }
 
 generateRandomCharacter();
