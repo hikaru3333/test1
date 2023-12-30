@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Character Stats</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="characterCanvas"></canvas>
+<script>
+var canvas = document.getElementById("characterCanvas");
+var ctx = canvas.getContext("2d");
+
+specy=0;
+stats = {
+  fam: 0,
+  hp: 0, 
+  mp: 0, 
+  sp: 0, 
+  hei: 0,
+  wei: 0,
+  chr: 0,
+  ext: 50, 
+  col: 50,
+  ope: 50,  
+  dil: 50,
+  cop: 0,
+  str: 0,
+  int: 0,
+  dur: 0,
+  mag: 0,
+  dex: 0,
+  spe: 0,
+  div: 300, 
+  cha: 50, 
+  rep: 50, 
+  abs: 50,  
+  ord: 50,
+  def: 50,
+}
+//種族固有値の行列
+const matrix = [
+  [1,2,3,4],[5,6,7]
+]
+
+//canvasのサイズ合わせ
+function resizeCanvas() {
+  //キャンバスのサイズを設定
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  //実行内容を更新
+  drawCharacter();
+}
+//描画
+function drawCharacter() {
+  //入力
+  chara = {
+    名前: "test",
+    性別: "♀",
+    種族: specy,
+    地位: stats.fam,
+    例: matrix[0,0],
+    _____性質: "______",
+    外向性: stats.ext,
+    冷静さ: stats.col,
+    開放性: stats.ope,
+    勤勉さ: stats.dil,
+    協調性: stats.cop,
+    ___魄状態値: "______",
+    HP: stats.hp,
+    MP: stats.mp,
+    SP: stats.sp,
+    身長: stats.hei,
+    体重: stats.wei,
+    魅力: stats.chr,
+    __基礎能力値: "______",
+    力: stats.str,
+    智: stats.int,
+    耐久: stats.dur,
+    魔法: stats.mag,
+    器用: stats.dex,
+    俊敏: stats.spe,
+    _____属性: "______",
+    発散: stats.div,
+    混沌: stats.cha,
+    反発: stats.rep,
+    吸収: stats.abs,
+    秩序: stats.ord,
+    収束: stats.def,
+    _________: "______",
+  };
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // ヘッダー
+  ctx.font = "bold 16px Arial";
+  ctx.fillText("キャラシート", 50, 30);
+  // キャラクターの性格と能力を描画
+  ctx.font = "14px Arial";
+  var y = 60;
+  for (var prop in chara) {
+    if (chara.hasOwnProperty(prop)) {
+      ctx.fillText(prop, 50, y);
+      ctx.fillText(chara[prop], 120, y);
+      y += 18;
+    }
+  }
+}
+
+//canvasサイズ変更
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+</script>
+</body>
+</html>

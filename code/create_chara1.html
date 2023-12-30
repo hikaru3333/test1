@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Character Stats</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="characterCanvas"></canvas>
+<script>
+var canvas = document.getElementById("characterCanvas");
+var ctx = canvas.getContext("2d");
+
+//to do:レーダーチャートの関数化、種族ごとのリスト化とリスト関数
+
+//入力欄*********************
+CharacterName = "テスト"; //キャラ名 
+CharacterSex = 0; //性別,0→女,1→男
+Characterspecies = 0; //0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+//*************
+
+var chara = {};
+var statusm = [];
+var status = [];
+var centerx = 0;
+var centery = 0;
+var Sex = 0;
+var species = 0;
+var family_status = 0;
+
+stats = {
+  fam: 0,
+  hp: 0, 
+  mp: 0, 
+  sp: 0, 
+  hei: 0,
+  wei: 0,
+  chr: 0,
+  ext: 50, 
+  col: 50,
+  ope: 50,  
+  dil: 50,
+  cop: 0,
+  str: 0,
+  int: 0,
+  dur: 0,
+  mag: 0,
+  dex: 0,
+  spe: 0,
+  div: 300, 
+  cha: 50, 
+  rep: 50, 
+  abs: 50,  
+  ord: 50,
+  def: 50,
+}
+//種族固有値の行列
+const bias_matrix = [
+  [50,300,100,300,100,300,100,300,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300]
+  [50,300,100,300,100,300,100,300,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300]
+]
+
+//canvasのサイズ合わせ
+function resizeCanvas() {
+  //キャンバスのサイズを設定
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  //実行内容を更新
+  drawCharacter(chara);
+}
+//描画
+function drawCharacter(chara) {
+  drawcharasheet(chara)
+  statusm = [bias_matrix[Characterspecies][24],bias_matrix[Characterspecies][26],bias_matrix[Characterspecies][30],bias_matrix[Characterspecies][34],bias_matrix[Characterspecies][32],bias_matrix[Characterspecies][28]];
+  status = [stats.str, stats.int, stats.mag, stats.spe, stats.dex, stats.dur];
+  console.log(status)
+  centerx = 270;
+  centery = 400;
+  var r = 30;
+  drawraderchart(centerx,centery,r)
+}
+function drawcharasheet(chara){
+  //ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // ヘッダー
+  ctx.font = "bold 16px Arial";
+  ctx.fillText("キャラシート", 50, 30);
+  // キャラクターの性格と能力を描画
+  ctx.font = "14px Arial";
+  var y = 60;
+  for (var prop in chara) {
+    if (chara.hasOwnProperty(prop)) {
+      ctx.fillText(prop, 50, y);
+      ctx.fillText(chara[prop], 120, y);
+      y += 18;
+    }
+  }
+  console.log(1);
+}
+function drawraderchart(x,y,r){
+  var sides = statusm.length; // 頂点の数＝データの要素数
+  ctx.fillStyle = 'black';
+  ctx.font = "12px Arial";
+  ctx.globalAlpha = 1/2;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
+    var value = statusm[i];
+    var x1 = x + r * Math.cos(angle)*2;
+    var y1 = y + r * Math.sin(angle)*2;
+    var x2 = x + r * Math.cos(angle1)*2;
+    var y2 = y + r * Math.sin(angle1)*2;
+    ctx.beginPath();
+    ctx.moveTo(centerx, centery);
+    ctx.lineTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.closePath();
+    ctx.stroke();
+    for (var n = 0; n < 3; n++){
+      x1 = x + r * Math.cos(angle)*(1/2+n/2);
+      y1 = y + r * Math.sin(angle)*(1/2+n/2);
+      x2 = x + r * Math.cos(angle1)*(1/2+n/2);
+      y2 = y + r * Math.sin(angle1)*(1/2+n/2);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+  ctx.beginPath();
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var value = statusm[i];
+    var x1 = x + r * Math.cos(angle) * (value / 50);
+    var y1 = y + r * Math.sin(angle) * (value / 50);
+    if (i === 0) {ctx.moveTo(centerx, centery);} 
+    else {ctx.lineTo(x1, y1);}
+  }
+  ctx.closePath();
+  ctx.strokeStyle = "rgba(255,0,100,0.5)"
+  ctx.stroke();
+  //status
+  ctx.beginPath();
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var value = status[i];
+    var x = x + r * Math.cos(angle) * (value / 50);
+    var y = y + r * Math.sin(angle) * (value / 50);
+    if (i === 0) {ctx.moveTo(x, y);} 
+    else {ctx.lineTo(x, y);}
+  }
+  ctx.closePath();
+  ctx.globalAlpha = 1/4;
+  ctx.fillStyle = 'red';
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,0,0, 0.3)"
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+
+//キャラ生成、パラメータ決定
+function generateRandomCharacter() {
+  getbias();
+  getstats();
+  
+  //入力
+  chara = {
+    名前: CharacterName,
+    性別: Sex,
+    種族: species,
+    地位: family_status,
+    _____性質: "______",
+    素質: getRandomValue(["勇敢", "聡明", "ツンデレ", "陰キャ"]),
+    外向性: stats.ext,
+    冷静さ: stats.col,
+    開放性: stats.ope,
+    勤勉さ: stats.dil,
+    協調性: stats.cop,
+    ___魄状態値: "______",
+    HP: stats.hp,
+    MP: stats.mp,
+    SP: stats.sp,
+    身長: stats.hei,
+    体重: stats.wei,
+    魅力: stats.chr,
+    __基礎能力値: "______",
+    力: stats.str,
+    智: stats.int,
+    耐久: stats.dur,
+    魔法: stats.mag,
+    器用: stats.dex,
+    俊敏: stats.spe,
+    _____属性: "______",
+    特殊1: getRandomValue(["勇敢", "聡明", "ツンデレ", "陰キャ"]),
+    特殊2: getRandomValue(["勇敢", "聡明", "ツンデレ", "陰キャ"]),
+    発散: stats.div,
+    混沌: stats.cha,
+    反発: stats.rep,
+    吸収: stats.abs,
+    秩序: stats.ord,
+    収束: stats.def,
+    _________: "______",
+  };
+}
+function getbias(){
+  //性別補正
+  if(CharacterSex==0){
+    Sex = "♀";bias_matrix[Characterspecies][24]-=5;bias_matrix[Characterspecies][30]+=5;bias_matrix[Characterspecies][32]+=5;bias_matrix[Characterspecies][28]-=5;
+  }
+  else{
+    Sex = "♂";bias_matrix[Characterspecies][24]+=5;bias_matrix[Characterspecies][30]-=5;bias_matrix[Characterspecies][32]-=5;bias_matrix[Characterspecies][28]+=5;
+  }
+}
+function getstats(){
+  var i = 0;
+  for (var prop in stats) {
+    if (stats.hasOwnProperty(prop)) {
+      stats[prop]=getRandomNumber(bias_matrix[Characterspecies][2*i], bias_matrix[Characterspecies][2*i+1])
+      i ++;
+    }
+  }
+  //地位
+  if(stats.fam<25){family_status="奴隷"}
+  else if(stats.fam<35){family_status="貧民"}
+  else if(stats.fam<65){family_status="平民"}
+  else if(stats.fam<70){family_status="富豪"}
+  else if(stats.fam<75){family_status="下級貴族"}
+  else if(stats.fam<80){family_status="貴族"}
+  else if(stats.fam<85){family_status="上級貴族"}
+  else{family_status="王家"}
+}
+
+//文字列の中で等確率で要素を決定
+function getRandomValue(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+//平均値分散を入力し正規分布整数乱数を生成
+function getRandomNumber(mean, variance) {
+  // Box-Muller変換
+  var u1 = Math.random();
+  var u2 = Math.random();
+
+  var z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+
+  // z0が標準正規分布に従うため、平均と分散を適用
+  var randomValue = mean + Math.sqrt(variance) * z0;
+
+  //整数化
+  randomValue = Math.round(randomValue)
+
+  return randomValue;
+}
+//ビッグファイブ値から性格を決定
+
+//属性値から特異属性決定
+
+
+generateRandomCharacter();
+//canvasサイズ変更
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+</script>
+</body>
+</html>
+
+//var strm = 50; var strv = 300;var intm = 50; var intv = 300;var durm = 50; var durv = 300;var magm = 50; var magv = 300;var dexm = 50; var dexv = 300;var spem = 50; var spev = 100;var hpm = 100; var hpv = 300; spm = 100; var spv = 300; var mpm = 100; var mpv = 300; chrm = 50; var chrv = 300;var heim = 170; var heiv = 169;var weim = 65; var weiv = 100;var famm = 50; var famv = 300;var divm = 50; var divv = 300;var cham = 50; var chav = 300;var repm = 50; var repv = 300;var absm = 50; var absv = 300;var ordm = 50; var ordv = 300;var defm = 50; var defv = 300;var extm = 50; var extv = 300;var colm = 50; var colv = 300;var opem = 50; var opev = 300;var dilm = 50; var dilv = 300;var copm = 50; var copv = 300;
+//var hp=hpm; var mp=mpm; var sp=spm; var chr=chrm;var hei=heim;var wei=weim;var str=strm;var int=intm;var dur=durm;var mag=magm;var dex=dexm;var spe=spem;
+
+
+strm = 50; strv = 300;
+intm = 50; intv = 300;
+durm = 50; durv = 300;
+magm = 50; magv = 300;
+dexm = 50; dexv = 300;
+spem = 50; spev = 100;
+hpm = 100; hpv = 300; //hp
+spm = 100; spv = 300; //stamina
+mpm = 100; mpv = 300; //mp
+chrm = 50; chrv = 300;
+heim = 170; heiv = 169;
+weim = 65; weiv = 100;
+famm = 50; famv = 300; //地位
+divm = 50; divv = 300;
+cham = 50; chav = 300;
+repm = 50; repv = 300;
+absm = 50; absv = 300;
+ordm = 50; ordv = 300;
+defm = 50; defv = 300;
+extm = 50; extv = 300;
+colm = 50; colv = 300;
+opem = 50; opev = 300;
+dilm = 50; dilv = 300;
+copm = 50; copv = 300;
