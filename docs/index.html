@@ -6,8 +6,7 @@
   <title>Random Character Stats</title>
   <style>
     body {
-      margin: 5;
-      overflow: hidden;
+      margin: 1;
     }
     canvas {
       display: block;
@@ -15,7 +14,7 @@
     }
     h1 {
       text-align: center;
-      font-size: 20px;
+      font-size: 15px;
     }
     h2 {
       font-size: 12px;
@@ -28,7 +27,10 @@
       margin: 10px;
     }
     #canvasContainer {
-      display: flex;
+      width: 325px; /* 幅を設定 */
+      height: 650px; /* 高さを設定 */
+      overflow: auto;
+      display: center;
     }
   </style>
 </head>
@@ -58,6 +60,7 @@
     <br>
   </div>
   <div id="canvasContainer">
+    <h2>名前を入力して性別と種族を選ぶ<br>------------------------------------------------------------<br>　状態値：先天的特徴<br>　気質：性格、人間性<br>　基礎能力：戦闘能力の基準<br>　属性：いい感じに解釈して(てきとう)<br>------------------------------------------------------------<br>　E→まるでダメ<br>　D→ボチボチ<br>　C→一般人<br>　B→優秀<br>　A→極めて優秀<br>　S→ネ申<br></h2>
     <canvas id="characterCanvas" width="310" height="620"></canvas>
     <h2 id="generatedText"></h2>
   </div>
@@ -70,7 +73,7 @@ var ctx = canvas.getContext("2d");
 CharacterName = getRandomValue(["ヒトガ・ゴ・ミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
 gndr = getRandomValue([0,1]); //性別,0→女,1→男
 race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
-let text = "　名前を入力して性別と種族を選ぶ\n------------------------------\n　状態値：先天的特徴\n　気質：性格、人間性\n　基礎能力：戦闘能力の基準\n　属性：いい感じに解釈して(てきとう)\n\n　E→まるでダメ\n　D→ボチボチ\n　C→一般人\n　B→優秀\n　A→極めて優秀\n　S→ネ申\n------------------------------\n　評価：\n";
+let text = "　評価：\n\n";
 
 stats = {
   fam: 0,
@@ -521,7 +524,7 @@ function generateRandomCharacter() {
   else{family_status="王家";text+="　あなたは人の上に立つ者...王家の御方だ！\n"}
   
   //評価
-  text+="　性格：　"
+  text+="\n　あなたの性格については...\n"
   if(stats.cop>60){
     if(stats.dil>60){text+="頼りになり、"}else if(stats.dil<40){text+="謙虚で、"}
     if(stats.ext>60){text+="極めて陽の者で、"}else if(stats.ext<40){text+="臆病で、"}
@@ -550,30 +553,75 @@ function generateRandomCharacter() {
   }
   else if(stats.ext<40){
     if(stats.col>60){text+="用心深く、"}else if(stats.col<40){text+="落ち着いていて、"}
-    if(stats.ope>60){text+="陰の者で、"}else if(stats.ope<40){text+="極めて陰の者、"}
+    if(stats.ope>60){text+="陰の者で、"}else if(stats.ope<40){text+="極めて陰の者で、"}
   }
   if(stats.col>60){
     if(stats.ope>60){text+="官能的で、"}else if(stats.ope<40){text+="疑い深く、"}
   }
-  else if(stats.col40){
+  else if(stats.col<40){
     if(stats.ope>60){text+="創造的で、"}else if(stats.ope<40){text+="鈍感で、"}
   }
   if (stats.ext>= stats.col&& stats.ext>= stats.ope&& stats.ext>= stats.dil&& stats.ext>= stats.cop) {
-    text+="陽キャである！"
-  } else if (stats.col>= stats.ext&& stats.col>= stats.ope&& stats.col>= stats.dil&& stats.col>= stats.cop) {
+    text+="人との会話が好きだ！"
+  } 
+  else if (stats.col>= stats.ext&& stats.col>= stats.ope&& stats.col>= stats.dil&& stats.col>= stats.cop) {
     text+="メンヘラである！"
-  } else if (stats.ope>= stats.ext&& stats.ope>= stats.col&& stats.ope>= stats.dil&& stats.ope>= stats.cop) {
+  } 
+  else if (stats.ope>= stats.ext&& stats.ope>= stats.col&& stats.ope>= stats.dil&& stats.ope>= stats.cop) {
     text+="感性豊かである！"
-  } else if (stats.dil>= stats.ext&& stats.dil>= stats.col&& stats.dil>= stats.ope&& stats.dil>= stats.cop) {
+  } 
+  else if (stats.dil>= stats.ext&& stats.dil>= stats.col&& stats.dil>= stats.ope&& stats.dil>= stats.cop) {
     text+="とても誠実である！"
-  } else{text+="協調性が高い！"}
+  } 
+  else{text+="協調性が高い！"}
   if(stats.ext<45 && stats.col<45 && stats.ope<45 && stats.ext<45 && stats.dil<45){text+="　ぶっちゃけカスである！"}
+  //基礎能力
+  text+="\n\n　あなたの能力については...\n"
+  if(stats.str<2){text+="貧弱すぎて移動すらできない...　"}
+  else if(stats.str<10){text+="力が貧弱すぎて重い武器が持てない...　"}
+  else if(stats.str<30){text+="力が弱い　"}
+  else if(stats.str>70){text+="とても力が強い　"}
+  else if(stats.str>90){text+="10年に1度の力持ちだ！　"}
+  else if(stats.str>100){text+="100年に1度の力持ちだ！　"}
+  else if(stats.str>110){text+="1000年に1度の力持ちだ！　"}
+  if(stats.int<2){text+="脳みそに皺がない...意思疎通すら不可能　"}
+  else if(stats.int<10){text+="アホだ...ほとんど言う事を聞かない　"}
+  else if(stats.int<30){text+="バカである　"}
+  else if(stats.int>70){text+="とても頭が良い　"}
+  else if(stats.int>90){text+="10年に1度の頭脳だ！　"}
+  else if(stats.int>100){text+="100年に1度の頭脳だ！　"}
+  else if(stats.int>110){text+="1000年に1度の頭脳だ！　"}
+  if(stats.dur<2){text+="泡沫の如き儚さ...転んだら死ぬ　"}
+  else if(stats.dur<10){text+="打たれ弱い...一撃で死ぬ　"}
+  else if(stats.dur<30){text+="打たれ弱い　"}
+  else if(stats.dur>70){text+="とても打たれ強い　"}
+  else if(stats.dur>90){text+="致命的な攻撃にも耐え得る！　"}
+  else if(stats.dur>100){text+="どんな攻撃も無効化し得る！　"}
+  else if(stats.dur>110){text+="どんな攻撃も効かない！　"}
+  if(stats.mag<2){text+="全く魔法が使えない...　"}
+  else if(stats.mag<10){text+="全力を振り絞れば...雀の涙ほどの魔法は使える　"}
+  else if(stats.mag<30){text+="魔法が苦手　"}
+  else if(stats.mag>70){text+="魔法がとても得意　"}
+  else if(stats.mag>90){text+="10年に1度の魔法使いだ！　"}
+  else if(stats.mag>100){text+="100年に1度の魔法使いだ！　"}
+  else if(stats.mag>110){text+="1000年に1度の魔法使いだ！　"}
+  if(stats.dex<2){text+="不器用すぎて道具が使えない...　"}
+  else if(stats.dex<10){text+="不器用だ...道具は一つしか使えない　"}
+  else if(stats.dex<30){text+="不器用だ　"}
+  else if(stats.dex>70){text+="とても器用だ　"}
+  else if(stats.dex>90){text+="同時に10の武器を巧みに操る！　"}
+  else if(stats.dex>100){text+="同時に100の武器を巧みに操る！　"}
+  else if(stats.dex>110){text+="同時に1000の武器を巧みに操る！　"}
+  if(stats.spe<2){text+="...あれ？動かない...ずっと止まっている...　"}
+  else if(stats.spe<10){text+="お...そ...i...　"}
+  else if(stats.spe<30){text+="遅い　"}
+  else if(stats.spe>70){text+="とても速い　"}
+  else if(stats.spe>90){text+="ﾊﾔｲ　ほとんどの場合で先制する！　"}
+  else if(stats.spe>100){text+="ﾊﾔｲ　同時に複数の行動をする！　"}
+  else if(stats.spe>100){text+="ﾊﾔｲ　全速力では世界が停止する！　"}
+  //属性
+  text+="\n\n　あなたの属性は...\n"
 
-  /*外向性: stats.ext,
-  神経質: stats.col,
-  開放性: stats.ope,
-  誠実性: stats.dil,
-  協調性: stats.cop,*/
 
   //入力
   chara = {
@@ -618,7 +666,7 @@ function generateRandomCharacter() {
 
 //初期化
 function initialize(){
-  text = "　名前を入力して性別と種族を選ぶ\n------------------------------\n　状態値：先天的特徴\n　気質：性格、人間性\n　基礎能力：戦闘能力の基準\n　属性：いい感じに解釈して(てきとう)\n\n　E→まるでダメ\n　D→ボチボチ\n　C→一般人\n　B→優秀\n　A→極めて優秀\n　S→ネ申\n------------------------------\n　評価：\n";
+  text = "　評価：\n\n";
   bias =[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
     [50,169,100,200,100,200,100,200,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300],
     [55,169, 90,200,130,200, 90,200,170,169,60,100,70,250,30,100,40,200,70,250,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,60,300],
