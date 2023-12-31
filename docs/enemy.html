@@ -50,15 +50,25 @@
 <body>
   <h1>ランダムNPCメーカー</h1>
   <div class="textContainer">
-    <h2>　名前を入力して性別と種族を選ぶ<br>------------------------------------------------------------<br>　状態値：先天的特徴<br>　気質：性格、人間性<br>　基礎能力：戦闘能力の基準<br>　属性：いい感じに解釈して(てきとう)<br>------------------------------------------------------------<br>　E→まるでダメ<br>　D→ボチボチ<br>　C→一般人<br>　B→優秀<br>　A→極めて優秀<br>　S→ネ申<br></h2>
-    <label for="variableInput">名前：</label>
-    <input type="text" id="variableInput"><br>
+    <h2>　E→まるでダメ<br>　D→ボチボチ<br>　C→一般人<br>　B→優秀<br>　A→極めて優秀<br>　S→ネ申<br></h2>
+    <label for="selectInput2">ロール：</label>
+    <select id="selectInput2">
+        <option value=0>PC同等レベル</option>
+        <option value=1>カスレベル</option>
+        <option value=2>一般人レベル</option>
+        <option value=3>小ボスレベル</option>
+        <option value=4>中ボスレベル</option>
+        <option value=5>大ボスレベル</option>
+        <option value=6>国王(特殊)</option>
+        <option value=7>貴族(特殊)</option>
+        <option value=8>魔王(特殊)</option>
+    </select>
     <label for="selectInput">性別：</label>
     <select id="selectInput">
         <option value=0>♀</option>
         <option value=1>♂</option>
     </select>
-    <label for="selectInput1">種族：</label>
+    <br><label for="selectInput1">種族：</label>
     <select id="selectInput1">
         <option value=0>人間</option>
         <option value=1>エルフ</option>
@@ -70,7 +80,8 @@
         <option value=7>魚人</option>
         <option value=8>妖精</option>
     </select>
-    <button onclick="changeVariable()">決定＆再生成</button>
+    <button onclick="changeVariable()">決定＆再生成</button><br>
+    <button onclick="rerandom()">完全ランダム再生成</button>
   </div>
   <div id="canvasContainer">
     <br>
@@ -104,7 +115,8 @@ var ctx = canvas.getContext("2d");
 CharacterName = getRandomValue(["ヒトガ・ゴミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
 gndr = getRandomValue([0,1]); //性別,0→女,1→男
 race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
-let text = "　";
+role = getRandomValue([0,1,2,3,4,5,6,7,8]);
+  let text = "　";
 
 stats = {
   fam: 0,
@@ -145,6 +157,16 @@ var bias =[//地位　hp　　　mp　　　sp 　　　身長　　　体重　
       [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,80,144,50,300,80,144],
       [50,300,110,200,90 ,200,120,200,180,169,80,100,45,300,55,300,55,300,55,300,55,300,55,300,60,200,45,200,60,200,45,200,40,100,60,100,40,200,40,200,40,200,60,300,60,200,60,200],
       [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,75,250,60,300,60,300]
+];
+
+//ロール行列
+var rolebias=[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
+          [ 0, 0 ,  0,  0,  0,  0,  0,  0,  0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
+          [-20, 0,-50,  0,-50,  0,-50,  0,-20,  0,-10, 0,-30, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0],
+          [-10, 0,-25,  0,-25,  0,-25,  0,  0,  0, 0,  0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0],
+          [10, 0 , 20,  0, 20,  0, 20,  0, 10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0],
+          [20, 0 , 40,  0, 40,  0, 40,  0, 20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0],
+          [30, 0 , 60,  0, 60,  0, 60,  0, 30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0]
 ];
 
 //描画
@@ -505,19 +527,45 @@ function generateRandomCharacter() {
   if(gndr==0){Sex = "♀";bias[race][24]-=5;bias[race][30]+=5;bias[race][32]+=5;bias[race][28]-=5;bias[race][14]+=5;bias[race][18]-=5;}
   else{Sex = "♂";bias[race][24]+=5;bias[race][30]-=5;bias[race][32]-=5;bias[race][28]+=5;bias[race][14]-=5;bias[race][18]+=5;}
   bias[race][26]+=(stats.fam-50)/5; bias[race][12]+=(stats.fam-50)/5;//地位補正
+  //role補正
+  var sides = bias[race].length;
+  if(role<=5){
+    for (var i = 0; i < sides; i++){
+      bias[race][i]+=rolebias[role][i]
+    }
+  }
+  else if(role==6){
+    bias[race][0]=150;bias[race][1]=1;
+    for (var i = 0; i < sides; i++){
+      bias[race][i]+=rolebias[4][i]
+    }
+  }
+  else if(role==8){
+    race = getRandomValue([0,1,2,2,2,2,2,2,2,2,3,4,5,6,6,6,6,7,8]);
+    bias[race][0]=150;bias[race][1]=1;
+    for (var i = 0; i < sides; i++){
+      bias[race][i]+=rolebias[5][i]
+    }
+  }
+  else{
+    for (var i = 0; i < sides; i++){
+      bias[race][i]+=rolebias[3][i]
+    }
+    bias[race][0]=77;bias[race][1]=2;
+  }
   //ステータス生成
   stats.str=getRandomNumber(bias[race][24], bias[race][25]);if(stats.str<1){stats.str=1};
   stats.int=getRandomNumber(bias[race][26], bias[race][27]);if(stats.int<1){stats.int=1};
   stats.mag=getRandomNumber(bias[race][30], bias[race][31]);if(stats.mag<0){stats.mag=0};
   stats.dur=getRandomNumber(bias[race][28], bias[race][29]);if(stats.dur<1){stats.dur=1};
   stats.dex=getRandomNumber(bias[race][32], bias[race][33]);if(stats.dex<0){stats.dex=0};
-  stats.spe=getRandomNumber(bias[race][34], bias[race][35]);
-  stats.hp = getRandomNumber(bias[race][2], bias[race][3]);
-  stats.mp = getRandomNumber(bias[race][4], bias[race][5]);
-  stats.sp = getRandomNumber(bias[race][6], bias[race][7]);
-  stats.chr = getRandomNumber(bias[race][12], bias[race][13]);
-  stats.hei = getRandomNumber(bias[race][8], bias[race][9]);
-  stats.wei = getRandomNumber(bias[race][10], bias[race][11]);
+  stats.spe=getRandomNumber(bias[race][34], bias[race][35]);if(stats.spe<1){stats.spe=1};
+  stats.hp = getRandomNumber(bias[race][2], bias[race][3]);if(stats.hp<1){stats.hp=1};
+  stats.mp = getRandomNumber(bias[race][4], bias[race][5]);if(stats.mp<1){stats.mp=1};
+  stats.sp = getRandomNumber(bias[race][6], bias[race][7]);if(stats.sp<1){stats.sp=1};
+  stats.chr = getRandomNumber(bias[race][12], bias[race][13]);if(stats.chr<1){stats.chr=1};
+  stats.hei = getRandomNumber(bias[race][8], bias[race][9]);if(stats.hei<1){stats.hei=1};
+  stats.wei = getRandomNumber(bias[race][10], bias[race][11]);if(stats.wei<1){stats.wei=1};
   stats.div=getRandomNumber(bias[race][36], bias[race][37]);if(stats.div<0){stats.div=0};
   stats.cha=getRandomNumber(bias[race][38], bias[race][39]);if(stats.cha<0){stats.cha=0};
   stats.rep=getRandomNumber(bias[race][40], bias[race][41]);if(stats.rep<0){stats.rep=0};
@@ -531,6 +579,181 @@ function generateRandomCharacter() {
   stats.cop=getRandomNumber(bias[race][22], bias[race][23]);if(stats.cop<0){stats.cop=0};
   stats.fam=getRandomNumber(bias[race][0], bias[race][1]);
   
+  //名前
+  if(gndr==1){CharacterName = getRandomValue(["ウィリアム"
+    ,"アーサー"
+    ,"メイナード"
+    ,"ギルバート"
+    ,"ヒルデブランド"
+    ,"エドワード"
+    ,"アドルフ"
+    ,"ハインリヒ"
+    ,"ディートヘルム"
+    ,"ヴィルヘルム"
+    ,"フリードリヒ"
+    ,"エルヴィン"
+    ,"マクシミリアン"
+    ,"ヘルムート"
+    ,"テオドール"
+    ,"ヴォルフ"
+    ,"アレクサンダー"
+    ,"クルト"
+    ,"ヴァルター"
+    ,"アルフレート"
+    ,"ベルンハルト"
+    ,"ヴォルフガング"
+    ,"ディートリッヒ"
+    ,"エデュアルト"
+    ,"レオン"
+    ,"マルティン"
+    ,"ゴットハルト"
+    ,"ジークフリート"
+    ,"ハンニバル"
+    ,"ヴォルフラム"
+    ,"アレッサンドロ"
+    ,"ファウスト"
+    ,"サルヴァトーレ"
+    ,"メイナード"
+    ,"ヴァレンタイン"
+    ,"ブルクハルト"
+    ,"フェリックス"
+    ,"アルフレッド"
+    ,"バージル"
+    ,"ブラッドフォード"
+    ,"ブラッドリー"
+    ,"セドリック"
+    ,"クリフォード"
+    ,"ローレンス"
+    ,"レナード"
+    ,"メイナード"
+    ,"ロードリック"
+    ,"レオンハルト"
+    ,"アルバーノ"
+    ,"ジェラルド"
+    ,"イルデブランド"
+    ,"ヴァルフレード"
+    ,"アルフォンソ"
+    ,"レンブラント"
+  ]);}  
+  else{CharacterName = getRandomValue([
+    "アイリーン"
+    ,"シンシア"
+    ,"フレイヤ"
+    ,"エリザベス"
+    ,"アリス"
+    ,"ソーニャ"
+    ,"メイ"
+    ,"レイチェル"
+    ,"エミリア"
+    ,"シャーロット"
+    ,"ジェシカ"
+    ,"エレノア"
+    ,"マーガレット"
+    ,"フローレンス"
+    ,"クレア"
+    ,"パトリシア"
+    ,"リン"
+    ,"アリス"
+    ,"エレオノール"
+    ,"ジャンヌ"
+    ,"ジュリエット"
+    ,"ララ"
+    ,"レティシア"
+    ,"マリアンヌ"
+    ,"ミレイユ"
+    ,"アルマ"
+    ,"アメリア"
+    ,"クリスタ"
+    ,"ハンナ"
+    ,"フローラ"
+    ,"レオナ"
+    ,"クリスティーネ"
+    ,"ルイーゼ"
+    ,"マルグリット"
+    ,"マルティナ"
+    ,"ニコル"
+    ,"ペトラ"
+    ,"ヴァーレリー"
+    ,"ラウラ"
+    ,"ヒルダ"
+    ,"リナ"
+    ,"アンナ"
+    ,"エリカ"
+    ,"エミーリア"
+    ,"エマ"
+    ,"ヴェロニカ"
+    ,"カトリーヌ"
+    ,"クラリス"
+    ,"モニカ"
+    ,"ソフィア"
+  ]);}//名
+  CharacterName += "・";
+  if(stats.fam>=85){CharacterName += getRandomValue(["「国名」"]);} //王姓
+  else if(stats.fam>=70){
+    CharacterName += getRandomValue([
+      "ラ"
+      ,"フォン"
+      ,"ディ"
+      ,"デ"
+      ,"ファン"
+    ]);
+    CharacterName += "・";
+  } //貴族姓
+  if(stats.fam>=85){} //
+  else{CharacterName += getRandomValue([
+    "レイブンシールド"
+    ,"アイアンハート"
+    ,"ストームウィーバー"
+    ,"シルバーウッド"
+    ,"フロストベイン"
+    ,"シャドウダンサー"
+    ,"スターフォール"
+    ,"エンバーストーン"
+    ,"ソーンフィールド"
+    ,"ムーンシャドウ"
+    ,"ブラックソーン"
+    ,"ストームライダー"
+    ,"シルバーリーフ"
+    ,"ホークウィンド"
+    ,"フロストフォール"
+    ,"アイアンハンマー"
+    ,"スウィフトアロー"
+    ,"レイブンソング"
+    ,"シャドウキャスター"
+    ,"トーンブレード"
+    ,"ドラゴンハート"
+    ,"スウィフトブレード"
+    ,"ストーンフォージ"
+    ,"ムーンストライダー"
+    ,"ゴールデンシェイド"
+    ,"スターウィスパー"
+    ,"フロストファイア"
+    ,"ドラゴンライダー"
+    ,"エンバーフォージ"
+    ,"ストームクローク"
+    ,"アイアンフィスト"
+    ,"シャドウベイン"
+    ,"スウィフトウィンド"
+    ,"ドラゴンベイン"
+    ,"シルバームーン"
+    ,"フロストウィンド"
+    ,"ブラックシスル"
+    ,"エンバーフォール"
+    ,"トーンハート"
+    ,"レイブンスパイア"
+    ,"スウィフトフレイム"
+    ,"ストームシャウド"
+    ,"ムーンブレード"
+    ,"シルバーストーム"
+    ,"エンバーソーン"
+    ,"ドラゴンスパイア"
+    ,"ストームブレード"
+    ,"フロストソーン"
+    ,"シルバーフレイム"
+    ,"シャドウシスル"
+  ]);} //姓
+  
+
   text += "　";
   text += "評価：\n\n";
   //種族
@@ -556,7 +779,17 @@ function generateRandomCharacter() {
   else if(stats.fam<80){family_status="貴族";text+="　御貴族様だ！伯爵だ！\n"}
   else if(stats.fam<85){family_status="上級貴族";text+=getRandomValue(["　貴殿は侯爵ですな！\n","　王家の次に偉いようだ！公爵ですな！\n"])}
   else{family_status="王家";text+="　貴殿は人の上に立つ者...王家の御方だ！\n"}
-  
+  //ロール
+  if(role==0){role_status="PC同等";}
+  else if(role==1){role_status="カス";}
+  else if(role==2){role_status="一般人";}
+  else if(role==3){role_status="小ボス";}
+  else if(role==4){role_status="中ボス";}
+  else if(role==5){role_status="大ボス";}
+  else if(role==6){role_status="王様";}
+  else if(role==7){role_status="貴族";}
+  else if(role==8){role_status="魔王";}
+
   //評価・髪・体
   text+="\n　あなたは、"
   text+=getRandomValue(["金髪","銀髪","青髪","桃髪","黒髪","茶髪"]);
@@ -649,6 +882,35 @@ function generateRandomCharacter() {
   } 
   else{text+="協調性が高い！"}
   if(stats.ext<45 && stats.col<45 && stats.ope<45 && stats.ext<45 && stats.dil<45){text+="　ぶっちゃけカスである！"}
+  //口調
+  text+="\n\n　口調に関しては、";
+  text+="一人称が「";
+  text+=getRandomValue([
+    "わし"
+    ,"ワイ"
+    ,"私"
+    ,"あたし"
+    ,"俺"
+    ,"僕"
+    ,"おいどん"
+    ,"自分"
+    ,"拙者"
+    ,"小生"
+    ,"朕"
+    ,"俺様"
+    ,"おら"
+  ]);
+  text+="」であり、";
+  text+=getRandomValue([
+    "「〜のじゃ」とか「〜じゃのぉ」を語尾につける"
+    ,"敬語調で「〜です・ます」を語尾につける"
+    ,"エセ中華風で「〜アル」を語尾につける"
+    ,"タメ口である"
+    ,"関西風で「〜んや」とか「〜ねん」を語尾につける"
+    ,"「〜だってばよ！」とかを語尾につける"
+  ]);
+  text+="";
+  
   //基礎能力
   text+="\n\n　あなたの基礎能力については...\n"
   if(stats.hp<3){text+="...小指をぶつけただけで死ぬ...　"}
@@ -820,6 +1082,7 @@ function generateRandomCharacter() {
     性別: Sex,
     種族: species,
     地位: family_status,
+    ロール: role_status,
     ____状態値: "______",
     HP: stats.hp,
     MP: stats.mp,
@@ -894,9 +1157,9 @@ function resizeCanvas() {
 }
 //変数入力
 function changeVariable(){
-  CharacterName = document.getElementById('variableInput').value;
   gndr = document.getElementById('selectInput').value;
   race = document.getElementById('selectInput1').value;
+  role = document.getElementById('selectInput2').value;
   initialize();
   generateRandomCharacter();
   drawCharacter(chara);
@@ -920,6 +1183,17 @@ function generateRandomNumbers2(){
 //サイト移動
 function move1(){window.location.href = 'weapon.html';}
 function move2(){window.location.href = 'index.html';}
+
+//ランダム再生成
+function rerandom(){
+  gndr = getRandomValue([0,1]); //性別,0→女,1→男
+  race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+  role = getRandomValue([0,1,2,3,4,5]);
+  initialize();
+  generateRandomCharacter();
+  drawCharacter(chara);
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');; 
+}
 
 generateRandomCharacter();
 //canvasサイズ変更

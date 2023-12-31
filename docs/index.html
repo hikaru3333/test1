@@ -70,7 +70,8 @@
         <option value=7>魚人</option>
         <option value=8>妖精</option>
     </select>
-    <button onclick="changeVariable()">決定＆再生成</button>
+    <button onclick="changeVariable()">決定＆再生成</button><br>
+    <button onclick="rerandom()">完全ランダム再生成</button>
   </div>
   <div id="canvasContainer">
     <br>
@@ -649,6 +650,35 @@ function generateRandomCharacter() {
   } 
   else{text+="協調性が高い！"}
   if(stats.ext<45 && stats.col<45 && stats.ope<45 && stats.ext<45 && stats.dil<45){text+="　ぶっちゃけカスである！"}
+  //口調
+  text+="\n\n　口調に関しては、";
+  text+="一人称が「";
+  text+=getRandomValue([
+    "わし"
+    ,"ワイ"
+    ,"私"
+    ,"あたし"
+    ,"俺"
+    ,"僕"
+    ,"おいどん"
+    ,"自分"
+    ,"拙者"
+    ,"小生"
+    ,"朕"
+    ,"俺様"
+    ,"おら"
+  ]);
+  text+="」であり、";
+  text+=getRandomValue([
+    "「〜のじゃ」とか「〜じゃのぉ」を語尾につける"
+    ,"敬語調で「〜です・ます」を語尾につける"
+    ,"エセ中華風で「〜アル」を語尾につける"
+    ,"タメ口である"
+    ,"関西風で「〜んや」とか「〜ねん」を語尾につける"
+    ,"「〜だってばよ！」とかを語尾につける"
+  ]);
+  text+="";
+  
   //基礎能力
   text+="\n\n　あなたの基礎能力については...\n"
   if(stats.hp<3){text+="...小指をぶつけただけで死ぬ...　"}
@@ -675,49 +705,50 @@ function generateRandomCharacter() {
   else if(stats.sp>135){text+="スタミナがとても多い！　"}
   else if(stats.sp>120){text+="スタミナが多い！　"}
   else if((stats.mp<=120 && stats.mp>=80)||(stats.hp<=120 && stats.hp>=80)){}else{text+="\n";}
+  //
   if(stats.str<3){text+="力が貧弱すぎて移動すらできない...　"}
   else if(stats.str<10){text+="力が貧弱すぎて重い武器が持てない...　"}
-  else if(stats.str<30){text+="力が弱い　"}
+  else if(stats.str<37){text+="力が弱い　"}
   else if(stats.str>110){text+="1000年に1度の力持ちだ！　"}
   else if(stats.str>100){text+="100年に1度の力持ちだ！　"}
-  else if(stats.str>90){text+="10年に1度の力持ちだ！　"}
-  else if(stats.str>70){text+="とても力が強い　"}
+  else if(stats.str>85){text+="10年に1度の力持ちだ！　"}
+  else if(stats.str>63){text+="とても力が強い　"}
   if(stats.int<3){text+="脳みそに皺がない...意思疎通すら不可能　"}
   else if(stats.int<10){text+="アホだ...ほとんど言う事を聞かない　"}
-  else if(stats.int<30){text+="バカである　"}
+  else if(stats.int<37){text+="バカである　"}
   else if(stats.int>110){text+="1000年に1度の頭脳だ！　"}
   else if(stats.int>100){text+="100年に1度の頭脳だ！　"}
-  else if(stats.int>90){text+="10年に1度の頭脳だ！　"}
-  else if(stats.int>70){text+="とても頭が良い　"}
+  else if(stats.int>85){text+="10年に1度の頭脳だ！　"}
+  else if(stats.int>63){text+="とても頭が良い　"}
   if(stats.dur<3){text+="打たれ弱い... 泡沫の如き儚さ... 転んだら死ぬ　"}
   else if(stats.dur<10){text+="打たれ弱い...一撃で死ぬ　"}
-  else if(stats.dur<30){text+="打たれ弱い　"}
+  else if(stats.dur<37){text+="打たれ弱い　"}
   else if(stats.dur>110){text+="打たれ強い！どんな攻撃も効かない！　"}
   else if(stats.dur>100){text+="打たれ強い！どんな攻撃も無効化し得る！　"}
-  else if(stats.dur>90){text+="打たれ強い！致命的な攻撃にも耐え得る！　"}
-  else if(stats.dur>70){text+="打たれ強い　"}
+  else if(stats.dur>85){text+="打たれ強い！致命的な攻撃にも耐え得る！　"}
+  else if(stats.dur>63){text+="打たれ強い　"}
   if(stats.mag<3){text+="全く魔法が使えない...　"}
   else if(stats.mag<10){text+="...魔法は一種類しか使えない...　"}
-  else if(stats.mag<30){text+="魔法が苦手　"}
+  else if(stats.mag<37){text+="魔法が苦手　"}
   else if(stats.mag>110){text+="1000年に1度の魔法使いだ！　"}
   else if(stats.mag>100){text+="100年に1度の魔法使いだ！　"}
-  else if(stats.mag>90){text+="10年に1度の魔法使いだ！　"}
-  else if(stats.mag>70){text+="魔法がとても得意　"}
+  else if(stats.mag>85){text+="10年に1度の魔法使いだ！　"}
+  else if(stats.mag>63){text+="魔法がとても得意　"}
   if(stats.dex<3){text+="不器用すぎて道具が使えない...　"}
   else if(stats.dex<10){text+="不器用だ...道具は一つしか使えない　"}
-  else if(stats.dex<30){text+="不器用だ　"}
+  else if(stats.dex<37){text+="不器用だ　"}
   else if(stats.dex>110){text+="同時に1000の武器を巧みに操る！　"}
   else if(stats.dex>100){text+="同時に100の武器を巧みに操る！　"}
-  else if(stats.dex>90){text+="同時に10の武器を巧みに操る！　"}
-  else if(stats.dex>70){text+="とても器用だ　"}
+  else if(stats.dex>85){text+="同時に10の武器を巧みに操る！　"}
+  else if(stats.dex>63){text+="とても器用だ　"}
   if(stats.spe<5){text+="...あれ？動かない...石像のようだ...(遅い)　"}
   else if(stats.spe<20){text+="お...そ...i...　"}
   else if(stats.spe<40){text+="遅い　"}
   else if(stats.spe>110){text+="ﾊﾔｲ、速すぎて世界が停止する！　"}
   else if(stats.spe>100){text+="ハヤイ、同時に複数の行動をする！　"}
-  else if(stats.spe>90){text+="はやい、ほとんどの場合で先制する！　"}
-  else if(stats.spe>70){text+="とても速い　"}
-  if((stats.spe<=70 && stats.spe>=40)&&(stats.str<=70 && stats.str>=30)&&(stats.int<=70 && stats.int>=30)&&(stats.dur<=70 && stats.dur>=30)&&(stats.mag<=70 && stats.mag>=30)&&(stats.dex<=70 && stats.dex>=30)){
+  else if(stats.spe>85){text+="はやい、ほとんどの場合で先制する！　"}
+  else if(stats.spe>63){text+="とても速い　"}
+  if((stats.spe<=63 && stats.spe>=40)&&(stats.str<=63 && stats.str>=37)&&(stats.int<=63 && stats.int>=37)&&(stats.dur<=63 && stats.dur>=37)&&(stats.mag<=63 && stats.mag>=37)&&(stats.dex<=63 && stats.dex>=37)){
     text+="　普通だ　"
   }
   //属性
@@ -875,15 +906,11 @@ function getRandomNumber(mean, variance) {
   // Box-Muller変換
   var u1 = Math.random();
   var u2 = Math.random();
-
   var z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-
   // z0が標準正規分布に従うため、平均と分散を適用
   var randomValue = mean + Math.sqrt(variance) * z0;
-
   //整数化
   randomValue = Math.round(randomValue)
-
   return randomValue;
 }
 //canvasのサイズ合わせ　→ しない
@@ -892,7 +919,8 @@ function resizeCanvas() {
   document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');;
   drawCharacter(chara);
 }
-//変数入力
+
+//変数入力再生成
 function changeVariable(){
   CharacterName = document.getElementById('variableInput').value;
   gndr = document.getElementById('selectInput').value;
@@ -920,6 +948,193 @@ function generateRandomNumbers2(){
 //サイト移動
 function move1(){window.location.href = 'weapon.html';}
 function move2(){window.location.href = 'enemy.html';}
+
+//ランダム再生成
+function rerandom(){
+  var Name = document.getElementById('variableInput').value;
+  if(Name == ""){
+    //名前
+    if(gndr==1){CharacterName = getRandomValue(["ウィリアム"
+      ,"アーサー"
+      ,"メイナード"
+      ,"ギルバート"
+      ,"ヒルデブランド"
+      ,"エドワード"
+      ,"アドルフ"
+      ,"ハインリヒ"
+      ,"ディートヘルム"
+      ,"ヴィルヘルム"
+      ,"フリードリヒ"
+      ,"エルヴィン"
+      ,"マクシミリアン"
+      ,"ヘルムート"
+      ,"テオドール"
+      ,"ヴォルフ"
+      ,"アレクサンダー"
+      ,"クルト"
+      ,"ヴァルター"
+      ,"アルフレート"
+      ,"ベルンハルト"
+      ,"ヴォルフガング"
+      ,"ディートリッヒ"
+      ,"エデュアルト"
+      ,"レオン"
+      ,"マルティン"
+      ,"ゴットハルト"
+      ,"ジークフリート"
+      ,"ハンニバル"
+      ,"ヴォルフラム"
+      ,"アレッサンドロ"
+      ,"ファウスト"
+      ,"サルヴァトーレ"
+      ,"メイナード"
+      ,"ヴァレンタイン"
+      ,"ブルクハルト"
+      ,"フェリックス"
+      ,"アルフレッド"
+      ,"バージル"
+      ,"ブラッドフォード"
+      ,"ブラッドリー"
+      ,"セドリック"
+      ,"クリフォード"
+      ,"ローレンス"
+      ,"レナード"
+      ,"メイナード"
+      ,"ロードリック"
+      ,"レオンハルト"
+      ,"アルバーノ"
+      ,"ジェラルド"
+      ,"イルデブランド"
+      ,"ヴァルフレード"
+      ,"アルフォンソ"
+      ,"レンブラント"
+    ]);}  
+    else{CharacterName = getRandomValue([
+      "アイリーン"
+      ,"シンシア"
+      ,"フレイヤ"
+      ,"エリザベス"
+      ,"アリス"
+      ,"ソーニャ"
+      ,"メイ"
+      ,"レイチェル"
+      ,"エミリア"
+      ,"シャーロット"
+      ,"ジェシカ"
+      ,"エレノア"
+      ,"マーガレット"
+      ,"フローレンス"
+      ,"クレア"
+      ,"パトリシア"
+      ,"リン"
+      ,"アリス"
+      ,"エレオノール"
+      ,"ジャンヌ"
+      ,"ジュリエット"
+      ,"ララ"
+      ,"レティシア"
+      ,"マリアンヌ"
+      ,"ミレイユ"
+      ,"アルマ"
+      ,"アメリア"
+      ,"クリスタ"
+      ,"ハンナ"
+      ,"フローラ"
+      ,"レオナ"
+      ,"クリスティーネ"
+      ,"ルイーゼ"
+      ,"マルグリット"
+      ,"マルティナ"
+      ,"ニコル"
+      ,"ペトラ"
+      ,"ヴァーレリー"
+      ,"ラウラ"
+      ,"ヒルダ"
+      ,"リナ"
+      ,"アンナ"
+      ,"エリカ"
+      ,"エミーリア"
+      ,"エマ"
+      ,"ヴェロニカ"
+      ,"カトリーヌ"
+      ,"クラリス"
+      ,"モニカ"
+      ,"ソフィア"
+    ]);}//名
+    CharacterName += "・";
+    if(stats.fam>=85){CharacterName += getRandomValue(["「国名」"]);} //王姓
+    else if(stats.fam>=70){
+      CharacterName += getRandomValue([
+        "ラ"
+        ,"フォン"
+        ,"ディ"
+        ,"デ"
+        ,"ファン"
+      ]);
+      CharacterName += "・";
+    } //貴族姓
+    if(stats.fam>=85){} //
+    else{CharacterName += getRandomValue([
+      "レイブンシールド"
+      ,"アイアンハート"
+      ,"ストームウィーバー"
+      ,"シルバーウッド"
+      ,"フロストベイン"
+      ,"シャドウダンサー"
+      ,"スターフォール"
+      ,"エンバーストーン"
+      ,"ソーンフィールド"
+      ,"ムーンシャドウ"
+      ,"ブラックソーン"
+      ,"ストームライダー"
+      ,"シルバーリーフ"
+      ,"ホークウィンド"
+      ,"フロストフォール"
+      ,"アイアンハンマー"
+      ,"スウィフトアロー"
+      ,"レイブンソング"
+      ,"シャドウキャスター"
+      ,"トーンブレード"
+      ,"ドラゴンハート"
+      ,"スウィフトブレード"
+      ,"ストーンフォージ"
+      ,"ムーンストライダー"
+      ,"ゴールデンシェイド"
+      ,"スターウィスパー"
+      ,"フロストファイア"
+      ,"ドラゴンライダー"
+      ,"エンバーフォージ"
+      ,"ストームクローク"
+      ,"アイアンフィスト"
+      ,"シャドウベイン"
+      ,"スウィフトウィンド"
+      ,"ドラゴンベイン"
+      ,"シルバームーン"
+      ,"フロストウィンド"
+      ,"ブラックシスル"
+      ,"エンバーフォール"
+      ,"トーンハート"
+      ,"レイブンスパイア"
+      ,"スウィフトフレイム"
+      ,"ストームシャウド"
+      ,"ムーンブレード"
+      ,"シルバーストーム"
+      ,"エンバーソーン"
+      ,"ドラゴンスパイア"
+      ,"ストームブレード"
+      ,"フロストソーン"
+      ,"シルバーフレイム"
+      ,"シャドウシスル"
+    ]);} //姓
+  }
+  else{CharacterName = Name;}
+  gndr = getRandomValue([0,1]); //性別,0→女,1→男
+  race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+  initialize();
+  generateRandomCharacter();
+  drawCharacter(chara);
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');; 
+}
 
 generateRandomCharacter();
 //canvasサイズ変更
