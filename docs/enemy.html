@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Random Character Stats</title>
+  <title>Random NPC Stats</title>
   <style>
     body {
       background-color: rgb(229, 219, 245);
@@ -48,7 +48,7 @@
   </style>
 </head>
 <body>
-  <h1>ランダムキャラメーカー</h1>
+  <h1>ランダムNPCメーカー</h1>
   <div class="textContainer">
     <h2>　名前を入力して性別と種族を選ぶ<br>------------------------------------------------------------<br>　状態値：先天的特徴<br>　気質：性格、人間性<br>　基礎能力：戦闘能力の基準<br>　属性：いい感じに解釈して(てきとう)<br>------------------------------------------------------------<br>　E→まるでダメ<br>　D→ボチボチ<br>　C→一般人<br>　B→優秀<br>　A→極めて優秀<br>　S→ネ申<br></h2>
     <label for="variableInput">名前：</label>
@@ -94,7 +94,7 @@
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
   </div>
   <br><button onclick="move1()" class="button">ランダム武器メーカー</button>
-  <button onclick="move2()" class="button">ランダムNPCキャラメーカー</button>
+  <button onclick="move2()" class="button">ランダムキャラメーカー</button>
   <br><br><br><h3>hikaru 2023</h3>
 <script>
 var canvas = document.getElementById("characterCanvas");
@@ -919,7 +919,7 @@ function generateRandomNumbers2(){
 
 //サイト移動
 function move1(){window.location.href = 'weapon.html';}
-function move2(){window.location.href = 'enemy.html';}
+function move2(){window.location.href = 'index.html';}
 
 generateRandomCharacter();
 //canvasサイズ変更
