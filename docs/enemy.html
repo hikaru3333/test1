@@ -85,7 +85,7 @@
   </div>
   <div id="canvasContainer">
     <br>
-    <canvas id="characterCanvas" width="310" height="570"></canvas>
+    <canvas id="characterCanvas" width="310" height="585"></canvas>
     <button onclick="changeVariable()">決定＆再生成</button>
     <h2 id="generatedText"></h2>
     <br><br><br><br>
@@ -104,7 +104,7 @@
     <h1 id="generatedText2"></h1><br>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
   </div>
-  <br><button onclick="move1()" class="button">ランダム武器メーカー</button>
+  <br><button onclick="move1()" class="button">ランダム道具メーカー</button>
   <button onclick="move2()" class="button">ランダムキャラメーカー</button>
   <br><br><br><h3>hikaru 2023</h3>
 <script>
@@ -803,9 +803,9 @@ function generateRandomCharacter() {
     if(stats.chr<60){text+="ありふれた風貌の娘だ。"}
     else if(stats.chr<75){text+="かわいい貌の娘だ！　お買い物でたまに割引してくれそうだ！"}
     else if(stats.chr<90){text+="すごい美人さんだ！　お買い物でいつも割引してくれそうだ！"}
-    else if(stats.chr<100){text+="まさに傾国の美女だ！　あなたの本気♡に敵う男なし！"}
-    else if(stats.chr<110){text+="歴史に残る美女だ！　あなたのお願い♡は誰にも断られない！"}
-    else{text+="神の如き美女だ！　その姿を見たものは誰でも堕ちてしまう..."}
+    else if(stats.chr<100){text+="まさに傾国の美女だ！　あなたの本気(意味深)に敵う男なし！"}
+    else if(stats.chr<110){text+="歴史に残る美女だ！　あなたのお願いは誰にも断られない！"}
+    else{text+="女神の如き美女だ！　その姿を目にした者は誰でも堕ちてしまう..."}
   }
   else{
     if(stats.chr<60){text+="フツメンだ。"}
@@ -813,7 +813,7 @@ function generateRandomCharacter() {
     else if(stats.chr<90){text+="すごいイケメンだ！　恋人の数知れず...　夜道に注意..."}
     else if(stats.chr<100){text+="10年に1度のイケメンだ！　モテモテである。余裕でヒモになれそう！"}
     else if(stats.chr<110){text+="100年に1度のイケメンだ！　余裕でハーレムを作れそうだ。ヒモキングになろう！"}
-    else{text+="神の如きイケメンだ！　その姿を見たものは誰でも堕ちてしまう...　男はホモになる..."}
+    else{text+="神の如きイケメンだ！　その姿を目にした者は誰でも堕ちてしまう...　男はホモになる..."}
   }text+="\n　";
   if(race==6){
     if(stats.hei/stats.wei<34/12){text+="スレンダーな体型だ。完全実体化している珍しい悪魔だ"}
@@ -982,7 +982,7 @@ function generateRandomCharacter() {
   if((stats.spe<=70 && stats.spe>=40)&&(stats.str<=70 && stats.str>=30)&&(stats.int<=70 && stats.int>=30)&&(stats.dur<=70 && stats.dur>=30)&&(stats.mag<=70 && stats.mag>=30)&&(stats.dex<=70 && stats.dex>=30)){
     text+="　普通だ　"
   }
-  //属性
+  //属性・特殊能力
   maxVariable = Math.max(stats.div, stats.cha, stats.def, stats.rep, stats.ord, stats.abs);
   if(maxVariable>90){
     text+="\n\n　あなたの属性については...\n　"
@@ -1003,22 +1003,22 @@ function generateRandomCharacter() {
     } 
     if (stats.abs>90) {text+="還元、";}
     if(stats.div>80){
-      if(stats.cha>80){text+="プラズマ、"}
-      if(stats.def>80){text+="超加速、"}
-      if(stats.rep>80){text+="反射、"}
-      if(stats.ord>80){text+="ビーム、"}
-      if(stats.abs>80){text+="破壊、"}
+      if(stats.cha>80){text+=getRandomValue(["プラズマ、","電磁気、"])}
+      if(stats.def>80){text+=getRandomValue(["超加速、","時間停止、","タイムリープ、"])}
+      if(stats.rep>80){text+=getRandomValue(["反射、","ビーム"])}
+      if(stats.ord>80){text+=getRandomValue(["召喚、","転移、"])}
+      if(stats.abs>80){text+=getRandomValue(["破壊、","治癒、","復元、"])}
     }
     if(stats.cha>80){
-      if(stats.def>80){text+="竜巻、"}
-      if(stats.rep>80){text+="溶岩、"}
+      if(stats.def>80){text+=getRandomValue(["竜巻、","雷雲、"])}
+      if(stats.rep>80){text+=getRandomValue(["溶岩、","爆縮、"])}
       if(stats.ord>80){text+="爆発、"}
       if(stats.abs>80){text+="崩壊、"}
     }
     if(stats.def>80){
       if(stats.rep>80){text+="結晶、"}
-      if(stats.ord>80){text+="爆縮、"}
-      if(stats.abs>80){text+="復元、"}
+      if(stats.ord>80){text+=getRandomValue(["降霊術、","死霊術、"])}
+      if(stats.abs>80){text+=getRandomValue(["洗脳、","呪い、"])}
     }
     if(stats.rep>80){
       if(stats.ord>80){text+="金剛石、"}
@@ -1041,29 +1041,29 @@ function generateRandomCharacter() {
       text+="闇、";
     } 
     if (stats.rep>65) {
-      text+="岩、";
+      text+=getRandomValue(["岩、","硬化、"]);
     } 
     if (stats.ord>65) {
       text+="水、";
     } 
-    if (stats.abs>65){text+="酸、";}
+    if (stats.abs>65){text+=getRandomValue(["酸、","テレパシー、"]);}
     if(stats.div>80){
-      if(stats.cha>80){text+="プラズマ、"}
-      if(stats.def>80){text+="超加速、"}
-      if(stats.rep>80){text+="反射、"}
-      if(stats.ord>80){text+="ビーム、"}
-      if(stats.abs>80){text+="破壊、"}
+      if(stats.cha>80){text+=getRandomValue(["プラズマ、","電磁気、"])}
+      if(stats.def>80){text+=getRandomValue(["超加速、","時間停止、","タイムリープ、"])}
+      if(stats.rep>80){text+=getRandomValue(["反射、","ビーム"])}
+      if(stats.ord>80){text+=getRandomValue(["召喚、","転移、"])}
+      if(stats.abs>80){text+=getRandomValue(["破壊、","治癒、","復元、"])}
     }
     if(stats.cha>80){
-      if(stats.def>80){text+="竜巻、"}
-      if(stats.rep>80){text+="溶岩、"}
+      if(stats.def>80){text+=getRandomValue(["竜巻、","雷雲、"])}
+      if(stats.rep>80){text+=getRandomValue(["溶岩、","爆縮、"])}
       if(stats.ord>80){text+="爆発、"}
       if(stats.abs>80){text+="崩壊、"}
     }
     if(stats.def>80){
       if(stats.rep>80){text+="結晶、"}
-      if(stats.ord>80){text+="爆縮、"}
-      if(stats.abs>80){text+="復元、"}
+      if(stats.ord>80){text+=getRandomValue(["降霊術、","死霊術、"])}
+      if(stats.abs>80){text+=getRandomValue(["洗脳、","呪い、"])}
     }
     if(stats.rep>80){
       if(stats.ord>80){text+="金剛石、"}
@@ -1075,6 +1075,8 @@ function generateRandomCharacter() {
     text+="の形で現れやすい\n"
   }
   else{text+="\n\n　あなたに特異な属性はなく...器用貧乏だ\n"}
+
+  //嗜好
 
   //入力
   chara = {
@@ -1176,7 +1178,7 @@ function generateRandomNumbers(){
 function generateRandomNumbers2(){
   const min = parseFloat(document.getElementById('min').value);
   const max = parseFloat(document.getElementById('max').value);
-  const randomNumbers = Math.floor(Math.random()*(max-min))+min;
+  const randomNumbers = Math.floor(Math.random()*(max-min+1))+min;
   document.getElementById("generatedText2").innerHTML = randomNumbers;
 }
 
