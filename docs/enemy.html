@@ -821,13 +821,18 @@ function generateRandomCharacter() {
     else{text+="スレンダーな体型で、浮いてるようだ...！完全霊体化している！霞のような存在だ！"}
   }
   else if(race==8){text+="体が小さくて軽い。浮いてるようだ...！"}
-  else if(stats.hei/stats.wei<34/30){text+="...ボール...? 丸っこい体型だ";}
-  else if(stats.hei/stats.wei<34/22){text+="ぽっちゃり体型だ";}
-  else if(stats.hei/stats.wei<34/18){if(gndr==1){text+="ガチムチだ。たくさん肉がついている。"}else{text+="ボン・キュ・ボンの化身だ...！"}}
-  else if(stats.hei/stats.wei<34/14){if(gndr==1){text+="ガッチリした体型だ"}else{text+="グラマラスな体型だ"}}
-  else if(stats.hei/stats.wei<34/11){text+="スレンダーな体型だ"}
-  else if(stats.hei/stats.wei<34/8){text+="痩せ気味のようだ"}
-  else{text+="...まるで骨が歩いているようだ...　骨と皮しかない体型だ"}
+  else {
+    if(stats.hei<155){text+="チビで、"}
+    else if(stats.hei<180){text+="普通の背丈で、"}
+    else{text+="長身で、"}
+    if(stats.hei/stats.wei<34/30){text+="...ボール...? 丸っこい体型だ";}
+    else if(stats.hei/stats.wei<34/22){text+="ぽっちゃり体型だ";}
+    else if(stats.hei/stats.wei<34/18){if(gndr==1){text+="ガチムチだ。たくさん肉がついている。"}else{text+="ボン・キュ・ボンの化身だ...！"}}
+    else if(stats.hei/stats.wei<34/14){if(gndr==1){text+="ガッチリした体型だ"}else{text+="グラマラスな体型だ"}}
+    else if(stats.hei/stats.wei<34/11){text+="スレンダーな体型だ"}
+    else if(stats.hei/stats.wei<34/8){text+="痩せ気味のようだ"}
+    else{text+="...まるで骨が歩いているようだ...　骨と皮しかない体型だ"}
+  }
   text+="\n";
 
   //気質
