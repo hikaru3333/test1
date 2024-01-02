@@ -50,42 +50,21 @@
 <body>
   <h1>ランダム道具メーカー</h1>
   <div class="textContainer">
-    <h2>　E→まるでダメ<br>　D→ボチボチ<br>　C→一般人<br>　B→優秀<br>　A→極めて優秀<br>　S→ネ申<br></h2>
-    <label for="selectInput2">ロール：</label>
-    <select id="selectInput2">
-        <option value=0>PC同等レベル</option>
-        <option value=1>カスレベル</option>
-        <option value=2>一般人レベル</option>
-        <option value=3>小ボスレベル</option>
-        <option value=4>中ボスレベル</option>
-        <option value=5>大ボスレベル</option>
-        <option value=6>国王(特殊)</option>
-        <option value=7>貴族(特殊)</option>
-        <option value=8>魔王(特殊)</option>
-    </select>
-    <label for="selectInput">性別：</label>
+    <label for="selectInput">種類</label>
     <select id="selectInput">
-        <option value=0>♀</option>
-        <option value=1>♂</option>
+      <option value=0>便利品</option>
+      <option value=1>回復薬</option>
+      <option value=2>魔法具</option>
+      <option value=3>呪具</option>
+      <option value=4>防御具</option>
+      <option value=5>武器</option>
     </select>
-    <br><label for="selectInput1">種族：</label>
-    <select id="selectInput1">
-        <option value=0>人間</option>
-        <option value=1>エルフ</option>
-        <option value=2>魔族</option>
-        <option value=3>ドワーフ</option>
-        <option value=4>竜人</option>
-        <option value=5>羽人</option>
-        <option value=6>悪魔</option>
-        <option value=7>魚人</option>
-        <option value=8>妖精</option>
-    </select>
-    <button onclick="changeVariable()">決定＆再生成</button><br>
+    <button onclick="changeVariable()">決定＆再生成</button>
     <button onclick="rerandom()">完全ランダム再生成</button>
   </div>
   <div id="canvasContainer">
     <br>
-    <canvas id="characterCanvas" width="310" height="585"></canvas>
+    <canvas id="characterCanvas" width="310" height="500"></canvas>
     <button onclick="changeVariable()">決定＆再生成</button>
     <h2 id="generatedText"></h2>
     <br><br><br><br>
@@ -113,10 +92,10 @@ var ctx = canvas.getContext("2d");
 
 //入力欄*********************
 CharacterName = getRandomValue(["ヒトガ・ゴミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
-gndr = getRandomValue([0,1]); //性別,0→女,1→男
-race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
-role = getRandomValue([0,1,2,3,4,5,6,7,8]);
-  let text = "　";
+gndr = getRandomValue([0,1]); //なんかのパレメータ１,
+race = getRandomValue([0,1,2,3,4,5]); //アイテムの種類
+role = getRandomValue([0,1,2,3,4,5,6,7,8]); //なんかのパラメータ３
+let text = "　";
 
 stats = {
   fam: 0,
@@ -147,26 +126,76 @@ stats = {
 var chara = {};
 
 //種族固有値の行列
-var bias =[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
-      [50,169,100,200,100,200,100,200,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300],
-      [55,169, 90,200,130,200, 90,200,170,169,60,100,70,250,30,100,40,200,70,250,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,60,300],
-      [60, 81,110,200,120,200,110,200,175,169,75,100,55,300,50,300,45,200,50,300,50,300,50,300,60,300,50,300,60,200,65,200,50,300,50,100,30,100,60,200,50,300,50,300,60,300,75,200],
-      [50,300,130,200, 30, 81,110,200,120,169,70,100,40,144,55,300,60,300,55,300,65,200,55,300,70,250,50,200,70,250,20, 36,60,300,30, 36,40,200,60,300,60,300,60,300,40,200,40,200],
-      [50,300,120,200,120,200,120,200,180,169,90,100,55,300,30,100,70,250,50,300,70,250,40,200,70,250,25, 64,70,250,70,250,30,100,65,100,70,250,80,200,30,100,30,100,10,  4,60,300],
-      [50,300, 90,200,100,200,130,200,170,169,75,100,65,200,55,300,35,100,50,300,60,300,50,300,40,200,50,300,45,200,60,200,55,300,70,100,75,200,30,100,40,100,70,250,65,300,40,200],
-      [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,80,144,50,300,80,144],
-      [50,300,110,200,90 ,200,120,200,180,169,80,100,45,300,55,300,55,300,55,300,55,300,55,300,60,200,45,200,60,200,45,200,40,100,60,100,40,200,40,200,40,200,60,300,60,200,60,200],
-      [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,75,250,60,300,60,300]
+var bias0 =[
+  //名前 金額 燃費 回数 説明
+  ["マップ",5,0,"∞","マップは街を出た時の移動に必要だ。"],
+  ["テレフォン",100,"MP -"+5,"∞","テレフォンは遠くのテレフォンと周波数が共鳴して、遠くの人と連絡が取れる。魔力を消費する。"],
+  ["自転車(レア)",200,"SP -"+30,"∞","自転車を使えば、遠くに速く行ける。スタミナ消費が激しい。"],
+  ["自動車(激レア)",10000,"MP -"+10,"∞","自動車は魔力で自ら動く車だ。"],
+  ["煙玉",50,0,1,"煙玉を使えば、戦闘から逃れられる。"],
+  ["テント",100,"SP -"+10,5,"テントを使えば、街の外で安全に泊まることができる"],
+  ["マキビシ",10,0,1,"マキビシを巻けば、追いかけてくる敵から逃げ切れる。"],
+  ["方位磁針",5,0,"∞","マップだけでは方向に迷う。方位磁針が必要だ。"],
+  ["お洒落品",30,0,1,"時にはお洒落をして、心を癒そう。"],
+  ["飴ちゃん",1,0,1,"甘いものを食べて心を落ち着かせよう"],
+  ["矢",1,0,10,"矢は弓弩に使う。10本セット。稀に矢を使わない弓弩もある。"],
+  ["弾丸",10,0,1,"弾丸は銃に使う。稀に弾丸を使わない銃もある。"],
+  ["銀の弾頭",100,0,1,"銀の弾頭は矢や弾丸の先頭に付ける。威力の向上と破魔の力がある。"],
+  ["爆薬(レア)",10,0,1,"城壁を崩すほどの威力がある。出回ってはけない..."]
 ];
-
-//ロール行列
-var rolebias=[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
-          [ 0, 0 ,  0,  0,  0,  0,  0,  0,  0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0],
-          [-20, 0,-50,  0,-50,  0,-50,  0,-20,  0,-10, 0,-30, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0,-20, 0],
-          [-10, 0,-25,  0,-25,  0,-25,  0,  0,  0, 0,  0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0,-10, 0],
-          [10, 0 , 20,  0, 20,  0, 20,  0, 10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0,10,  0],
-          [20, 0 , 40,  0, 40,  0, 40,  0, 20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0,20,  0],
-          [30, 0 , 60,  0, 60,  0, 60,  0, 30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0,30,  0]
+var bias1 =[
+  //名前 金額 回復量 正気度 説明
+  ["欠損回復薬(レア)",10000,1000,-30,"欠損回復薬を使えば、欠損部位がトカゲのように生えてくる。使用後に凄まじい中毒性と幻覚、無気力さが襲ってきて、著しく正気を失う。頭が取れても生え変わるが...　それはあなたと言えるのだろうか..."],
+  ["全回復薬",1000,100,-10,"全回復薬は優秀な回復薬だ。使用後に著しく幻覚、情緒不安定さが襲ってきて、狂気的になる。ハイポーションともいう。"],
+  ["回復薬",300,50,-5,"回復薬は回復薬だ。使用後に多幸感と幻覚を感じる。ポーションともいう。その使用後の多幸感から花町で使われることが多い。"],
+  ["微回復薬",50,10,-1,"微回復薬は冒険者に広く使われる。回復薬中毒者にとっての清涼飲料水だ。"],
+  ["絆創膏",3,1,-0,"絆創膏は傷を塞ぐ。"],
+  ["魔力回復薬(レア)",1000,30,-10,"魔力回復薬はとても不味く、正気を削ぐ。あまり使われていない。"]
+];
+var bias2 =[
+  //名前 金額 魔力消費 回数 説明
+  ["攻撃魔法の巻物("+getRandomValue([
+      "炎","氷","岩石","雷","酸","マグマ","疾風"
+    ])+getRandomValue([
+      "の矢","の弾丸"
+    ])+")"
+  ,100,10,10,"巻物を使うと攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"],
+  ["強攻撃魔法の巻物("+getRandomValue([
+      "炎","氷","岩石","雷","酸","マグマ"
+    ])+getRandomValue([
+      "の弾幕","の壁","の嵐"
+    ])+")"
+  ,300,30,10,"巻物を使うと強めの攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"],
+  ["召喚の巻物(レア)",500,20,3,"巻物を使うと役に立つを召喚する。ピンチに使うと良いだろう。"],
+  ["洗脳の巻物(激レア)",500,20,1,"巻物を使って洗脳を施す。敵を仲間にしたり、自滅させたりすることができる。自分に使うと強い自己暗示になり、一時的にパワーアップする。"],
+  ["転移の巻物(レア)",500,20,5,"巻物を使うと瞬間移動する。一度行ったことある場所になら転移できる。"]
+];
+var bias3 =[
+  //名前 金額 代償 回数 説明
+  ["呪毒",10,"正気度 -"+30,1,"呪毒を相手に飲ませ、呪う。呪った相手のHPを半分にする。人を呪わば穴二つ。"],
+  ["緊箍児",200,"正気度 -"+30,1,"緊箍児(きんこじ)を相手の頭に括り付け、呪文を唱える。相手に絶え間ない苦痛を与えて自由意志を剥奪し、意のままに操る。緊箍児が外れれば相手は自由になる(無事とは言っていない)"],
+  ["藁人形",100,"正気度 -"+30,3,"相手の血を藁人形に垂らして釘を打って呪う。呪った相手に大ダメージ。人を呪わば穴二つ。"],
+  ["呪いの人形",100,"流血状態","∞","呪いの人形は勝手に動き、敵を殲滅する。使用するとあなたのHPは常に減少する。人を呪わば穴二つ。"],
+  ["輝く頭蓋骨",10,"正気度 -"+30,1,"輝く頭蓋骨を使うとランダムに転移する。逃げる時に使おう。"],
+  ["呪いの金貨(レア)",1,"狂気状態","∞","呪いの金貨を所持すると正気と理性を失い狂気状態となるが、不死身となる。最後の手。"],
+  ["紫の鏡(レア)",200,"不運","∞","紫の鏡は、真実を映し出す。映した対象の呪いを解く力があるが、行き場を失った怨嗟を溜め、持ち主に不運をもたらす。"]
+];
+var bias4 =[
+  //名前 金額 攻撃力 防御力 耐久性 重量 魔法効率 説明
+  ["兜", 100,0, 25,50,3,0,""],
+  ["籠手",100,13,15,50,3,0,""],
+  ["靴", 100,5, 15,50,3,0,""],
+  ["胴着",200,0,40,75,5,0,""],
+  ["盾",  200,5,50,100,6,0,""]
+];
+var bias5 =[
+  //名前 金額 攻撃力 防御力 耐久性 重量 魔法効率 説明
+  ["剣",100,75,25,60,6,40,""],
+  ["槍",100,85,10,60,8,40,""],
+  ["杖",100,10,5,25,3,80,""],
+  ["棍棒",100,100,40,80,15,20,""],
+  ["弓",100,25,0,30,3,30,""],
+  ["銃",500,50,0,60,6,30,""]
 ];
 
 //描画
@@ -175,961 +204,1579 @@ function drawCharacter(chara) {
   // ヘッダー
   ctx.globalAlpha = 1;
   ctx.fillStyle = 'black';
+  ctx.font = "bold 16px Arial";
+  if(race==0){tool="便利道具"}
+  else if(race==1){tool="回復薬"}
+  else if(race==2){tool="魔道具"}
+  else if(race==3){tool="呪具"}
+  else if(race==4){tool="防御具"}
+  else if(race==5){tool="武器"}
+  ctx.fillText(tool, 30, 20);
   // キャラクターの性格と能力を描画
   ctx.font = "14px Arial";
-  var y = 20; var n = 0;
+  var y = 50; var n = 0;
   for (var prop in chara) {
     if (chara.hasOwnProperty(prop)) {
       ctx.fillStyle = 'black';
       ctx.globalAlpha = 1;
       ctx.fillText(prop, 10, y);
       ctx.fillText(chara[prop], 80, y);
-      if (!isNaN(chara[prop]) && y>100){
-        ctx.globalAlpha = 1;
-        if(n>4 && (n<6 || n>10)){
-          ctx.fillStyle = 'gray';
-          if(chara[prop]<1){ctx.fillText("測定不能", 110, y);}
-          else if(chara[prop]<10){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 110, y);}
-          else if(chara[prop]<20){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
-          else if(chara[prop]<30){ctx.fillStyle = 'lightgreen';ctx.fillText("D-", 110, y);}
-          else if(chara[prop]<40){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 110, y);}
-          else if(chara[prop]<50){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 110, y);}
-          else if(chara[prop]<60){ctx.fillStyle = 'yellowgreen';ctx.fillText("C+", 110, y);}
-          else if(chara[prop]<65){ctx.fillStyle = 'gold';ctx.fillText("B-", 110, y);}
-          else if(chara[prop]<70){ctx.fillStyle = 'gold';ctx.fillText("B", 110, y);}
-          else if(chara[prop]<75){ctx.fillStyle = 'gold';ctx.fillText("B+", 110, y);}
-          else if(chara[prop]<80){ctx.fillStyle = 'crimson';ctx.fillText("A-", 110, y);}
-          else if(chara[prop]<85){ctx.fillStyle = 'crimson';ctx.fillText("A", 110, y);}
-          else if(chara[prop]<90){ctx.fillStyle = 'crimson';ctx.fillText("A+", 110, y);}
-          else if(chara[prop]<95){ctx.fillStyle = 'purple';ctx.fillText("S-", 110, y);}
-          else if(chara[prop]<100){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
-          else if(chara[prop]<105){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
-          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 110, y);}
-        }
-        else if(n<3){
-          if(chara[prop]<75){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
-          else if(chara[prop]<90){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 110, y);}
-          else if(chara[prop]<105){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 110, y);}
-          else if(chara[prop]<120){ctx.fillStyle = 'gold';ctx.fillText("B", 110, y);}
-          else if(chara[prop]<130){ctx.fillStyle = 'crimson';ctx.fillText("A", 110, y);}
-          else if(chara[prop]<140){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
-          else if(chara[prop]<150){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
-          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 110, y);}
-        }
-      }
-      else{n -= 1;}
       y += 18; n ++;
     }
   }
-  //ダイアグラム１
-  var statusm = [bias[race][24], bias[race][26], bias[race][30], bias[race][34], bias[race][32], bias[race][28]];
-  var status = [stats.str, stats.int, stats.mag, stats.spe, stats.dex, stats.dur];
-  var centerX = 220; 
-  var centerY = 355;
-  var sides = statusm.length; // 頂点の数＝データの要素数
-  var radius = 30;
-  ctx.font = "12px Arial";
-  ctx.fillStyle = 'black';
-  ctx.globalAlpha = 1/2;
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle)*2;
-    var y = centerY + radius * Math.sin(angle)*2;
-    var x1 = centerX + radius * Math.cos(angle1)*2;
-    var y1 = centerY + radius * Math.sin(angle1)*2;
-    let stat;
-    if(i==0){stat="力";}
-    else if(i==1){stat="智";}
-    else if(i==2){stat="魔法";}
-    else if(i==3){stat="俊敏";}
-    else if(i==4){stat="器用";}
-    else if(i==5){stat="耐久";}
-    ctx.fillText(stat, x-10, y+5);
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x1, y1);
-    ctx.closePath();
-    ctx.stroke();
-    for (var n = 0; n < 3; n++){
-      x = centerX + radius * Math.cos(angle)*(1/2+n/2);
-      y = centerY + radius * Math.sin(angle)*(1/2+n/2);
-      x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
-      y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x1, y1);
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.strokeStyle = "rgba(0,100,255,0.5)"
-  ctx.stroke();
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = status[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.globalAlpha = 1/4;
-  ctx.fillStyle = 'blue';
-  ctx.fill();
-  ctx.strokeStyle = "rgba(0,0,255, 0.3)"
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
-  //ダイアグラム２
-  var statusm = [bias[race][2]/2, bias[race][4]/2, bias[race][12], bias[race][8]/17*5, bias[race][10]/13*10, bias[race][6]/2];
-  var status = [stats.hp/2, stats.mp/2, stats.chr, stats.hei/17*5, stats.wei/13*10, stats.sp/2];
-  var centerX = 220; 
-  var centerY = 90;
-  var sides = statusm.length; // 頂点の数＝データの要素数
-  var radius = 30;
-  ctx.fillStyle = 'black';
-  ctx.font = "12px Arial";
-  ctx.globalAlpha = 1/2;
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle)*2;
-    var y = centerY + radius * Math.sin(angle)*2;
-    var x1 = centerX + radius * Math.cos(angle1)*2;
-    var y1 = centerY + radius * Math.sin(angle1)*2;
-    let stat;
-    if(i==0){stat="HP";}
-    else if(i==1){stat="MP";}
-    else if(i==2){stat="魅力";}
-    else if(i==3){stat="身長";}
-    else if(i==4){stat="体重";}
-    else if(i==5){stat="SP";}
-    ctx.fillText(stat, x-10, y+5);
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x1, y1);
-    ctx.closePath();
-    ctx.stroke();
-    for (var n = 0; n < 3; n++){
-      x = centerX + radius * Math.cos(angle)*(1/2+n/2);
-      y = centerY + radius * Math.sin(angle)*(1/2+n/2);
-      x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
-      y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
+  /*
+  //ダイアグラム1
+  if(race>=4){
+    var statusm = [bias[race][14], bias[race][16], bias[race][18], bias[race][20], bias[race][22]];
+    var status = [stats.ext, stats.col, stats.ope, stats.dil, stats.cop];
+    var centerX = 240; 
+    var centerY = 440;
+    var sides = statusm.length; // 頂点の数＝データの要素数
+    var radius = 30;
+    ctx.fillStyle = 'black';
+    ctx.font = "12px Arial";
+    ctx.globalAlpha = 1/2;
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
+    for (var i = 0; i < sides; i++) {
+      var angle = i/sides*2*Math.PI-Math.PI/2;
+      var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
+      var value = statusm[i];
+      var x = centerX + radius * Math.cos(angle)*2;
+      var y = centerY + radius * Math.sin(angle)*2;
+      var x1 = centerX + radius * Math.cos(angle1)*2;
+      var y1 = centerY + radius * Math.sin(angle1)*2;
+      let stat;
+      if(i==0){stat="外向性";}
+      else if(i==1){stat="神経質";}
+      else if(i==2){stat="開放性";}
+      else if(i==3){stat="誠実性";}
+      else if(i==4){stat="協調性";}
+      ctx.fillText(stat, x-10, y+5);
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(x, y);
       ctx.lineTo(x1, y1);
       ctx.closePath();
       ctx.stroke();
+      for (var n = 0; n < 3; n++){
+        x = centerX + radius * Math.cos(angle)*(1/2+n/2);
+        y = centerY + radius * Math.sin(angle)*(1/2+n/2);
+        x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
+        y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x1, y1);
+        ctx.closePath();
+        ctx.stroke();
+      }
     }
-  }
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.strokeStyle = "rgba(255,0,100,0.5)"
-  ctx.stroke();
-  //status
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = status[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.globalAlpha = 1/4;
-  ctx.fillStyle = 'red';
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,0,0, 0.3)"
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  //ダイアグラム3
-  var statusm = [bias[race][36], bias[race][38], bias[race][40], bias[race][46], bias[race][44], bias[race][42]];
-  var status = [stats.div, stats.cha, stats.rep, stats.def, stats.ord, stats.abs];
-  var centerX = 220; 
-  var centerY = 495;
-  var sides = statusm.length; // 頂点の数＝データの要素数
-  var radius = 30;
-  ctx.fillStyle = 'black';
-  ctx.font = "12px Arial";
-  ctx.globalAlpha = 1/2;
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle)*2;
-    var y = centerY + radius * Math.sin(angle)*2;
-    var x1 = centerX + radius * Math.cos(angle1)*2;
-    var y1 = centerY + radius * Math.sin(angle1)*2;
-    let stat;
-    if(i==0){stat="発散";}
-    else if(i==1){stat="混沌";}
-    else if(i==2){stat="反発";}
-    else if(i==3){stat="収束";}
-    else if(i==4){stat="秩序";}
-    else if(i==5){stat="干渉";}
-    ctx.fillText(stat, x-10, y+5);
     ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x1, y1);
-    ctx.closePath();
-    ctx.stroke();
-    for (var n = 0; n < 3; n++){
-      x = centerX + radius * Math.cos(angle)*(1/2+n/2);
-      y = centerY + radius * Math.sin(angle)*(1/2+n/2);
-      x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
-      y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x1, y1);
-      ctx.closePath();
-      ctx.stroke();
+    for (var i = 0; i < sides; i++) {
+      var angle = i/sides*2*Math.PI-Math.PI/2;
+      var value = statusm[i];
+      var x = centerX + radius * Math.cos(angle) * (value / 50);
+      var y = centerY + radius * Math.sin(angle) * (value / 50);
+      if (i === 0) {ctx.moveTo(x, y);} 
+      else {ctx.lineTo(x, y);}
     }
-  }
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.strokeStyle = "rgba(0,255,100,0.5)"
-  ctx.stroke();
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = status[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.globalAlpha = 1/4;
-  ctx.fillStyle = 'green';
-  ctx.fill();
-  ctx.strokeStyle = "rgba(0,255,0, 0.3)"
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  //ダイアグラム4
-  var statusm = [bias[race][14], bias[race][16], bias[race][18], bias[race][20], bias[race][22]];
-  var status = [stats.ext, stats.col, stats.ope, stats.dil, stats.cop];
-  var centerX = 220; 
-  var centerY = 230;
-  var sides = statusm.length; // 頂点の数＝データの要素数
-  var radius = 30;
-  ctx.fillStyle = 'black';
-  ctx.font = "12px Arial";
-  ctx.globalAlpha = 1/2;
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle)*2;
-    var y = centerY + radius * Math.sin(angle)*2;
-    var x1 = centerX + radius * Math.cos(angle1)*2;
-    var y1 = centerY + radius * Math.sin(angle1)*2;
-    let stat;
-    if(i==0){stat="外向性";}
-    else if(i==1){stat="神経質";}
-    else if(i==2){stat="開放性";}
-    else if(i==3){stat="誠実性";}
-    else if(i==4){stat="協調性";}
-    ctx.fillText(stat, x-10, y+5);
+    ctx.closePath();
+    ctx.strokeStyle = "rgba(255,200,100,0.5)"
+    ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.lineTo(x, y);
-    ctx.lineTo(x1, y1);
-    ctx.closePath();
-    ctx.stroke();
-    for (var n = 0; n < 3; n++){
-      x = centerX + radius * Math.cos(angle)*(1/2+n/2);
-      y = centerY + radius * Math.sin(angle)*(1/2+n/2);
-      x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
-      y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x1, y1);
-      ctx.closePath();
-      ctx.stroke();
+    for (var i = 0; i < sides; i++) {
+      var angle = i/sides*2*Math.PI-Math.PI/2;
+      var value = status[i];
+      var x = centerX + radius * Math.cos(angle) * (value / 50);
+      var y = centerY + radius * Math.sin(angle) * (value / 50);
+      if (i === 0) {ctx.moveTo(x, y);} 
+      else {ctx.lineTo(x, y);}
     }
+    ctx.closePath();
+    ctx.globalAlpha = 1/4;
+    ctx.fillStyle = 'orange';
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,100, 0.3)"
+    ctx.lineWidth = 2;
+    ctx.stroke();
   }
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = statusm[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.strokeStyle = "rgba(255,200,100,0.5)"
-  ctx.stroke();
-  ctx.beginPath();
-  for (var i = 0; i < sides; i++) {
-    var angle = i/sides*2*Math.PI-Math.PI/2;
-    var value = status[i];
-    var x = centerX + radius * Math.cos(angle) * (value / 50);
-    var y = centerY + radius * Math.sin(angle) * (value / 50);
-    if (i === 0) {ctx.moveTo(x, y);} 
-    else {ctx.lineTo(x, y);}
-  }
-  ctx.closePath();
-  ctx.globalAlpha = 1/4;
-  ctx.fillStyle = 'orange';
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,100, 0.3)"
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  */
 }
 //キャラ生成、パラメータ決定
 function generateRandomCharacter() {
-  //性別補正
-  if(gndr==0){Sex = "♀";bias[race][24]-=5;bias[race][30]+=5;bias[race][32]+=5;bias[race][28]-=5;bias[race][14]+=5;bias[race][18]-=5;}
-  else{Sex = "♂";bias[race][24]+=5;bias[race][30]-=5;bias[race][32]-=5;bias[race][28]+=5;bias[race][14]-=5;bias[race][18]+=5;}
-  bias[race][26]+=(stats.fam-50)/5; bias[race][12]+=(stats.fam-50)/5;//地位補正
-  //role補正
-  var sides = bias[race].length;
-  if(role<=5){
-    for (var i = 0; i < sides; i++){
-      bias[race][i]+=rolebias[role][i]
-    }
-  }
-  else if(role==6){
-    bias[race][0]=150;bias[race][1]=1;
-    for (var i = 0; i < sides; i++){
-      bias[race][i]+=rolebias[4][i]
-    }
-  }
-  else if(role==8){
-    race = getRandomValue([0,1,2,2,2,2,2,2,2,2,3,4,5,6,6,6,6,7,8]);
-    bias[race][0]=150;bias[race][1]=1;
-    for (var i = 0; i < sides; i++){
-      bias[race][i]+=rolebias[5][i]
-    }
-  }
-  else{
-    for (var i = 0; i < sides; i++){
-      bias[race][i]+=rolebias[3][i]
-    }
-    bias[race][0]=77;bias[race][1]=2;
-  }
-  //ステータス生成
-  stats.str=getRandomNumber(bias[race][24], bias[race][25]);if(stats.str<1){stats.str=1};
-  stats.int=getRandomNumber(bias[race][26], bias[race][27]);if(stats.int<1){stats.int=1};
-  stats.mag=getRandomNumber(bias[race][30], bias[race][31]);if(stats.mag<0){stats.mag=0};
-  stats.dur=getRandomNumber(bias[race][28], bias[race][29]);if(stats.dur<1){stats.dur=1};
-  stats.dex=getRandomNumber(bias[race][32], bias[race][33]);if(stats.dex<0){stats.dex=0};
-  stats.spe=getRandomNumber(bias[race][34], bias[race][35]);if(stats.spe<1){stats.spe=1};
-  stats.hp = getRandomNumber(bias[race][2], bias[race][3]);if(stats.hp<1){stats.hp=1};
-  stats.mp = getRandomNumber(bias[race][4], bias[race][5]);if(stats.mp<1){stats.mp=1};
-  stats.sp = getRandomNumber(bias[race][6], bias[race][7]);if(stats.sp<1){stats.sp=1};
-  stats.chr = getRandomNumber(bias[race][12], bias[race][13]);if(stats.chr<1){stats.chr=1};
-  stats.hei = getRandomNumber(bias[race][8], bias[race][9]);if(stats.hei<1){stats.hei=1};
-  stats.wei = getRandomNumber(bias[race][10], bias[race][11]);if(stats.wei<1){stats.wei=1};
-  stats.div=getRandomNumber(bias[race][36], bias[race][37]);if(stats.div<0){stats.div=0};
-  stats.cha=getRandomNumber(bias[race][38], bias[race][39]);if(stats.cha<0){stats.cha=0};
-  stats.rep=getRandomNumber(bias[race][40], bias[race][41]);if(stats.rep<0){stats.rep=0};
-  stats.abs=getRandomNumber(bias[race][42], bias[race][43]);if(stats.abs<0){stats.abs=0};
-  stats.ord=getRandomNumber(bias[race][44], bias[race][45]);if(stats.ord<0){stats.ord=0};
-  stats.def=getRandomNumber(bias[race][46], bias[race][47]);if(stats.def<0){stats.def=0};
-  stats.ext=getRandomNumber(bias[race][14], bias[race][15]);if(stats.ext<0){stats.ext=0};
-  stats.col=getRandomNumber(bias[race][16], bias[race][17]);if(stats.col<0){stats.col=0};
-  stats.ope=getRandomNumber(bias[race][18], bias[race][19]);if(stats.ope<0){stats.ope=0};
-  stats.dil=getRandomNumber(bias[race][20], bias[race][21]);if(stats.dil<0){stats.dil=0};
-  stats.cop=getRandomNumber(bias[race][22], bias[race][23]);if(stats.cop<0){stats.cop=0};
-  stats.fam=getRandomNumber(bias[race][0], bias[race][1]);
-  
-  //名前
-  if(gndr==1){CharacterName = getRandomValue(["ウィリアム"
-    ,"アーサー"
-    ,"メイナード"
-    ,"ギルバート"
-    ,"ヒルデブランド"
-    ,"エドワード"
-    ,"アドルフ"
-    ,"ハインリヒ"
-    ,"ディートヘルム"
-    ,"ヴィルヘルム"
-    ,"フリードリヒ"
-    ,"エルヴィン"
-    ,"マクシミリアン"
-    ,"ヘルムート"
-    ,"テオドール"
-    ,"ヴォルフ"
-    ,"アレクサンダー"
-    ,"クルト"
-    ,"ヴァルター"
-    ,"アルフレート"
-    ,"ベルンハルト"
-    ,"ヴォルフガング"
-    ,"ディートリッヒ"
-    ,"エデュアルト"
-    ,"レオン"
-    ,"マルティン"
-    ,"ゴットハルト"
-    ,"ジークフリート"
-    ,"ハンニバル"
-    ,"ヴォルフラム"
-    ,"アレッサンドロ"
-    ,"ファウスト"
-    ,"サルヴァトーレ"
-    ,"メイナード"
-    ,"ヴァレンタイン"
-    ,"ブルクハルト"
-    ,"フェリックス"
-    ,"アルフレッド"
-    ,"バージル"
-    ,"ブラッドフォード"
-    ,"ブラッドリー"
-    ,"セドリック"
-    ,"クリフォード"
-    ,"ローレンス"
-    ,"レナード"
-    ,"メイナード"
-    ,"ロードリック"
-    ,"レオンハルト"
-    ,"アルバーノ"
-    ,"ジェラルド"
-    ,"イルデブランド"
-    ,"ヴァルフレード"
-    ,"アルフォンソ"
-    ,"レンブラント"
-  ]);}  
-  else{CharacterName = getRandomValue([
-    "アイリーン"
-    ,"シンシア"
-    ,"フレイヤ"
-    ,"エリザベス"
-    ,"アリス"
-    ,"ソーニャ"
-    ,"メイ"
-    ,"レイチェル"
-    ,"エミリア"
-    ,"シャーロット"
-    ,"ジェシカ"
-    ,"エレノア"
-    ,"マーガレット"
-    ,"フローレンス"
-    ,"クレア"
-    ,"パトリシア"
-    ,"リン"
-    ,"アリス"
-    ,"エレオノール"
-    ,"ジャンヌ"
-    ,"ジュリエット"
-    ,"ララ"
-    ,"レティシア"
-    ,"マリアンヌ"
-    ,"ミレイユ"
-    ,"アルマ"
-    ,"アメリア"
-    ,"クリスタ"
-    ,"ハンナ"
-    ,"フローラ"
-    ,"レオナ"
-    ,"クリスティーネ"
-    ,"ルイーゼ"
-    ,"マルグリット"
-    ,"マルティナ"
-    ,"ニコル"
-    ,"ペトラ"
-    ,"ヴァーレリー"
-    ,"ラウラ"
-    ,"ヒルダ"
-    ,"リナ"
-    ,"アンナ"
-    ,"エリカ"
-    ,"エミーリア"
-    ,"エマ"
-    ,"ヴェロニカ"
-    ,"カトリーヌ"
-    ,"クラリス"
-    ,"モニカ"
-    ,"ソフィア"
-  ]);}//名
-  CharacterName += "・";
-  if(stats.fam>=85){CharacterName += getRandomValue(["「国名」"]);} //王姓
-  else if(stats.fam>=70){
-    CharacterName += getRandomValue([
-      "ラ"
-      ,"フォン"
-      ,"ディ"
-      ,"デ"
-      ,"ファン"
-    ]);
-    CharacterName += "・";
-  } //貴族姓
-  if(stats.fam>=85){} //
-  else{CharacterName += getRandomValue([
-    "レイブンシールド"
-    ,"アイアンハート"
-    ,"ストームウィーバー"
-    ,"シルバーウッド"
-    ,"フロストベイン"
-    ,"シャドウダンサー"
-    ,"スターフォール"
-    ,"エンバーストーン"
-    ,"ソーンフィールド"
-    ,"ムーンシャドウ"
-    ,"ブラックソーン"
-    ,"ストームライダー"
-    ,"シルバーリーフ"
-    ,"ホークウィンド"
-    ,"フロストフォール"
-    ,"アイアンハンマー"
-    ,"スウィフトアロー"
-    ,"レイブンソング"
-    ,"シャドウキャスター"
-    ,"トーンブレード"
-    ,"ドラゴンハート"
-    ,"スウィフトブレード"
-    ,"ストーンフォージ"
-    ,"ムーンストライダー"
-    ,"ゴールデンシェイド"
-    ,"スターウィスパー"
-    ,"フロストファイア"
-    ,"ドラゴンライダー"
-    ,"エンバーフォージ"
-    ,"ストームクローク"
-    ,"アイアンフィスト"
-    ,"シャドウベイン"
-    ,"スウィフトウィンド"
-    ,"ドラゴンベイン"
-    ,"シルバームーン"
-    ,"フロストウィンド"
-    ,"ブラックシスル"
-    ,"エンバーフォール"
-    ,"トーンハート"
-    ,"レイブンスパイア"
-    ,"スウィフトフレイム"
-    ,"ストームシャウド"
-    ,"ムーンブレード"
-    ,"シルバーストーム"
-    ,"エンバーソーン"
-    ,"ドラゴンスパイア"
-    ,"ストームブレード"
-    ,"フロストソーン"
-    ,"シルバーフレイム"
-    ,"シャドウシスル"
-  ]);} //姓
-  
-
-  text += "　";
-  text += "評価：\n\n";
-  //種族
-  if(race==0){
-    species = "人間";
-    if(stats.mag>70){text+=getRandomValue(["　あなたは人間だ! ただの人間だ...\n","　あなたは人間だ、ありふれた種族だ\n","　あなたは人間だ、が角がある...　魔族の血が混ざっているのかも知れない、迫害の対象だ！!\n","　あなたはエルフとの混血、ハーフエルフだ！耳が少し尖っている!\n"])}
-    else{text+=getRandomValue(["　あなたは人間だ! ただの人間だ...\n","　あなたは人間だ、ありふれた種族だ\n"]);}
-  }
-  else if(race==1){species = "エルフ";text+="　あなたはエルフだ！耳が尖ってて長い!\n";}
-  else if(race==2){species = "魔族";text+=getRandomValue(["　あなたは魔族だ!巻角が生えてるよ\n","　あなたは魔族だ!鋭い角が生えてるよ\n"])}
-  else if(race==3){species = "ドワーフ";text+=getRandomValue(["　あなたはドワーフだ! お酒が大好きだ!\n","　あなたはドワーフだ! お酒は好きでない...\n"])}
-  else if(race==4){species = "竜人";text+="　あなたは竜人だ! 角と飛膜が生えてて鱗もあるよ!\n"}
-  else if(race==5){species = "羽人";text+="　あなたは羽人だ! 翼が生えてて天使みたいだ!\n"}
-  else if(race==6){species = "悪魔";text+="　あなたは悪魔だ! 見た目を変えられる!\n"}
-  else if(race==7){species = "魚人";text+=getRandomValue(["　あなたは魚人だ! 人魚型で足がない...\n","　あなたは魚人だ! 鰓呼吸できる人型だ！\n","　あなたは魚人だ! ...エイリアンのようだ...\n"])}
-  else if(race==8){species = "妖精";text+="　あなたは妖精だ! 小さくて羽が生えている\n"}
-  //地位
-  if(stats.fam<25){family_status="奴隷";text+="　...奴隷のようだ...人は皆、何かの奴隷だ...\n"}
-  else if(stats.fam<40){family_status="貧民";text+=getRandomValue(["　貧しい生活ながらも頑張っている!\n","　...スラム街に住む乞食のようだ...\n"])}
-  else if(stats.fam<65){family_status="平民";text+=getRandomValue(["　普通の生活をしている\n","　ありふれた毎日を楽しんでいる\n"])}
-  else if(stats.fam<70){family_status="富豪";text+=getRandomValue(["　お金持ちのようだ！強盗に気をつけよう！\n","　札束でビンタするのが趣味のようだ！\n"])}
-  else if(stats.fam<75){family_status="下級貴族";text+=getRandomValue(["　特権階級様だ...男爵のようだ！\n","　貴種だね、子爵のようだ！\n"])}
-  else if(stats.fam<80){family_status="貴族";text+="　御貴族様だ！伯爵だ！\n"}
-  else if(stats.fam<85){family_status="上級貴族";text+=getRandomValue(["　貴殿は侯爵ですな！\n","　王家の次に偉いようだ！公爵ですな！\n"])}
-  else{family_status="王家";text+="　貴殿は人の上に立つ者...王家の御方だ！\n"}
-  //ロール
-  if(role==0){role_status="PC同等";}
-  else if(role==1){role_status="カス";}
-  else if(role==2){role_status="一般人";}
-  else if(role==3){role_status="小ボス";}
-  else if(role==4){role_status="中ボス";}
-  else if(role==5){role_status="大ボス";}
-  else if(role==6){role_status="王様";}
-  else if(role==7){role_status="貴族";}
-  else if(role==8){role_status="魔王";}
-
-  //評価・髪・体
-  text+="\n　あなたは、"
-  text+=getRandomValue(["金髪","銀髪","青髪","桃髪","黒髪","茶髪"]);
-  if(gndr==0){text+=getRandomValue(["ショート","ロング","ミディアム","ボブヘア","ポニテ","ツインテール"]);text+="で";}
-  else{text+=getRandomValue(["刈り上げ","ショート","だったが今はハゲ","ロング","リーゼント","ボブヘア","坊主","モヒカン"]);text+="で";}
-  text+=getRandomValue(["金眼","銀眼","碧眼","赤い目","黒眼","茶色っぽい目"]);text+="の";
-  if(stats.chr<5){text+="なりだが、この世のものとは思えない貌をしている...　街では化け物と思われ迫害されている..."}
-  else if(stats.chr<15){text+="極めて醜い顔の持ち主だ...　極めて交渉事に向かない..."}
-  else if(stats.chr<30){text+="ブサイクだ... 交渉に失敗しやすい..."}
-  else if(gndr==0){
-    if(stats.chr<60){text+="ありふれた風貌の娘だ。"}
-    else if(stats.chr<75){text+="かわいい貌の娘だ！　お買い物でたまに割引してくれそうだ！"}
-    else if(stats.chr<90){text+="すごい美人さんだ！　お買い物でいつも割引してくれそうだ！"}
-    else if(stats.chr<100){text+="まさに傾国の美女だ！　あなたの本気(意味深)に敵う男なし！"}
-    else if(stats.chr<110){text+="歴史に残る美女だ！　あなたのお願いは誰にも断られない！"}
-    else{text+="女神の如き美女だ！　その姿を目にした者は誰でも堕ちてしまう..."}
-  }
-  else{
-    if(stats.chr<60){text+="フツメンだ。"}
-    else if(stats.chr<75){text+="イケメンだ。　高い確率で告白に成功する！"}
-    else if(stats.chr<90){text+="すごいイケメンだ！　恋人の数知れず...　夜道に注意..."}
-    else if(stats.chr<100){text+="10年に1度のイケメンだ！　モテモテである。余裕でヒモになれそう！"}
-    else if(stats.chr<110){text+="100年に1度のイケメンだ！　余裕でハーレムを作れそうだ。ヒモキングになろう！"}
-    else{text+="神の如きイケメンだ！　その姿を目にした者は誰でも堕ちてしまう...　男はホモになる..."}
-  }text+="\n　";
-  if(race==6){
-    if(stats.hei/stats.wei<34/12){text+="スレンダーな体型だ。完全実体化している珍しい悪魔だ"}
-    if(stats.hei/stats.wei<34/4){text+="スレンダーな体型だ。半霊体化している！実体が半分しかないため、体重が軽い"}
-    else{text+="スレンダーな体型で、浮いてるようだ...！完全霊体化している！霞のような存在だ！"}
-  }
-  else if(race==8){text+="体が小さくて軽い。浮いてるようだ...！"}
-  else if(stats.hei/stats.wei<34/30){text+="...ボール...? 丸っこい体型だ";}
-  else if(stats.hei/stats.wei<34/22){text+="ぽっちゃり体型だ";}
-  else if(stats.hei/stats.wei<34/18){if(gndr==1){text+="ガチムチだ。たくさん肉がついている。"}else{text+="ボン・キュ・ボンの化身だ...！"}}
-  else if(stats.hei/stats.wei<34/14){if(gndr==1){text+="ガッチリした体型だ"}else{text+="グラマラスな体型だ"}}
-  else if(stats.hei/stats.wei<34/11){text+="スレンダーな体型だ"}
-  else if(stats.hei/stats.wei<34/8){text+="痩せ気味のようだ"}
-  else{text+="...まるで骨が歩いているようだ...　骨と皮しかない体型だ"}
-  text+="\n";
-
-  //気質
-  text+="\n　あなたの気質については...\n"
-  if(stats.cop>60){
-    if(stats.dil>60){text+="頼りになり、"}else if(stats.dil<40){text+="謙虚で、"}
-    if(stats.ext>60){text+="極めて陽の者で、"}else if(stats.ext<40){text+="臆病で、"}
-    if(stats.col>60){text+="情に脆く、"}else if(stats.col<40){text+="リアリストで、"}
-    if(stats.ope>60){text+="気が利き、"}else if(stats.ope<40){text+="メンヘラで、"}
-  }
-  else if(stats.cop<40){
-    if(stats.dil>60){text+="頑固で、"}else if(stats.dil<40){text+="無謀で、"}
-    if(stats.ext>60){text+="傲慢で、"}else if(stats.ext<40){text+="無口で、"}
-    if(stats.col>60){text+="常にイライラしてて、"}else if(stats.col<40){text+="冷淡で、"}
-    if(stats.ope>60){text+="抜け目がなく、"}else if(stats.ope<40){text+="粗野で、"}
-  }
-  if(stats.dil>60){
-    if(stats.ext>60){text+="野心家で、"}else if(stats.ext<40){text+="用心深く、"}
-    if(stats.col>60){text+="几帳面で、"}else if(stats.col<40){text+="堅実で、"}
-    if(stats.ope>60){text+="情報通で、"}else if(stats.ope<40){text+="保守的で、"}
-  }
-  else if(stats.dil<40){
-    if(stats.ext>60){text+="わんぱくで、"}else if(stats.ext<40){text+="捻くれてて、"}
-    if(stats.col>60){text+="強引で、"}else if(stats.col<40){text+="控えめで、"}
-    if(stats.ope>60){text+=getRandomValue(["型破りで、","腹黒で、"])}else if(stats.ope<40){text+="見切り発車で、"}
-  }
-  if(stats.ext>60){
-    if(stats.col>60){text+="浮気しやすく、"}else if(stats.col<40){text+="意識高い系で、"}
-    if(stats.ope>60){text+="雄弁で、"}else if(stats.ope<40){text+="気取っていて、"}
-  }
-  else if(stats.ext<40){
-    if(stats.col>60){text+="用心深く、"}else if(stats.col<40){text+="落ち着いていて、"}
-    if(stats.ope>60){text+="陰の者で、"}else if(stats.ope<40){text+="極めて陰の者で、"}
-  }
-  if(stats.col>60){
-    if(stats.ope>60){text+="官能的で、"}else if(stats.ope<40){text+="疑い深く、"}
-  }
-  else if(stats.col<40){
-    if(stats.ope>60){text+="創造的で、"}else if(stats.ope<40){text+="鈍感で、"}
-  }
-  if (stats.ext>= stats.col&& stats.ext>= stats.ope&& stats.ext>= stats.dil&& stats.ext>= stats.cop) {
-    text+="人との会話が好きだ！"
-  } 
-  else if (stats.col>= stats.ext&& stats.col>= stats.ope&& stats.col>= stats.dil&& stats.col>= stats.cop) {
-    text+="メンヘラである！"
-  } 
-  else if (stats.ope>= stats.ext&& stats.ope>= stats.col&& stats.ope>= stats.dil&& stats.ope>= stats.cop) {
-    text+="感性豊かである！"
-  } 
-  else if (stats.dil>= stats.ext&& stats.dil>= stats.col&& stats.dil>= stats.ope&& stats.dil>= stats.cop) {
-    text+="とても誠実である！"
-  } 
-  else{text+="協調性が高い！"}
-  if(stats.ext<45 && stats.col<45 && stats.ope<45 && stats.ext<45 && stats.dil<45){text+="　ぶっちゃけカスである！"}
-  //口調
-  text+="\n\n　口調に関しては、";
-  text+="一人称が「";
-  text+=getRandomValue([
-    "わし"
-    ,"ワイ"
-    ,"私"
-    ,"あたし"
-    ,"俺"
-    ,"僕"
-    ,"おいどん"
-    ,"自分"
-    ,"拙者"
-    ,"小生"
-    ,"朕"
-    ,"俺様"
-    ,"おら"
-  ]);
-  text+="」であり、";
-  text+=getRandomValue([
-    "「〜のじゃ」とか「〜じゃのぉ」を語尾につける"
-    ,"敬語調で「〜です・ます」を語尾につける"
-    ,"エセ中華風で「〜アル」を語尾につける"
-    ,"タメ口である"
-    ,"関西風で「〜んや」とか「〜ねん」を語尾につける"
-    ,"「〜だってばよ！」とかを語尾につける"
-  ]);
-  text+="";
-  
-  //基礎能力
-  text+="\n\n　あなたの基礎能力については...\n"
-  if(stats.hp<3){text+="...小指をぶつけただけで死ぬ...　"}
-  else if(stats.hp<10){text+="蜻蛉の如き儚さ...　今まで生きてこれたことが奇跡...　"}
-  else if(stats.hp<30){text+="とてつもなく生命力が低い...　"}
-  else if(stats.hp<50){text+="とても生命力が低い　"}
-  else if(stats.hp<80){text+="生命力が低い　"}
-  else if(stats.hp>150){text+="生命力に満ち溢れている！　"}
-  else if(stats.hp>140){text+="ゴキブリの如き生命力！　"}
-  else if(stats.hp>130){text+="とても生命力が高い！　"}
-  else if(stats.hp>120){text+="生命力が高い　"}
-  if(stats.mp<10){text+="魔力がない！物理攻撃に頼ろう！　"}
-  else if(stats.mp<30){text+="魔力がほとんどない！一回の魔法が限界だろう...　"}
-  else if(stats.mp<50){text+="魔力がとても少ない...2,3回の魔法が限界だろう...　"}
-  else if(stats.mp<80){text+="魔力が少ない...　"}
-  else if(stats.mp>150){text+="歴史に残る魔力量だ！　"}
-  else if(stats.mp>135){text+="魔力がとても多い！　"}
-  else if(stats.mp>120){text+="魔力が多い！　"}
-  if(stats.sp<10){text+="スタミナが全くない！走るのは無理だ！連続行動できない...　"}
-  else if(stats.sp<30){text+="スタミナがほとんどない！連続行動は失敗しやすい...　"}
-  else if(stats.sp<50){text+="スタミナがとても少ない...　長時間の活動は厳しい...　"}
-  else if(stats.sp<80){text+="スタミナが少ない...　"}
-  else if(stats.sp>150){text+="スタミナ切れを知らない！　"}
-  else if(stats.sp>135){text+="スタミナがとても多い！　"}
-  else if(stats.sp>120){text+="スタミナが多い！　"}
-  else if((stats.mp<=120 && stats.mp>=80)||(stats.hp<=120 && stats.hp>=80)){}else{text+="\n";}
-  if(stats.str<3){text+="力が貧弱すぎて移動すらできない...　"}
-  else if(stats.str<10){text+="力が貧弱すぎて重い武器が持てない...　"}
-  else if(stats.str<30){text+="力が弱い　"}
-  else if(stats.str>110){text+="1000年に1度の力持ちだ！　"}
-  else if(stats.str>100){text+="100年に1度の力持ちだ！　"}
-  else if(stats.str>90){text+="10年に1度の力持ちだ！　"}
-  else if(stats.str>70){text+="とても力が強い　"}
-  if(stats.int<3){text+="脳みそに皺がない...意思疎通すら不可能　"}
-  else if(stats.int<10){text+="アホだ...ほとんど言う事を聞かない　"}
-  else if(stats.int<30){text+="バカである　"}
-  else if(stats.int>110){text+="1000年に1度の頭脳だ！　"}
-  else if(stats.int>100){text+="100年に1度の頭脳だ！　"}
-  else if(stats.int>90){text+="10年に1度の頭脳だ！　"}
-  else if(stats.int>70){text+="とても頭が良い　"}
-  if(stats.dur<3){text+="打たれ弱い... 泡沫の如き儚さ... 転んだら死ぬ　"}
-  else if(stats.dur<10){text+="打たれ弱い...一撃で死ぬ　"}
-  else if(stats.dur<30){text+="打たれ弱い　"}
-  else if(stats.dur>110){text+="打たれ強い！どんな攻撃も効かない！　"}
-  else if(stats.dur>100){text+="打たれ強い！どんな攻撃も無効化し得る！　"}
-  else if(stats.dur>90){text+="打たれ強い！致命的な攻撃にも耐え得る！　"}
-  else if(stats.dur>70){text+="打たれ強い　"}
-  if(stats.mag<3){text+="全く魔法が使えない...　"}
-  else if(stats.mag<10){text+="...魔法は一種類しか使えない...　"}
-  else if(stats.mag<30){text+="魔法が苦手　"}
-  else if(stats.mag>110){text+="1000年に1度の魔法使いだ！　"}
-  else if(stats.mag>100){text+="100年に1度の魔法使いだ！　"}
-  else if(stats.mag>90){text+="10年に1度の魔法使いだ！　"}
-  else if(stats.mag>70){text+="魔法がとても得意　"}
-  if(stats.dex<3){text+="不器用すぎて道具が使えない...　"}
-  else if(stats.dex<10){text+="不器用だ...道具は一つしか使えない　"}
-  else if(stats.dex<30){text+="不器用だ　"}
-  else if(stats.dex>110){text+="同時に1000の武器を巧みに操る！　"}
-  else if(stats.dex>100){text+="同時に100の武器を巧みに操る！　"}
-  else if(stats.dex>90){text+="同時に10の武器を巧みに操る！　"}
-  else if(stats.dex>70){text+="とても器用だ　"}
-  if(stats.spe<5){text+="...あれ？動かない...石像のようだ...(遅い)　"}
-  else if(stats.spe<20){text+="お...そ...i...　"}
-  else if(stats.spe<40){text+="遅い　"}
-  else if(stats.spe>110){text+="ﾊﾔｲ、速すぎて世界が停止する！　"}
-  else if(stats.spe>100){text+="ハヤイ、同時に複数の行動をする！　"}
-  else if(stats.spe>90){text+="はやい、ほとんどの場合で先制する！　"}
-  else if(stats.spe>70){text+="とても速い　"}
-  if((stats.spe<=70 && stats.spe>=40)&&(stats.str<=70 && stats.str>=30)&&(stats.int<=70 && stats.int>=30)&&(stats.dur<=70 && stats.dur>=30)&&(stats.mag<=70 && stats.mag>=30)&&(stats.dex<=70 && stats.dex>=30)){
-    text+="　普通だ　"
-  }
-  //属性・特殊能力
-  maxVariable = Math.max(stats.div, stats.cha, stats.def, stats.rep, stats.ord, stats.abs);
-  if(maxVariable>90){
-    text+="\n\n　あなたの属性については...\n　"
-    if (stats.div>90) {
-      text+="斥力、";
-    } 
-    if (stats.cha>90) {
-      text+=getRandomValue(["熱、","炎、"]);
-    } 
-    if (stats.def>90) {
-      text+="引力、";
-    } 
-    if (stats.rep>90) {
-      text+="金属、";
-    } 
-    if (stats.ord>90) {
-      text+=getRandomValue(["冷、","氷、"]);
-    } 
-    if (stats.abs>90) {text+="還元、";}
-    if(stats.div>80){
-      if(stats.cha>80){text+="プラズマ、"}
-      if(stats.def>80){text+="超加速、"}
-      if(stats.rep>80){text+="反射、"}
-      if(stats.ord>80){text+="ビーム、"}
-      if(stats.abs>80){text+="破壊、"}
-    }
-    if(stats.cha>80){
-      if(stats.def>80){text+="竜巻、"}
-      if(stats.rep>80){text+="溶岩、"}
-      if(stats.ord>80){text+="爆発、"}
-      if(stats.abs>80){text+="崩壊、"}
-    }
-    if(stats.def>80){
-      if(stats.rep>80){text+="結晶、"}
-      if(stats.ord>80){text+="爆縮、"}
-      if(stats.abs>80){text+="復元、"}
-    }
-    if(stats.rep>80){
-      if(stats.ord>80){text+="金剛石、"}
-      if(stats.abs>80){text+="水銀、"}
-    }
-    if(stats.ord>80){
-      if(stats.abs>80){text+="回復、"}
-    }
-    text+="の形で現れやすい\n"
-  }
-  else if(maxVariable>65){
-    text+="\n\n　あなたの属性については...\n　"
-    if (stats.div>65) {
-      text+="光、";
-    } 
-    if (stats.cha>65) {
-      text+="風、";
-    } 
-    if (stats.def>65) {
-      text+="闇、";
-    } 
-    if (stats.rep>65) {
-      text+="岩、";
-    } 
-    if (stats.ord>65) {
-      text+="水、";
-    } 
-    if (stats.abs>65){text+="酸、";}
-    if(stats.div>80){
-      if(stats.cha>80){text+="プラズマ、"}
-      if(stats.def>80){text+="超加速、"}
-      if(stats.rep>80){text+="反射、"}
-      if(stats.ord>80){text+="ビーム、"}
-      if(stats.abs>80){text+="破壊、"}
-    }
-    if(stats.cha>80){
-      if(stats.def>80){text+="竜巻、"}
-      if(stats.rep>80){text+="溶岩、"}
-      if(stats.ord>80){text+="爆発、"}
-      if(stats.abs>80){text+="崩壊、"}
-    }
-    if(stats.def>80){
-      if(stats.rep>80){text+="結晶、"}
-      if(stats.ord>80){text+="爆縮、"}
-      if(stats.abs>80){text+="復元、"}
-    }
-    if(stats.rep>80){
-      if(stats.ord>80){text+="金剛石、"}
-      if(stats.abs>80){text+="水銀、"}
-    }
-    if(stats.ord>80){
-      if(stats.abs>80){text+="回復、"}
-    }
-    text+="の形で現れやすい\n"
-  }
-  else{text+="\n\n　あなたに特異な属性はなく...器用貧乏だ\n"}
-
-  //嗜好
-
+  text += "　　説明：\n\n　";
   //入力
-  chara = {
-    名前: CharacterName,
-    性別: Sex,
-    種族: species,
-    地位: family_status,
-    ロール: role_status,
-    ____状態値: "______",
-    HP: stats.hp,
-    MP: stats.mp,
-    SP: stats.sp,
-    身長: stats.hei,
-    体重: stats.wei,
-    魅力: stats.chr,
-    _____気質: "______",
-    外向性: stats.ext,
-    神経質: stats.col,
-    開放性: stats.ope,
-    誠実性: stats.dil,
-    協調性: stats.cop,
-    __基礎能力値: "______",
-    力: stats.str,
-    智: stats.int,
-    耐久: stats.dur,
-    魔法: stats.mag,
-    器用: stats.dex,
-    俊敏: stats.spe,
-    _____属性: "______",
-    発散: stats.div,
-    混沌: stats.cha,
-    反発: stats.rep,
-    収束: stats.def,
-    秩序: stats.ord,
-    干渉: stats.abs,
-    _________: "______",
-  };
+  if(race==0){
+    for (var i = 0; i < bias0.length; i++){
+      bias0[i][1]=getRandomNumber(bias0[i][1],(bias0[i][1]/10)**2);
+    }
+    var a=getRandomValue([0,1,0,1,2,3,4,5,6,7,8,9,4,5,6,7,8,9,10,11,12]); 
+    var b=getRandomValue([0,1,2,4,5,6,7,8,9,10,11,12]); 
+    var c=getRandomValue([0,1,4,5]); 
+    var d=getRandomValue([6,7,8,9]); 
+    var e=getRandomValue([10,11,12,13]); 
+    text += bias0[a][4];text +="\n\n　"
+    text += bias0[b][4];text +="\n\n　"
+    text += bias0[c][4];text +="\n\n　"
+    text += bias0[d][4];text +="\n\n　"
+    text += bias0[e][4];text +="\n\n　"
+    chara = {
+      名前: bias0[a][0],
+      金額: bias0[a][1],
+      燃費: bias0[a][2],
+      回数: bias0[a][3],
+      ____________: "______",
+      名前_: bias0[b][0],
+      金額_: bias0[b][1],
+      燃費_: bias0[b][2],
+      回数_: bias0[b][3],
+      _________: "______",
+      名前__: bias0[c][0],
+      金額__: bias0[c][1],
+      燃費__: bias0[c][2],
+      回数__: bias0[c][3],
+      __________: "______",
+      名前___: bias0[d][0],
+      金額___: bias0[d][1],
+      燃費___: bias0[d][2],
+      回数___: bias0[d][3],
+      ___________: "______",
+      名前____: bias0[e][0],
+      金額____: bias0[e][1],
+      燃費____: bias0[e][2],
+      回数____: bias0[e][3],
+    };
+  }
+  if(race==1){
+    for (var i = 0; i < bias1.length; i++){
+      bias1[i][1]=getRandomNumber(bias1[i][1],(bias1[i][1]/10)**2);
+    }
+    var a=getRandomValue([0,1,2,3,4,5]); 
+    var b=getRandomValue([1,2,3,4]); 
+    var c=getRandomValue([1,2,3,4]);  
+    var d=getRandomValue([1,2,3,4]);  
+    var e=getRandomValue([1,2,3,4]);  
+    text += bias1[a][4];text +="\n\n　"
+    text += bias1[b][4];text +="\n\n　"
+    text += bias1[c][4];text +="\n\n　"
+    text += bias1[d][4];text +="\n\n　"
+    text += bias1[e][4];text +="\n\n　"
+    chara = {
+      名前: bias1[a][0],
+      金額: bias1[a][1],
+      回復量: bias1[a][2],
+      正気度: bias1[a][3],
+      ____________: "______",
+      名前_: bias1[b][0],
+      金額_: bias1[b][1],
+      回復量_: bias1[b][2],
+      正気度_: bias1[b][3],
+      _________: "______",
+      名前__: bias1[c][0],
+      金額__: bias1[c][1],
+      回復量__: bias1[c][2],
+      正気度__: bias1[c][3],
+      __________: "______",
+      名前___: bias1[d][0],
+      金額___: bias1[d][1],
+      回復量___: bias1[d][2],
+      正気度___: bias1[d][3],
+      ___________: "______",
+      名前____: bias1[e][0],
+      金額____: bias1[e][1],
+      回復量____: bias1[e][2],
+      正気度____: bias1[e][3],
+    };
+  }
+  if(race==2){
+    for (var i = 0; i < bias2.length; i++){
+      bias2[i][1]=getRandomNumber(bias2[i][1],(bias2[i][1]/10)**2);
+    }
+    var a=getRandomValue([0,1,0,1,2,3,2,3,4]); 
+    var b=getRandomValue([0,1]); 
+    var c=getRandomValue([0,1]); 
+    var d=getRandomValue([0,1]);  
+    var e=getRandomValue([0,1]);  
+    text += bias2[a][4];text +="\n\n　"
+    text += bias2[b][4];text +="\n\n　"
+    text += bias2[c][4];text +="\n\n　"
+    text += bias2[d][4];text +="\n\n　"
+    text += bias2[e][4];text +="\n\n　"
+
+    if(b==0){
+      magb="攻撃魔法の巻物("+getRandomValue([
+          "炎","氷","岩石","雷","酸","マグマ","疾風"
+        ])+getRandomValue([
+          "の矢","の弾丸"
+        ])+")"
+      ,100,10,10,"巻物を使うと攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    else{
+      magb="強攻撃魔法の巻物("+getRandomValue([
+          "炎","氷","岩石","雷","酸","マグマ"
+        ])+getRandomValue([
+          "の弾幕","の壁","の嵐"
+        ])+")"
+      ,300,30,10,"巻物を使うと強めの攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    if(c==0){
+    magc="攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ","疾風"
+      ])+getRandomValue([
+        "の矢","の弾丸"
+      ])+")"
+    ,100,10,10,"巻物を使うと攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    else{
+    magc="強攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ"
+      ])+getRandomValue([
+        "の弾幕","の壁","の嵐"
+      ])+")"
+    ,300,30,10,"巻物を使うと強めの攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    if(d==0){
+    magd="攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ","疾風"
+      ])+getRandomValue([
+        "の矢","の弾丸"
+      ])+")"
+    ,100,10,10,"巻物を使うと攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    else{
+    magd="強攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ"
+      ])+getRandomValue([
+        "の弾幕","の壁","の嵐"
+      ])+")"
+    ,300,30,10,"巻物を使うと強めの攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    if(e==0){
+    mage="攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ","疾風"
+      ])+getRandomValue([
+        "の矢","の弾丸"
+      ])+")"
+    ,100,10,10,"巻物を使うと攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+    else{
+    mage="強攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ"
+      ])+getRandomValue([
+        "の弾幕","の壁","の嵐"
+      ])+")"
+    ,300,30,10,"巻物を使うと強めの攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"
+    }
+
+    chara = {
+      名前: bias2[a][0],
+      金額: bias2[a][1],
+      魔力消費: bias2[a][2],
+      回数: bias2[a][3],
+      ____________: "______",
+      名前_: magb,
+      金額_: bias2[b][1],
+      魔力消費_: bias2[b][2],
+      回数_: bias2[b][3],
+      _________: "______",
+      名前__: magc,
+      金額__: bias2[c][1],
+      魔力消費__: bias2[c][2],
+      回数__: bias2[c][3],
+      __________: "______",
+      名前___: magd,
+      金額___: bias2[d][1],
+      魔力消費___: bias2[d][2],
+      回数___: bias2[d][3],
+      ___________: "______",
+      名前____: mage,
+      金額____: bias2[e][1],
+      魔力消費____: bias2[e][2],
+      回数____: bias2[e][3],
+    };
+  }
+  if(race==3){
+    for (var i = 0; i < bias3.length; i++){
+      bias3[i][1]=getRandomNumber(bias3[i][1],(bias3[i][1]/10)**2);
+    }
+    var a=getRandomValue([0,1,2,3,4,5,6]); 
+    var b=getRandomValue([0,1,2,3,4,5,6]);
+    var c=getRandomValue([0,1,2,3,4]);
+    var d=getRandomValue([0,1,2,3,4]);
+    var e=getRandomValue([0,1,2,3,4]);
+    text += bias3[a][4];text +="\n\n　"
+    text += bias3[b][4];text +="\n\n　"
+    text += bias3[c][4];text +="\n\n　"
+    text += bias3[d][4];text +="\n\n　"
+    text += bias3[e][4];text +="\n\n　"
+    chara = {
+      名前: bias3[a][0],
+      金額: bias3[a][1],
+      代償: bias3[a][2],
+      回数: bias3[a][3],
+      ____________: "______",
+      名前_: bias3[b][0],
+      金額_: bias3[b][1],
+      代償_: bias3[b][2],
+      回数_: bias3[b][3],
+      _________: "______",
+      名前__: bias3[c][0],
+      金額__: bias3[c][1],
+      代償__: bias3[c][2],
+      回数__: bias3[c][3],
+      __________: "______",
+      名前___: bias3[d][0],
+      金額___: bias3[d][1],
+      代償___: bias3[d][2],
+      回数___: bias3[d][3],
+      ___________: "______",
+      名前____: bias3[e][0],
+      金額____: bias3[e][1],
+      代償____: bias3[e][2],
+      回数____: bias3[e][3],
+    };
+  }
+  if(race==4){
+    var b1=[];var b2=[];var b3=[];
+    var a=getRandomValue([0,1,2,3,4]); 
+    for (var i = 1; i < bias4[a].length; i++){
+      b1[i]=getRandomNumber(bias4[a][i],(bias4[a][i]/4)**2);
+    }
+      //盾
+    if(a==4){
+      b1_0=getRandomValue([0,0,0,0,0,0,1,2,3])
+      if(b1_0==1){
+        b1[0]="蘇生の盾＊ヒルドル＊";b1[1]=70000;b1[2]=0;b1[3]=700;
+        b1[4]=400;b1[5]=5;b1[6]=50;b1[7]="＊ヒルドル＊は伝説の蘇生の盾である。戦場にて戦死者を蘇らせる力がある。永遠の戦いを楽しもう！";
+      }
+      else if(b1_0==2){
+        b1[0]="巨楯＊天磐盾＊";b1[1]=60000;b1[2]=200;b1[3]=1000;
+        b1[4]=1000;b1[5]=100;b1[6]=0;b1[7]="＊天磐盾＊は伝説の盾である。山のように重く、100年に1度の力持ちでなければ持ち上げられない。";
+      }
+      else if(b1_0==3){
+        b1[0]="神鏡*八咫鏡＊";b1[1]=88888;b1[2]=8;b1[3]=888;
+        b1[4]=888;b1[5]=8;b1[6]=88;b1[7]="*八咫鏡＊は災いを防ぐ神鏡である。万物を照し、邪悪・災厄を払う。";
+      }
+      else {
+        if(b1[3]>bias4[a][3]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[3]>bias4[a][3]*1.3){b1[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b1[3]>bias4[a][3]){b1[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b1[3]>bias4[a][3]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[3]>bias4[a][3]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias4[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias4[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias4[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias4[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[5]>bias4[a][5]*1.4){b1[0]+="大楯"}
+        else if(b1[5]>bias4[a][5]*0.6){b1[0]+="盾"}
+        else{b1[0]+="小楯"}
+        b1[7]="盾は手に持つ防具の一種だ。";
+      }
+    }
+      //鎧
+    else if(a==3){
+      b1_0=getRandomValue([0,0,0,0,1,2])
+      if(b1_0==1){
+        b1[0]="聖鎧＊アイギス＊";b1[1]=50000;b1[2]=0;b1[3]=500;
+        b1[4]=400;b1[5]=6;b1[6]=50;b1[7]="＊アイギス＊は伝説の聖なる鎧である。ありとあらゆる邪悪・災厄を払う魔除けの能力を持つ。";
+      }
+      else if(b1_0==2){
+        b1[0]="無敵鎧＊カヴァーチャ＊";b1[1]=60000;b1[2]=0;b1[3]=100;
+        b1[4]=200;b1[5]=7;b1[6]=0;b1[7]="＊カヴァーチャ＊は無敵の鎧であるが呪われている。装備すれば、決して死ぬことはないが、決して脱ぐこともできない。正気がじわじわと削れる。";
+      }
+      else {
+        if(b1[3]>bias4[a][3]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[3]>bias4[a][3]*1.3){b1[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b1[3]>bias4[a][3]){b1[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b1[3]>bias4[a][3]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[3]>bias4[a][3]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias4[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias4[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias4[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias4[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[5]>bias4[a][5]*1.4){b1[0]+="重鎧"}
+        else if(b1[5]>bias4[a][5]*0.6){b1[0]+=getRandomValue(["胴丸鎧","甲冑"])}
+        else{b1[0]+=getRandomValue(["防弾チョッキ","軽鎧"])}
+        b1[7]="鎧は胴に纏う防具の一種だ。";
+      }
+    }
+      //靴
+    else if(a==2){
+      b1_0=getRandomValue([0,0,0,0,0,0,1,2,3])
+      if(b1_0==1){
+        b1[0]="籠球靴＊エア ジョーダン＊";b1[1]=136066;b1[2]=0;b1[3]=10;
+        b1[4]=200;b1[5]=0;b1[6]=0;b1[7]="＊エア ジョーダン＊は伝説のシューズである。履き手は宙を飛び、ダンクを決める...! (^_^)冗談だよ〜";
+      }
+      else if(b1_0==2){
+        b1[0]="硝子靴＊シンデレラ＊";b1[1]=777;b1[2]=0;b1[3]=10;
+        b1[4]=50;b1[5]=2;b1[6]=50;b1[7]="＊シンデレラ＊は伝説の硝子の靴である。履くと、その身から蠱惑的な魅力が溢れて出る。サイズが合わないと不運に合う。";
+      }
+      else if(b1_0==3){
+        b1[0]="神靴＊ヘルメス＊";b1[1]=60000;b1[2]=0;b1[3]=20;
+        b1[4]=200;b1[5]=0;b1[6]=80;b1[7]="＊ヘルメス＊は伝説の靴である。履き手は無敵の速さを得る。";
+      }
+      else {
+        if(b1[3]>bias4[a][3]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[3]>bias4[a][3]*1.3){b1[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b1[3]>bias4[a][3]){b1[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b1[3]>bias4[a][3]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[3]>bias4[a][3]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias4[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias4[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias4[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias4[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[5]>bias4[a][5]*1.3){b1[0]+="長靴"}
+        else if(b1[5]>bias4[a][5]*0.7){b1[0]+=getRandomValue(["ハイヒール","革靴"])}
+        else{b1[0]+=getRandomValue(["運動靴","上履き"])}
+        b1[7]="靴は足に纏う防具？だ。";
+      }
+    }
+      //籠手
+    else if(a==1){
+      b1_0=getRandomValue([0,0,0,0,1,2])
+      if(b1_0==1){
+        b1[0]="鉄籠手＊ヤールングレイプル＊";b1[1]=50000;b1[2]=150;b1[3]=200;
+        b1[4]=300;b1[5]=7;b1[6]=50;b1[7]="＊ヤールングレイプル＊は伝説の鉄の籠手である。雷を帯び、力に満ち溢れている。";
+      }
+      else if(b1_0==2){
+        b1[0]="弓具＊稜威高鞆＊";b1[1]=60000;b1[2]=15;b1[3]=100;
+        b1[4]=200;b1[5]=3;b1[6]=100;b1[7]="＊稜威高鞆＊(いつのたかとも)は弓の付いている籠手である。その弓から炎を射る。";
+      }
+      else {
+        if(b1[3]>bias4[a][3]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[3]>bias4[a][3]*1.3){b1[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b1[3]>bias4[a][3]){b1[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b1[3]>bias4[a][3]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[3]>bias4[a][3]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias4[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias4[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias4[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias4[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[2]<15){
+          if(b1[5]>bias4[a][5]*1.3){b1[0]+="重籠手"}
+          else if(b1[5]>bias4[a][5]*0.7){b1[0]+=getRandomValue(["籠手"])}
+          else{b1[0]+=getRandomValue(["手袋","軍手"])}
+        }
+        else{
+          if(b1[5]>bias4[a][5]*1.3){b1[0]+="ガントレット"}
+          else if(b1[5]>bias4[a][5]*0.7){b1[0]+=getRandomValue(["ボクシンググローブ"])}
+          else{b1[0]+=getRandomValue(["メリケンサック"])}
+        }
+        b1[7]="グローブ・籠手は手に纏い、攻撃や防御に用いる。";
+      }
+    }
+      //兜
+    else if(a==0){
+      b1_0=getRandomValue([0,0,0,0,1,2])
+      if(b1_0==1){
+        b1[0]="恐怖兜＊エギル＊";b1[1]=50000;b1[2]=0;b1[3]=50;
+        b1[4]=100;b1[5]=3;b1[6]=50;b1[7]="＊エギル＊は伝説の兜である。対峙するものを恐怖させ、正気度を削る。";
+      }
+      else if(b1_0==2){
+        b1[0]="透明兜＊アイドス・キュエネー＊";b1[1]=100000;b1[2]=0;b1[3]=50;
+        b1[4]=100;b1[5]=3;b1[6]=20;b1[7]="＊アイドス・キュエネー＊は伝説の兜である。被った者の存在を世界から秘匿する。姿が見えなくなるのは勿論、物理法則すらも無視し得る。";
+      }
+      else {
+        if(b1[3]>bias4[a][3]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[3]>bias4[a][3]*1.3){b1[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b1[3]>bias4[a][3]){b1[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b1[3]>bias4[a][3]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[3]>bias4[a][3]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias4[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias4[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias4[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias4[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[5]>bias4[a][5]*1.3){b1[0]+="重兜"}
+        else if(b1[5]>bias4[a][5]*0.7){b1[0]+=getRandomValue(["兜","王冠"])}
+        else{b1[0]+=getRandomValue(["帽子","尖り帽子"])}
+        b1[7]="兜・冠り物は頭に被る防具である。";
+      }
+    }
+    text +=b1[7];
+    text +="\n\n　"
+
+    var b=getRandomValue([0,1,2,3,4]);
+    for (var i = 1; i < bias4[b].length; i++){
+      b2[i]=getRandomNumber(bias4[b][i],(bias4[b][i]/4)**2);
+    }
+      //盾
+    if(b==4){
+        if(b2[3]>bias4[b][3]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[3]>bias4[b][3]*1.3){b2[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b2[3]>bias4[b][3]){b2[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b2[3]>bias4[b][3]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[3]>bias4[b][3]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias4[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias4[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias4[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias4[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[5]>bias4[b][5]*1.4){b2[0]+="大楯"}
+        else if(b2[5]>bias4[b][5]*0.6){b2[0]+="盾"}
+        else{b2[0]+="小楯"}
+        b2[7]="盾は手に持つ防具の一種だ。";
+    }
+      //鎧
+    else if(b==3){
+        if(b2[3]>bias4[b][3]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[3]>bias4[b][3]*1.3){b2[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b2[3]>bias4[b][3]){b2[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b2[3]>bias4[b][3]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[3]>bias4[b][3]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias4[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias4[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias4[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias4[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[5]>bias4[b][5]*1.4){b2[0]+="重鎧"}
+        else if(b2[5]>bias4[b][5]*0.6){b2[0]+=getRandomValue(["胴丸鎧","甲冑"])}
+        else{b2[0]+=getRandomValue(["防弾チョッキ","軽鎧"])}
+        b2[7]="鎧は胴に纏う防具の一種だ。";
+    }
+      //靴
+    else if(b==2){
+        if(b2[3]>bias4[b][3]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[3]>bias4[b][3]*1.3){b2[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b2[3]>bias4[b][3]){b2[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b2[3]>bias4[b][3]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[3]>bias4[b][3]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias4[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias4[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias4[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias4[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[5]>bias4[b][5]*1.3){b2[0]+="長靴"}
+        else if(b2[5]>bias4[b][5]*0.7){b2[0]+=getRandomValue(["ハイヒール","革靴"])}
+        else{b2[0]+=getRandomValue(["運動靴","上履き"])}
+        b2[7]="靴は足に纏う防具？だ。";
+    }
+      //籠手
+    else if(b==1){
+        if(b2[3]>bias4[b][3]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[3]>bias4[b][3]*1.3){b2[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b2[3]>bias4[b][3]){b2[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b2[3]>bias4[b][3]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[3]>bias4[b][3]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias4[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias4[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias4[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias4[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[2]<15){
+          if(b2[5]>bias4[b][5]*1.3){b2[0]+="重籠手"}
+          else if(b2[5]>bias4[b][5]*0.7){b2[0]+=getRandomValue(["籠手"])}
+          else{b2[0]+=getRandomValue(["手袋","軍手"])}
+        }
+        else{
+          if(b2[5]>bias4[b][5]*1.3){b2[0]+="ガントレット"}
+          else if(b2[5]>bias4[b][5]*0.7){b2[0]+=getRandomValue(["ボクシンググローブ"])}
+          else{b2[0]+=getRandomValue(["メリケンサック"])}
+        }
+        b2[7]="グローブ・籠手は手に纏い、攻撃や防御に用いる。";
+    }
+      //兜
+    else if(b==0){
+        if(b2[3]>bias4[b][3]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[3]>bias4[b][3]*1.3){b2[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b2[3]>bias4[b][3]){b2[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b2[3]>bias4[b][3]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[3]>bias4[b][3]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias4[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias4[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias4[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias4[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[5]>bias4[b][5]*1.3){b2[0]+="重兜"}
+        else if(b2[5]>bias4[b][5]*0.7){b2[0]+=getRandomValue(["兜","王冠"])}
+        else{b2[0]+=getRandomValue(["帽子","尖り帽子"])}
+        b2[7]="兜・冠り物は頭に被る防具である。";
+    }  
+    text +=b2[7];
+    text +="\n\n　"
+
+    var c=getRandomValue([0,1,2,3,4]);
+    for (var i = 1; i < bias4[c].length; i++){
+      b3[i]=getRandomNumber(bias4[c][i],(bias4[c][i]/4)**2);
+    }
+      //盾
+    if(c==4){
+        if(b3[3]>bias4[c][3]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[3]>bias4[c][3]*1.3){b3[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b3[3]>bias4[c][3]){b3[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b3[3]>bias4[c][3]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[3]>bias4[c][3]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias4[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias4[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias4[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias4[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[5]>bias4[c][5]*1.4){b3[0]+="大楯"}
+        else if(b3[5]>bias4[c][5]*0.6){b3[0]+="盾"}
+        else{b3[0]+="小楯"}
+        b3[7]="盾は手に持つ防具の一種だ。";
+    }
+      //鎧
+    else if(c==3){
+        if(b3[3]>bias4[c][3]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[3]>bias4[c][3]*1.3){b3[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b3[3]>bias4[c][3]){b3[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b3[3]>bias4[c][3]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[3]>bias4[c][3]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias4[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias4[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias4[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias4[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[5]>bias4[c][5]*1.4){b3[0]+="重鎧"}
+        else if(b3[5]>bias4[c][5]*0.6){b3[0]+=getRandomValue(["胴丸鎧","甲冑"])}
+        else{b3[0]+=getRandomValue(["防弾チョッキ","軽鎧"])}
+        b3[7]="鎧は胴に纏う防具の一種だ。";
+    }
+      //靴
+    else if(c==2){
+        if(b3[3]>bias4[c][3]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[3]>bias4[c][3]*1.3){b3[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b3[3]>bias4[c][3]){b3[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b3[3]>bias4[c][3]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[3]>bias4[c][3]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias4[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias4[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias4[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias4[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[5]>bias4[c][5]*1.3){b3[0]+="長靴"}
+        else if(b3[5]>bias4[c][5]*0.7){b3[0]+=getRandomValue(["ハイヒール","革靴"])}
+        else{b3[0]+=getRandomValue(["運動靴","上履き"])}
+        b3[7]="靴は足に纏う防具？だ。";
+    }
+      //籠手
+    else if(c==1){
+        if(b3[3]>bias4[c][3]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[3]>bias4[c][3]*1.3){b3[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b3[3]>bias4[c][3]){b3[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b3[3]>bias4[c][3]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[3]>bias4[c][3]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias4[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias4[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias4[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias4[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[2]<15){
+          if(b3[5]>bias4[c][5]*1.3){b3[0]+="重籠手"}
+          else if(b3[5]>bias4[c][5]*0.7){b3[0]+=getRandomValue(["籠手"])}
+          else{b3[0]+=getRandomValue(["手袋","軍手"])}
+        }
+        else{
+          if(b3[5]>bias4[c][5]*1.3){b3[0]+="ガントレット"}
+          else if(b3[5]>bias4[c][5]*0.7){b3[0]+=getRandomValue(["ボクシンググローブ"])}
+          else{b3[0]+=getRandomValue(["メリケンサック"])}
+        }
+        b3[7]="グローブ・籠手は手に纏い、攻撃や防御に用いる。";
+    }
+      //兜
+    else if(c==0){
+        if(b3[3]>bias4[c][3]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[3]>bias4[c][3]*1.3){b3[0]=getRandomValue(["ダイヤの","炭素繊維の"]);}
+        else if(b3[3]>bias4[c][3]){b3[0]=getRandomValue(["鉄の","防弾ガラスの"]);}
+        else if(b3[3]>bias4[c][3]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[3]>bias4[c][3]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias4[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias4[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias4[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias4[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[5]>bias4[c][5]*1.3){b3[0]+="重兜"}
+        else if(b3[5]>bias4[c][5]*0.7){b3[0]+=getRandomValue(["兜","王冠"])}
+        else{b3[0]+=getRandomValue(["帽子","尖り帽子"])}
+        b3[7]="兜・冠り物は頭に被る防具である。";
+    }  
+    text +=b3[7];
+    text +="\n\n　"
+
+    chara = {
+      名前: b1[0],
+      金額: b1[1],
+      攻撃力: b1[2],
+      防御力: b1[3],
+      耐久性: b1[4],
+      重量: b1[5],
+      魔法効率: b1[6],
+      ____________: "______",
+      名前_: b2[0],
+      金額_: b2[1],
+      攻撃力_: b2[2],
+      防御力_: b2[3],
+      耐久性_: b2[4],
+      重量_: b2[5],
+      魔法効率_: b2[6],
+      _________: "______",
+      名前__: b3[0],
+      金額__: b3[1],
+      攻撃力__: b3[2],
+      防御力__: b3[3],
+      耐久性__: b3[4],
+      重量__: b3[5],
+      魔法効率__: b3[6],
+    };
+  }
+  if(race==5){
+    var b1=[];var b2=[];var b3=[];
+    var a=getRandomValue([0,1,2,3,4,5]); 
+    for (var i = 1; i < bias5[a].length; i++){
+      b1[i]=getRandomNumber(bias5[a][i],(bias5[a][i]/4)**2);
+    }
+    //剣
+    if(a==0){
+      b1_0=getRandomValue([0,0,0,0,0,0,1,2,3])
+      if(b1_0==1){
+        b1[0]="聖剣＊エクスカリバー＊";b1[1]=70000;b1[2]=250;b1[3]=150;
+        b1[4]=300;b1[5]=6;b1[6]=100;b1[7]="＊エクスカリバー＊は伝説の剣である。力に満ち溢れていて、装備者の身を風で守る。";
+      }
+      else if(b1_0==3){
+        b1[0]="神剣＊十握剣＊";b1[1]=100000;b1[2]=1000;b1[3]=10;
+        b1[4]=100;b1[5]=10;b1[6]=100;b1[7]="＊十握剣＊は伝説の剣である。凄まじい破壊力を秘め、一太刀で海を割る事も出来る。";
+      }
+      else if(b1_0==2){
+        b1[0]="魔剣＊グラム＊";b1[1]=44444;b1[2]=444;b1[3]=44;
+        b1[4]=444;b1[5]=44;b1[6]=44;b1[7]="＊グラム＊は伝説の大剣である。龍を一撃で真っ二つにするほど破壊力がある。";
+      }
+      else {
+        if(b1[2]>bias5[a][2]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[2]>bias5[a][2]*1.3){b1[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b1[2]>bias5[a][2]){b1[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b1[2]>bias5[a][2]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[2]>bias5[a][2]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias5[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias5[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias5[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias5[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[6]>bias5[a][6]*1.4){
+          b1[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b1[6]*=1.5;
+          b1[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b1[6]>bias5[a][6]*1.1){b1[0]+=getRandomValue(["聖なる","魔の"]);b1[7]="この武器は魔法を助ける。";}
+        else{b1[6]=0;b1[7]="";}
+        if(b1[5]>bias5[a][5]*1.3){//大剣
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="巨刀"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["長剣"])}
+          else{b1[0]+=getRandomValue(["大太刀"])}
+          b1[7]+="長く大きな剣のようだ。リーチが長い。";
+        }
+        else if(b1[5]>bias5[a][5]*0.7){//剣
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="大剣"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["騎士剣"])}
+          else{b1[0]+=getRandomValue(["太刀"])}
+          b1[7]+="剣は斬撃と突き攻撃に優れる。";
+        }
+        else{//短剣
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="中華包丁"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["ナイフ"])}
+          else{b1[0]+=getRandomValue(["出刃包丁"])}
+          b1[7]+="短く小さな剣のようだ。リーチが短い。";
+        }
+      }
+    }
+    //槍
+    if(a==1){
+      b1_0=getRandomValue([0,0,0,0,1,2])
+      if(b1_0==1){
+        b1[0]="神槍＊天逆鉾＊";b1[1]=100000;b1[2]=400;b1[3]=0;
+        b1[4]=100;b1[5]=10;b1[6]=100;b1[7]="＊天逆鉾＊(あまのさかほこ)は伝説の矛である。最強の矛。あらゆる防御を無効化する。";
+      }
+      else if(b1_0==2){
+        b1[0]="魔槍＊グングニル＊";b1[1]=60000;b1[2]=300;b1[3]=0;
+        b1[4]=200;b1[5]=10;b1[6]=100;b1[7]="＊グングニル＊は伝説の槍である。敵に投げれば、決して的を外さず、敵を貫いた後に自動的に手元に戻る。";
+      }
+      else {
+        if(b1[2]>bias5[a][2]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[2]>bias5[a][2]*1.3){b1[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b1[2]>bias5[a][2]){b1[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b1[2]>bias5[a][2]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[2]>bias5[a][2]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias5[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias5[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias5[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias5[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[6]>bias5[a][6]*1.4){
+          b1[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b1[6]*=1.5;
+          b1[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b1[6]>bias5[a][6]*1.1){b1[0]+=getRandomValue(["聖なる","魔の"]);b1[7]="この武器は魔法を助ける。";}
+        else{b1[6]=0;b1[7]="";}
+        if(b1[5]>bias5[a][5]*1.3){//長い
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="ハルバード"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["薙刀"])}
+          else{b1[0]+=getRandomValue(["長槍"])}
+          b1[7]+="長く大きな槍・斧のようだ。リーチが長い。";
+        }
+        else if(b1[5]>bias5[a][5]*0.7){//中位
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="戦斧"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["ランス"])}
+          else{b1[0]+=getRandomValue(["スピア"])}
+          b1[7]+="槍・斧は攻撃力に優れ、リーチが長い。防御に向かない";
+        }
+        else{//短い
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="両刃斧"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["片手斧"])}
+          else{b1[0]+=getRandomValue(["長針"])}
+          b1[7]+="短めの槍・斧のようだ。リーチが短い。";
+        }
+      }
+    }
+    //杖
+    if(a==2){
+      b1_0=getRandomValue([0,0,1])
+      if(b1_0==1){
+        b1[0]="魔杖＊フェンリル＊";b1[1]=50000;b1[2]=5;b1[3]=0;
+        b1[4]=50;b1[5]=2;b1[6]=1000;b1[7]="＊フェンリル＊は伝説の杖である。持ち主に最強の魔法力をもたらす。";
+      }
+      else {
+        b1[0]=""
+        if(b1[6]>bias5[a][6]*1.6){b1[0]+=getRandomValue(["エーテルの"]);}
+        else if(b1[6]>bias5[a][6]*1.3){b1[0]+=getRandomValue(["クリスタルの"]);}
+        else if(b1[6]>bias5[a][6]){b1[0]+=getRandomValue(["魔樹製の"]);}
+        else if(b1[6]>bias5[a][6]*0.7){b1[0]+=getRandomValue(["木製の"]);}
+        else if(b1[6]>bias5[a][6]*0.4){b1[0]+=getRandomValue(["段ボールの"]);}
+        else{b1[0]+=getRandomValue(["飴細工の"]);}
+        var random1=Math.random();
+        if(random1<1/10){
+          b1[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);
+          b1[7]="この杖は途方もない魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(random1<3/10){b1[0]+=getRandomValue(["聖なる","魔の"]);b1[7]="この杖は大きく魔法力を向上させる。";}
+        else{b1[7]="";}
+        b1[0]+="魔法の";
+        if(b1[5]>bias5[a][5]*1.3){//長い
+          b1[0]+="ステッキ"
+          b1[7]+="ステッキは長めの魔法使いの杖だ。";
+        }
+        else if(b1[5]>bias5[a][5]*0.7){//中位
+          b1[0]+="ロッド"
+          b1[7]+="ロッドは魔法使いの杖だ。";
+        }
+        else{//短い
+          b1[0]+="杖"
+          b1[7]+="魔法使いの杖だ。";
+        }
+        if(random1<1/10){b1[6]*=3}
+        else if(random1<3/10){b1[6]*=1.5}
+      }
+    }
+    //棍棒
+    if(a==3){
+      b1_0=getRandomValue([0,0,0,0,1,2])
+      if(b1_0==1){
+        b1[0]="神槌＊トール＊";b1[1]=30000;b1[2]=1000;b1[3]=20;
+        b1[4]=500;b1[5]="∞";b1[6]=120;b1[7]="＊トール＊は伝説の槌である。選ばれし者にしか持ち上げられない。雷を帯びている。最強の槌であり、あらゆるものを破壊する。";
+      }
+      else if(b1_0==2){
+        b1[0]="定海神針＊如意棒＊";b1[1]=60000;b1[2]="変幻自在";b1[3]=15;
+        b1[4]=400;b1[5]="変幻自在";b1[6]=100;b1[7]="＊如意棒＊は海の安寧を保つために神様が置いた針である。自由に長さ・太さ・重さを変える。突かば槍、払えば薙刀、持たば太刀";
+      }
+      else {
+        if(b1[2]>bias5[a][2]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[2]>bias5[a][2]*1.3){b1[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b1[2]>bias5[a][2]){b1[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b1[2]>bias5[a][2]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[2]>bias5[a][2]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias5[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias5[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias5[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias5[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[6]>bias5[a][6]*1.4){
+          b1[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b1[6]*=1.5;
+          b1[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b1[6]>bias5[a][6]*1.1){b1[0]+=getRandomValue(["聖なる","魔の"]);b1[7]="この武器は魔法を助ける。";}
+        else{b1[6]=0;b1[7]="";}
+        if(b1[5]>bias5[a][5]*1.3){//長い
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="鬼の金棒"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["流星錘"])}
+          else{b1[0]+=getRandomValue(["長棒"])}
+          b1[7]+="長く大きな棍棒のようだ。リーチが長い。";
+        }
+        else if(b1[5]>bias5[a][5]*0.7){//中位
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="戦鎚"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["メイス"])}
+          else{b1[0]+=getRandomValue(["六角棒"])}
+          b1[7]+="棍棒類は破壊力に優れる。";
+        }
+        else{//短い
+          if(b1[3]>bias5[a][3]*1.3){b1[0]+="釘バット"}
+          else if(b1[3]>bias5[a][3]*0.7){b1[0]+=getRandomValue(["ハンマー"])}
+          else{b1[0]+=getRandomValue(["水道管"])}
+          b1[7]+="短めの棍棒類のようだ。リーチが短い。";
+        }
+      }
+    }
+    //弓
+    if(a==4){
+      b1_0=getRandomValue([0,0,0,0,1,2])
+      if(b1_0==1){
+        b1[0]="必中弓＊フェイルノート＊";b1[1]=30000;b1[2]=100;b1[3]=20;
+        b1[4]=100;b1[5]=6;b1[6]=200;b1[7]="＊フェイルノート＊は伝説の弓である。魔法の矢を撃ち、狙った場所に必ず命中する。";
+      }
+      else if(b1_0==2){
+        b1[0]="愛弓＊キューピット＊";b1[1]=10000;b1[2]=0;b1[3]=5;
+        b1[4]=20;b1[5]=3;b1[6]=100;b1[7]="＊キューピット＊は官能的な弓である。見えざる矢を打ち、撃ち抜かれた者を狂す。";
+      }
+      else {
+        if(b1[2]>bias5[a][2]*1.6){b1[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b1[2]>bias5[a][2]*1.3){b1[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b1[2]>bias5[a][2]){b1[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b1[2]>bias5[a][2]*0.7){b1[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b1[2]>bias5[a][2]*0.4){b1[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b1[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b1[4]>bias5[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias5[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias5[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias5[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[6]>bias5[a][6]*1.4){
+          b1[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b1[6]*=2;
+          b1[7]="おめでとう！この弓弩は矢の代わりにとても強力な魔法の矢を打つよ！　ただ、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...♡  "]);
+        }
+        else if(b1[6]>bias5[a][6]*1.1){b1[0]+=getRandomValue(["聖なる","魔の"]);b1[7]="おめでとう！この弓弩は矢の代わりに魔法の矢を打つよ！　";}
+        else{b1[6]=0;b1[7]="";}
+        var random1=Math.random();
+        if(b1[5]>bias5[a][5]*1.3){//長い
+          if(random1>1/2){b1[0]+="大弩"}
+          else {b1[0]+=getRandomValue(["強弓"])}
+          b1[7]+="大きな弓弩のようだ。リーチがかなり長い。";
+        }
+        else if(b1[5]>bias5[a][5]*0.7){//中位
+          if(random1>1/28){b1[0]+="クロスボウ"}
+          else {b1[0]+=getRandomValue(["弓"])}
+          b1[7]+="弓弩は遠距離攻撃が可能だ。";
+        }
+        else{//短い
+          if(random1>1/28){b1[0]+="暗器弩"}
+          else {b1[0]+=getRandomValue(["短弓"])}
+          b1[7]+="小さめの弓弩のようだ。射撃武器にしてはリーチは短めだ。";
+        }
+      }
+    }
+    //銃
+    if(a==5){
+      b1[0]="";
+      b1_0=getRandomValue([0,0,1])
+      if(b1_0==1){
+        b1[0]="＊レールガン＊";b1[1]=50000;b1[2]=400;b1[3]=0;
+        b1[4]=150;b1[5]=30;b1[6]=0;b1[7]="＊レールガン＊は古代のオーパーツである。凄まじい威力と射程を有す。";
+      }
+      else {
+        if(b1[4]>bias5[a][4]*1.45){b1[0]+="最高品質の"}
+        else if(b1[4]>bias5[a][4]*1.2){b1[0]+="高品質の"}
+        else if(b1[4]>bias5[a][4]*0.8){b1[0]+="普通の"}
+        else if(b1[4]>bias5[a][4]*0.55){b1[0]+="低品質の"}
+        else{b1[0]+="ゴミカスのような"}
+        if(b1[6]>bias5[a][6]*1.4){
+          b1[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b1[6]*=2;
+          b1[7]="おめでとう！この銃は弾丸の代わりにとても強力な魔法の弾丸を打つよ！　ただ、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...♡  "]);
+        }
+        else if(b1[6]>bias5[a][6]*1.1){b1[0]+=getRandomValue(["聖なる","魔の"]);b1[7]="おめでとう！この銃は弾丸の代わりに魔法の弾丸を打つよ！　";}
+        else{b1[6]=0;b1[7]="";}
+        var random1=Math.random();
+        if(b1[5]>bias5[a][5]*1.3){//長い
+          if(b1[2]>bias5[a][2]*1.3){b1[0]+="対龍ライフル"}
+          else if(b1[5]>bias5[a][5]*0.7){b1[0]+=getRandomValue(["ライフル"])}
+          else {b1[0]+=getRandomValue(["狙撃銃"])}
+          b1[7]+="リーチの長い銃のようだ。お金がかかる。";
+        }
+        else if(b1[5]>bias5[a][5]*0.7){//中位
+          if(b1[2]>bias5[a][2]){b1[0]+="マグナムリボルバー"}
+          else {b1[0]+=getRandomValue(["リボルバー銃"])}
+          b1[7]+="銃は遠距離攻撃と連発が可能だが、お金がかかる。";
+        }
+        else{//短い
+          if(b1[2]>bias5[a][2]){b1[0]+="ショットガン"}
+          else {b1[0]+=getRandomValue(["ハンドガン"])}
+          b1[7]+="リーチの短いの銃のようだ。お金がかかる。";
+        }
+      }
+    }
+    
+    text +=b1[7];
+    text +="\n\n　"
+
+    var b=getRandomValue([3,4,2,3,4,5,3,4,2,3,4]);
+    for (var i = 1; i < bias5[b].length; i++){
+      b2[i]=getRandomNumber(bias5[b][i],(bias5[b][i]/4)**2);
+    }
+    //剣
+    if(b==0){
+        if(b2[2]>bias5[b][2]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[2]>bias5[b][2]*1.3){b2[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b2[2]>bias5[b][2]){b2[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b2[2]>bias5[b][2]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[2]>bias5[b][2]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias5[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias5[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias5[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias5[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[6]>bias5[b][6]*1.4){
+          b2[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b2[6]*=1.5;
+          b2[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b2[6]>bias5[b][6]*1.1){b2[0]+=getRandomValue(["聖なる","魔の"]);b2[7]="この武器は魔法を助ける。";}
+        else{b2[6]=0;b2[7]="";}
+        if(b2[5]>bias5[b][5]*1.3){//大剣
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="巨刀"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["長剣"])}
+          else{b2[0]+=getRandomValue(["大太刀"])}
+          b2[7]+="長く大きな剣のようだ。リーチが長い。";
+        }
+        else if(b2[5]>bias5[b][5]*0.7){//剣
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="大剣"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["騎士剣"])}
+          else{b2[0]+=getRandomValue(["太刀"])}
+          b2[7]+="剣は斬撃と突き攻撃に優れる。";
+        }
+        else{//短剣
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="中華包丁"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["ナイフ"])}
+          else{b2[0]+=getRandomValue(["出刃包丁"])}
+          b2[7]+="短く小さな剣のようだ。リーチが短い。";
+        }
+    }
+    //槍
+    if(b==1){
+        if(b2[2]>bias5[b][2]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[2]>bias5[b][2]*1.3){b2[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b2[2]>bias5[b][2]){b2[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b2[2]>bias5[b][2]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[2]>bias5[b][2]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias5[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias5[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias5[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias5[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[6]>bias5[b][6]*1.4){
+          b2[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b2[6]*=1.5;
+          b2[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b2[6]>bias5[b][6]*1.1){b2[0]+=getRandomValue(["聖なる","魔の"]);b2[7]="この武器は魔法を助ける。";}
+        else{b2[6]=0;b2[7]="";}
+        if(b2[5]>bias5[b][5]*1.3){//長い
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="ハルバード"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["薙刀"])}
+          else{b2[0]+=getRandomValue(["長槍"])}
+          b2[7]+="長く大きな槍・斧のようだ。リーチが長い。";
+        }
+        else if(b2[5]>bias5[b][5]*0.7){//中位
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="戦斧"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["ランス"])}
+          else{b2[0]+=getRandomValue(["スピア"])}
+          b2[7]+="槍・斧は攻撃力に優れ、リーチが長い。防御に向かない";
+        }
+        else{//短い
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="両刃斧"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["片手斧"])}
+          else{b2[0]+=getRandomValue(["長針"])}
+          b2[7]+="短めの槍・斧のようだ。リーチが短い。";
+        }
+    }
+    //杖
+    if(b==2){
+      b1_0=getRandomValue([0,0,1])
+        b2[0]=""
+        if(b2[6]>bias5[b][6]*1.6){b2[0]+=getRandomValue(["エーテルの"]);}
+        else if(b2[6]>bias5[b][6]*1.3){b2[0]+=getRandomValue(["クリスタルの"]);}
+        else if(b2[6]>bias5[b][6]){b2[0]+=getRandomValue(["魔樹製の"]);}
+        else if(b2[6]>bias5[b][6]*0.7){b2[0]+=getRandomValue(["木製の"]);}
+        else if(b2[6]>bias5[b][6]*0.4){b2[0]+=getRandomValue(["段ボールの"]);}
+        else{b2[0]+=getRandomValue(["飴細工の"]);}
+        var random1=Math.random();
+        if(random1<1/10){
+          b2[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);
+          b2[7]="この杖は途方もない魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(random1<3/10){b2[0]+=getRandomValue(["聖なる","魔の"]);b2[7]="この杖は大きく魔法力を向上させる。";}
+        else{b2[7]="";}
+        b2[0]+="魔法の";
+        if(b2[5]>bias5[b][5]*1.3){//長い
+          b2[0]+="ステッキ"
+          b2[7]+="ステッキは長めの魔法使いの杖だ。";
+        }
+        else if(b2[5]>bias5[b][5]*0.7){//中位
+          b2[0]+="ロッド"
+          b2[7]+="ロッドは魔法使いの杖だ。";
+        }
+        else{//短い
+          b2[0]+="杖"
+          b2[7]+="魔法使いの杖だ。";
+        }
+        if(random1<1/10){b2[6]*=3}
+        else if(random1<3/10){b2[6]*=1.5}
+    }
+    //棍棒
+    if(b==3){
+        if(b2[2]>bias5[b][2]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[2]>bias5[b][2]*1.3){b2[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b2[2]>bias5[b][2]){b2[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b2[2]>bias5[b][2]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[2]>bias5[b][2]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias5[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias5[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias5[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias5[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[6]>bias5[b][6]*1.4){
+          b2[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b2[6]*=1.5;
+          b2[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b2[6]>bias5[b][6]*1.1){b2[0]+=getRandomValue(["聖なる","魔の"]);b2[7]="この武器は魔法を助ける。";}
+        else{b2[6]=0;b2[7]="";}
+        if(b2[5]>bias5[b][5]*1.3){//長い
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="鬼の金棒"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["流星錘"])}
+          else{b2[0]+=getRandomValue(["長棒"])}
+          b2[7]+="長く大きな棍棒のようだ。リーチが長い。";
+        }
+        else if(b2[5]>bias5[b][5]*0.7){//中位
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="戦鎚"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["メイス"])}
+          else{b2[0]+=getRandomValue(["六角棒"])}
+          b2[7]+="棍棒類は破壊力に優れる。";
+        }
+        else{//短い
+          if(b2[3]>bias5[b][3]*1.3){b2[0]+="釘バット"}
+          else if(b2[3]>bias5[b][3]*0.7){b2[0]+=getRandomValue(["ハンマー"])}
+          else{b2[0]+=getRandomValue(["水道管"])}
+          b2[7]+="短めの棍棒類のようだ。リーチが短い。";
+        }
+    }
+    //弓
+    if(b==4){
+        if(b2[2]>bias5[b][2]*1.6){b2[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b2[2]>bias5[b][2]*1.3){b2[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b2[2]>bias5[b][2]){b2[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b2[2]>bias5[b][2]*0.7){b2[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b2[2]>bias5[b][2]*0.4){b2[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b2[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b2[4]>bias5[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias5[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias5[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias5[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[6]>bias5[b][6]*1.4){
+          b2[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b2[6]*=2;
+          b2[7]="おめでとう！この弓弩は矢の代わりにとても強力な魔法の矢を打つよ！　ただ、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...♡  "]);
+        }
+        else if(b2[6]>bias5[b][6]*1.1){b2[0]+=getRandomValue(["聖なる","魔の"]);b2[7]="おめでとう！この弓弩は矢の代わりに魔法の矢を打つよ！　";}
+        else{b2[6]=0;b2[7]="";}
+        var random1=Math.random();
+        if(b2[5]>bias5[b][5]*1.3){//長い
+          if(random1>1/2){b2[0]+="大弩"}
+          else {b2[0]+=getRandomValue(["強弓"])}
+          b2[7]+="大きな弓弩のようだ。リーチがかなり長い。";
+        }
+        else if(b2[5]>bias5[b][5]*0.7){//中位
+          if(random1>1/28){b2[0]+="クロスボウ"}
+          else {b2[0]+=getRandomValue(["弓"])}
+          b2[7]+="弓弩は遠距離攻撃が可能だ。";
+        }
+        else{//短い
+          if(random1>1/28){b2[0]+="暗器弩"}
+          else {b2[0]+=getRandomValue(["短弓"])}
+          b2[7]+="小さめの弓弩のようだ。射撃武器にしてはリーチは短めだ。";
+        }
+    }
+    //銃
+    if(b==5){
+        b2[0]="";
+        if(b2[4]>bias5[b][4]*1.45){b2[0]+="最高品質の"}
+        else if(b2[4]>bias5[b][4]*1.2){b2[0]+="高品質の"}
+        else if(b2[4]>bias5[b][4]*0.8){b2[0]+="普通の"}
+        else if(b2[4]>bias5[b][4]*0.55){b2[0]+="低品質の"}
+        else{b2[0]+="ゴミカスのような"}
+        if(b2[6]>bias5[b][6]*1.4){
+          b2[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b2[6]*=2;
+          b2[7]="おめでとう！この銃は弾丸の代わりにとても強力な魔法の弾丸を打つよ！　ただ、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...♡  "]);
+        }
+        else if(b2[6]>bias5[b][6]*1.1){b2[0]+=getRandomValue(["聖なる","魔の"]);b2[7]="おめでとう！この銃は弾丸の代わりに魔法の弾丸を打つよ！　";}
+        else{b2[6]=0;b2[7]="";}
+        var random1=Math.random();
+        if(b2[5]>bias5[b][5]*1.3){//長い
+          if(b2[2]>bias5[b][2]*1.3){b2[0]+="対龍ライフル"}
+          else if(b2[5]>bias5[b][5]*0.7){b2[0]+=getRandomValue(["ライフル"])}
+          else {b2[0]+=getRandomValue(["狙撃銃"])}
+          b2[7]+="リーチの長い銃のようだ。お金がかかる。";
+        }
+        else if(b2[5]>bias5[b][5]*0.7){//中位
+          if(b2[2]>bias5[b][2]){b2[0]+="マグナムリボルバー"}
+          else {b2[0]+=getRandomValue(["リボルバー銃"])}
+          b2[7]+="銃は遠距離攻撃と連発が可能だが、お金がかかる。";
+        }
+        else{//短い
+          if(b2[2]>bias5[b][2]){b2[0]+="ショットガン"}
+          else {b2[0]+=getRandomValue(["ハンドガン"])}
+          b2[7]+="リーチの短いの銃のようだ。お金がかかる。";
+        }
+    }
+    
+    text +=b2[7];
+    text +="\n\n　"
+
+    var c=getRandomValue([0,1,2,0,1,5,0,1,2,0,1]); 
+    for (var i = 1; i < bias5[c].length; i++){
+      b3[i]=getRandomNumber(bias5[c][i],(bias5[c][i]/4)**2);
+    }
+    //剣
+    if(c==0){
+        if(b3[2]>bias5[c][2]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[2]>bias5[c][2]*1.3){b3[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b3[2]>bias5[c][2]){b3[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b3[2]>bias5[c][2]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[2]>bias5[c][2]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias5[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias5[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias5[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias5[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[6]>bias5[c][6]*1.4){
+          b3[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b3[6]*=1.5;
+          b3[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b3[6]>bias5[c][6]*1.1){b3[0]+=getRandomValue(["聖なる","魔の"]);b3[7]="この武器は魔法を助ける。";}
+        else{b3[6]=0;b3[7]="";}
+        if(b3[5]>bias5[c][5]*1.3){//大剣
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="巨刀"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["長剣"])}
+          else{b3[0]+=getRandomValue(["大太刀"])}
+          b3[7]+="長く大きな剣のようだ。リーチが長い。";
+        }
+        else if(b3[5]>bias5[c][5]*0.7){//剣
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="大剣"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["騎士剣"])}
+          else{b3[0]+=getRandomValue(["太刀"])}
+          b3[7]+="剣は斬撃と突き攻撃に優れる。";
+        }
+        else{//短剣
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="中華包丁"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["ナイフ"])}
+          else{b3[0]+=getRandomValue(["出刃包丁"])}
+          b3[7]+="短く小さな剣のようだ。リーチが短い。";
+        }
+    }
+    //槍
+    if(c==1){
+        if(b3[2]>bias5[c][2]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[2]>bias5[c][2]*1.3){b3[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b3[2]>bias5[c][2]){b3[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b3[2]>bias5[c][2]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[2]>bias5[c][2]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias5[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias5[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias5[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias5[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[6]>bias5[c][6]*1.4){
+          b3[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b3[6]*=1.5;
+          b3[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b3[6]>bias5[c][6]*1.1){b3[0]+=getRandomValue(["聖なる","魔の"]);b3[7]="この武器は魔法を助ける。";}
+        else{b3[6]=0;b3[7]="";}
+        if(b3[5]>bias5[c][5]*1.3){//長い
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="ハルバード"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["薙刀"])}
+          else{b3[0]+=getRandomValue(["長槍"])}
+          b3[7]+="長く大きな槍・斧のようだ。リーチが長い。";
+        }
+        else if(b3[5]>bias5[c][5]*0.7){//中位
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="戦斧"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["ランス"])}
+          else{b3[0]+=getRandomValue(["スピア"])}
+          b3[7]+="槍・斧は攻撃力に優れ、リーチが長い。防御に向かない";
+        }
+        else{//短い
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="両刃斧"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["片手斧"])}
+          else{b3[0]+=getRandomValue(["長針"])}
+          b3[7]+="短めの槍・斧のようだ。リーチが短い。";
+        }
+    }
+    //杖
+    if(c==2){
+      b3_0=getRandomValue([0,0,1])
+        b3[0]=""
+        if(b3[6]>bias5[c][6]*1.6){b3[0]+=getRandomValue(["エーテルの"]);}
+        else if(b3[6]>bias5[c][6]*1.3){b3[0]+=getRandomValue(["クリスタルの"]);}
+        else if(b3[6]>bias5[c][6]){b3[0]+=getRandomValue(["魔樹製の"]);}
+        else if(b3[6]>bias5[c][6]*0.7){b3[0]+=getRandomValue(["木製の"]);}
+        else if(b3[6]>bias5[c][6]*0.4){b3[0]+=getRandomValue(["段ボールの"]);}
+        else{b3[0]+=getRandomValue(["飴細工の"]);}
+        var random1=Math.random();
+        if(random1<1/10){
+          b3[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);
+          b3[7]="この杖は途方もない魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(random1<3/10){b3[0]+=getRandomValue(["聖なる","魔の"]);b3[7]="この杖は大きく魔法力を向上させる。";}
+        else{b3[7]="";}
+        b3[0]+="魔法の";
+        if(b3[5]>bias5[c][5]*1.3){//長い
+          b3[0]+="ステッキ"
+          b3[7]+="ステッキは長めの魔法使いの杖だ。";
+        }
+        else if(b3[5]>bias5[c][5]*0.7){//中位
+          b3[0]+="ロッド"
+          b3[7]+="ロッドは魔法使いの杖だ。";
+        }
+        else{//短い
+          b3[0]+="杖"
+          b3[7]+="魔法使いの杖だ。";
+        }
+        if(random1<1/10){b3[6]*=3}
+        else if(random1<3/10){b3[6]*=1.5}
+    }
+    //棍棒
+    if(c==3){
+        if(b3[2]>bias5[c][2]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[2]>bias5[c][2]*1.3){b3[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b3[2]>bias5[c][2]){b3[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b3[2]>bias5[c][2]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[2]>bias5[c][2]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias5[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias5[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias5[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias5[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[6]>bias5[c][6]*1.4){
+          b3[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b3[6]*=1.5;
+          b3[7]="この武器は高い魔法力を持つが、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...  "]);
+        }
+        else if(b3[6]>bias5[c][6]*1.1){b3[0]+=getRandomValue(["聖なる","魔の"]);b3[7]="この武器は魔法を助ける。";}
+        else{b3[6]=0;b3[7]="";}
+        if(b3[5]>bias5[c][5]*1.3){//長い
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="鬼の金棒"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["流星錘"])}
+          else{b3[0]+=getRandomValue(["長棒"])}
+          b3[7]+="長く大きな棍棒のようだ。リーチが長い。";
+        }
+        else if(b3[5]>bias5[c][5]*0.7){//中位
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="戦鎚"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["メイス"])}
+          else{b3[0]+=getRandomValue(["六角棒"])}
+          b3[7]+="棍棒類は破壊力に優れる。";
+        }
+        else{//短い
+          if(b3[3]>bias5[c][3]*1.3){b3[0]+="釘バット"}
+          else if(b3[3]>bias5[c][3]*0.7){b3[0]+=getRandomValue(["ハンマー"])}
+          else{b3[0]+=getRandomValue(["水道管"])}
+          b3[7]+="短めの棍棒類のようだ。リーチが短い。";
+        }
+    }
+    //弓
+    if(c==4){
+        if(b3[2]>bias5[c][2]*1.6){b3[0]=getRandomValue(["アダマンタイトの"]);}
+        else if(b3[2]>bias5[c][2]*1.3){b3[0]=getRandomValue(["ダイヤの","玉鋼の"]);}
+        else if(b3[2]>bias5[c][2]){b3[0]=getRandomValue(["鉄の","黒曜石の"]);}
+        else if(b3[2]>bias5[c][2]*0.7){b3[0]=getRandomValue(["青銅の","銀製の"]);}
+        else if(b3[2]>bias5[c][2]*0.4){b3[0]=getRandomValue(["木製の","プラスチックの"]);}
+        else{b3[0]=getRandomValue(["段ボールの","飴細工の"]);}
+        if(b3[4]>bias5[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias5[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias5[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias5[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[6]>bias5[c][6]*1.4){
+          b3[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b3[6]*=2;
+          b3[7]="おめでとう！この弓弩は矢の代わりにとても強力な魔法の矢を打つよ！　ただ、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...♡  "]);
+        }
+        else if(b3[6]>bias5[c][6]*1.1){b3[0]+=getRandomValue(["聖なる","魔の"]);b3[7]="おめでとう！この弓弩は矢の代わりに魔法の矢を打つよ！　";}
+        else{b3[6]=0;b3[7]="";}
+        var random1=Math.random();
+        if(b3[5]>bias5[c][5]*1.3){//長い
+          if(random1>1/2){b3[0]+="大弩"}
+          else {b3[0]+=getRandomValue(["強弓"])}
+          b3[7]+="大きな弓弩のようだ。リーチがかなり長い。";
+        }
+        else if(b3[5]>bias5[c][5]*0.7){//中位
+          if(random1>1/28){b3[0]+="クロスボウ"}
+          else {b3[0]+=getRandomValue(["弓"])}
+          b3[7]+="弓弩は遠距離攻撃が可能だ。";
+        }
+        else{//短い
+          if(random1>1/28){b3[0]+="暗器弩"}
+          else {b3[0]+=getRandomValue(["短弓"])}
+          b3[7]+="小さめの弓弩のようだ。射撃武器にしてはリーチは短めだ。";
+        }
+    }
+    //銃
+    if(c==5){
+        b3[0]="";
+        if(b3[4]>bias5[c][4]*1.45){b3[0]+="最高品質の"}
+        else if(b3[4]>bias5[c][4]*1.2){b3[0]+="高品質の"}
+        else if(b3[4]>bias5[c][4]*0.8){b3[0]+="普通の"}
+        else if(b3[4]>bias5[c][4]*0.55){b3[0]+="低品質の"}
+        else{b3[0]+="ゴミカスのような"}
+        if(b3[6]>bias5[c][6]*1.4){
+          b3[0]+=getRandomValue(["精霊付きの","怨霊憑きの"]);b3[6]*=2;
+          b3[7]="おめでとう！この銃は弾丸の代わりにとても強力な魔法の弾丸を打つよ！　ただ、"+getRandomValue(["生き血を吸うようだ...  ","悪戯をしてくるようだ...  ","正気を奪うようだ...  ","魔力を吸い取るようだ...  ","精気を吸い取るようだ...♡  "]);
+        }
+        else if(b3[6]>bias5[c][6]*1.1){b3[0]+=getRandomValue(["聖なる","魔の"]);b3[7]="おめでとう！この銃は弾丸の代わりに魔法の弾丸を打つよ！　";}
+        else{b3[6]=0;b3[7]="";}
+        var random1=Math.random();
+        if(b3[5]>bias5[c][5]*1.3){//長い
+          if(b3[2]>bias5[c][2]*1.3){b3[0]+="対龍ライフル"}
+          else if(b3[5]>bias5[c][5]*0.7){b3[0]+=getRandomValue(["ライフル"])}
+          else {b3[0]+=getRandomValue(["狙撃銃"])}
+          b3[7]+="リーチの長い銃のようだ。お金がかかる。";
+        }
+        else if(b3[5]>bias5[c][5]*0.7){//中位
+          if(b3[2]>bias5[c][2]){b3[0]+="マグナムリボルバー"}
+          else {b3[0]+=getRandomValue(["リボルバー銃"])}
+          b3[7]+="銃は遠距離攻撃と連発が可能だが、お金がかかる。";
+        }
+        else{//短い
+          if(b3[2]>bias5[c][2]){b3[0]+="ショットガン"}
+          else {b3[0]+=getRandomValue(["ハンドガン"])}
+          b3[7]+="リーチの短いの銃のようだ。お金がかかる。";
+        }
+    }
+    
+    text +=b3[7];
+    text +="\n\n　"
+
+
+    chara = {
+      名前: b1[0],
+      金額: b1[1],
+      攻撃力: b1[2],
+      防御力: b1[3],
+      耐久性: b1[4],
+      重量: b1[5],
+      魔法効率: b1[6],
+      ____________: "______",
+      名前_: b2[0],
+      金額_: b2[1],
+      攻撃力_: b2[2],
+      防御力_: b2[3],
+      耐久性_: b2[4],
+      重量_: b2[5],
+      魔法効率_: b2[6],
+      _________: "______",
+      名前__: b3[0],
+      金額__: b3[1],
+      攻撃力__: b3[2],
+      防御力__: b3[3],
+      耐久性__: b3[4],
+      重量__: b3[5],
+      魔法効率__: b3[6],
+    };
+  }
+
 }
 
 //初期化
 function initialize(){
   text = "　";
-  bias =[//地位　hp　　　mp　　　sp 　　　身長　　　体重　　魅力　　外向性　神経質　開放性　誠実度　協調性　　　力　　　智　　耐久　　　魔法　　器用　　俊敏　　発散　　　混沌　　反発　　干渉　　秩序　　収束
-    [50,169,100,200,100,200,100,200,170,169,65,100,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,300,50,100,50,300,50,300,50,300,50,300,50,300,50,300],
-    [55,169, 90,200,130,200, 90,200,170,169,60,100,70,250,30,100,40,200,70,250,50,300,40,200,40,200,70,250,45,200,75,250,60,300,50,100,60,300,30,100,50,300,60,300,70,250,60,300],
-    [60, 81,110,200,120,200,110,200,175,169,75,100,55,300,50,300,45,200,50,300,50,300,50,300,60,300,50,300,60,200,65,200,50,300,50,100,30,100,60,200,50,300,50,300,60,300,75,200],
-    [50,300,130,200, 30, 81,110,200,120,169,70,100,40,144,55,300,60,300,55,300,65,200,55,300,70,250,50,200,70,250,20, 36,60,300,30, 36,40,200,60,300,60,300,60,300,40,200,40,200],
-    [50,300,120,200,120,200,120,200,180,169,90,100,55,300,30,100,70,250,50,300,70,250,40,200,70,250,25, 64,70,250,70,250,30,100,65,100,70,250,80,200,30,100,30,100,10,  4,60,300],
-    [50,300, 90,200,100,200,130,200,170,169,75,100,65,200,55,300,35,100,50,300,60,300,50,300,40,200,50,300,45,200,60,200,55,300,70,100,75,200,30,100,40,100,70,250,65,300,40,200],
-    [77,25 ,80 ,200,120,200,100,200,170,169,35, 36,75,200,70,200,40,200,60,200,30,100,55,300,35,100,75,200,40,200,65,300,65,300,60,100,10,  4,60,200,60,200,80,144,50,300,80,144],
-    [50,300,110,200,90 ,200,120,200,180,169,80,100,45,300,55,300,55,300,55,300,55,300,55,300,60,200,45,200,60,200,45,200,40,100,60,100,40,200,40,200,40,200,60,300,60,200,60,200],
-    [50,  0,30 , 49,120,200,100,200, 70, 49,10,  4,75,200,65,200,65,200,60,300,35,100,60,200,20, 25,70,250,30, 81,70,250,75,250,90,200,60,300,60,300,60,300,75,250,60,300,60,300]
+  bias0 =[
+    //名前 金額 燃費 回数 説明
+    ["マップ",5,0,"∞","マップは街を出た時の移動に必要だ。"],
+    ["テレフォン",100,"MP -"+5,"∞","テレフォンは遠くのテレフォンと周波数が共鳴して、遠くの人と連絡が取れる。魔力を消費する。"],
+    ["自転車(レア)",200,"SP -"+30,"∞","自転車を使えば、遠くに速く行ける。スタミナ消費が激しい。"],
+    ["自動車(激レア)",10000,"MP -"+10,"∞","自動車は魔力で自ら動く車だ。"],
+    ["煙玉",50,0,1,"煙玉を使えば、戦闘から逃れられる。"],
+    ["テント",100,"SP -"+10,5,"テントを使えば、街の外で安全に泊まることができる"],
+    ["マキビシ",10,0,1,"マキビシを巻けば、追いかけてくる敵から逃げ切れる。"],
+    ["方位磁針",5,0,"∞","マップだけでは方向に迷う。方位磁針が必要だ。"],
+    ["お洒落品",30,0,1,"時にはお洒落をして、心を癒そう。"],
+    ["飴ちゃん",1,0,1,"甘いものを食べて心を落ち着かせよう"],
+    ["矢",1,0,10,"矢は弓弩に使う。10本セット。稀に矢を使わない弓弩もある。"],
+    ["弾丸",10,0,1,"弾丸は銃に使う。稀に弾丸を使わない銃もある。"],
+    ["銀の弾頭",100,0,1,"銀の弾頭は矢や弾丸の先頭に付ける。威力の向上と破魔の力がある。"],
+    ["爆薬(レア)",10,0,1,"城壁を崩すほどの威力がある。出回ってはけない..."]
   ];
+  bias1 =[
+    //名前 金額 回復量 正気度 説明
+    ["欠損回復薬(レア)",10000,1000,-30,"欠損回復薬を使えば、欠損部位がトカゲのように生えてくる。使用後に凄まじい中毒性と幻覚、無気力さが襲ってきて、著しく正気を失う。頭が取れても生え変わるが...　それはあなたと言えるのだろうか..."],
+    ["全回復薬",1000,100,-10,"全回復薬は優秀な回復薬だ。使用後に著しく幻覚、情緒不安定さが襲ってきて、狂気的になる。ハイポーションともいう。"],
+    ["回復薬",300,50,-5,"回復薬は回復薬だ。使用後に多幸感と幻覚を感じる。ポーションともいう。その使用後の多幸感から花町で使われることが多い。"],
+    ["微回復薬",50,10,-1,"微回復薬は冒険者に広く使われる。回復薬中毒者にとっての清涼剤だ。"],
+    ["絆創膏",3,1,-0,"絆創膏は傷を塞ぐ。"],
+    ["魔力回復薬(レア)",1000,30,-10,"魔力回復薬はとても不味く、正気を削ぐ。あまり使われていない。"]
+  ];
+  bias2 =[
+    //名前 金額 魔力消費 回数 説明
+    ["攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ","疾風"
+      ])+getRandomValue([
+        "の矢","の弾丸"
+      ])+")"
+    ,100,10,10,"巻物を使うと攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"],
+    ["強攻撃魔法の巻物("+getRandomValue([
+        "炎","氷","岩石","雷","酸","マグマ"
+      ])+getRandomValue([
+        "の弾幕","の壁","の嵐"
+      ])+")"
+    ,300,30,10,"巻物を使うと強めの攻撃魔法が出る。魔力を通常より多めに消費するが絶え間なく連射できる。"],
+    ["召喚の巻物(レア)",500,20,3,"巻物を使うと役に立つを召喚する。ピンチに使うと良いだろう。"],
+    ["洗脳の巻物(激レア)",500,20,1,"巻物を使って洗脳を施す。敵を仲間にしたり、自滅させたりすることができる。自分に使うと強い自己暗示になり、一時的にパワーアップする。"],
+    ["転移の巻物(レア)",500,20,5,"巻物を使うと瞬間移動する。一度行ったことある場所になら転移できる。"]
+  ];
+  bias3 =[
+    //名前 金額 代償 回数 説明
+    ["呪毒",10,"正気度 -"+30,1,"呪毒を相手に飲ませ、呪う。呪った相手のHPを半分にする。人を呪わば穴二つ。"],
+    ["緊箍児",200,"正気度 -"+30,1,"緊箍児(きんこじ)を相手の頭に括り付け、呪文を唱える。相手に絶え間ない苦痛を与えて自由意志を剥奪し、意のままに操る。緊箍児が外れれば相手は自由になる(無事とは言っていない)"],
+    ["藁人形",100,"正気度 -"+30,3,"相手の血を藁人形に垂らして釘を打って呪う。呪った相手に大ダメージ。人を呪わば穴二つ。"],
+    ["呪いの人形",100,"流血状態","∞","呪いの人形は勝手に動き、敵を殲滅する。使用するとあなたのHPは常に減少する。人を呪わば穴二つ。"],
+    ["輝く頭蓋骨",10,"正気度 -"+30,1,"輝く頭蓋骨を使うとランダムに転移する。逃げる時に使おう。"],
+    ["呪いの金貨(レア)",1,"狂気状態","∞","呪いの金貨を所持すると正気と理性を失い狂気状態となるが、不死身となる。最後の手。"],
+    ["紫の鏡(レア)",200,"不運","∞","紫の鏡は、真実を映し出す。映した対象の呪いを解く力があるが、行き場を失った怨嗟を溜め、持ち主に不運をもたらす。"]
+  ];
+  bias4 =[
+    //名前 金額 攻撃力 防御力 耐久性 重量 魔法効率 説明
+    ["兜", 100,0, 25,50,3,0,""],
+    ["籠手",100,13,15,50,3,0,""],
+    ["靴", 100,5, 15,50,3,0,""],
+    ["胴着",200,0,40,75,5,0,""],
+    ["盾",  200,5,50,100,6,0,""]
+  ];
+  bias5 =[
+    //名前 金額 攻撃力 防御力 耐久性 重量 魔法効率 説明
+    ["剣",100,75,25,60,6,40,""],
+    ["槍",100,85,10,60,8,40,""],
+    ["杖",100,10,5,25,3,80,""],
+    ["棍棒",100,100,40,80,15,20,""],
+    ["弓",100,25,0,30,3,30,""],
+    ["銃",100,50,0,60,6,0,""]
+  ];
+
 }
 //文字列の中で等確率で要素を決定
 function getRandomValue(array) {
@@ -1159,9 +1806,7 @@ function resizeCanvas() {
 }
 //変数入力
 function changeVariable(){
-  gndr = document.getElementById('selectInput').value;
-  race = document.getElementById('selectInput1').value;
-  role = document.getElementById('selectInput2').value;
+  race = document.getElementById('selectInput').value;
   initialize();
   generateRandomCharacter();
   drawCharacter(chara);
@@ -1189,7 +1834,7 @@ function move2(){window.location.href = 'index.html';}
 //ランダム再生成
 function rerandom(){
   gndr = getRandomValue([0,1]); //性別,0→女,1→男
-  race = getRandomValue([0,1,2,3,4,5,6,7,8]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+  race = getRandomValue([0,1,2,3,4,5]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
   role = getRandomValue([0,1,2,3,4,5]);
   initialize();
   generateRandomCharacter();
