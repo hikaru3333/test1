@@ -90,12 +90,13 @@
 var canvas = document.getElementById("characterCanvas");
 var ctx = canvas.getContext("2d");
 
-//入力欄*********************
-CharacterName = getRandomValue(["ヒトガ・ゴミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
+//パラメータ
+CharacterName = 0; //アイテム名
 gndr = getRandomValue([0,1]); //なんかのパレメータ１,
 race = getRandomValue([0,1,2,3,4,5]); //アイテムの種類
 role = getRandomValue([0,1,2,3,4,5,6,7,8]); //なんかのパラメータ３
 let text = "　";
+var a=0;var b=1;var c=2;var d=3;var e=4;
 
 stats = {
   fam: 0,
@@ -199,6 +200,34 @@ var bias5 =[
   ["銃",500,50,0,60,6,30,""]
 ];
 
+//画像読み込み非同期処理関数→描画関数
+async function loadImage(imagePath) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = imagePath;
+  });
+}
+function resizeImage(img, targetSize) {
+  const aspectRatio = img.width / img.height;
+  let newWidth, newHeight;
+  if (img.width > img.height) {
+    newWidth = targetSize;
+    newHeight = targetSize / aspectRatio;
+  } else {
+    newWidth = targetSize * aspectRatio;
+    newHeight = targetSize;
+  }
+  return { width: newWidth, height: newHeight };
+}
+async function loadAndDrawImages(targetSize,basePath,x,y,i0,i1) {  // 画像が保存されているディレクトリのパス 'path/to/your/images/';
+  const imagePath = `${basePath}${i0}/${i1}.png`;
+  const img = await loadImage(imagePath);
+  const dimensions = resizeImage(img, targetSize);
+  ctx.drawImage(img, x, y, dimensions.width, dimensions.height);
+}
+
 //描画
 function drawCharacter(chara) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -225,6 +254,30 @@ function drawCharacter(chara) {
       y += 18; n ++;
     }
   }
+
+  //図を描画　余計な部分を消して後でまとめる
+  if(race==0){
+    var y=55
+    var dy=90
+    loadAndDrawImages(dy-18,'pic/tool/',200,y,race,a);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy,race,b);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy*2,race,c);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy*3,race,d);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy*4,race,e);
+  }
+  else if(race==1){
+    var y=55
+    var dy=90
+    loadAndDrawImages(dy-18,'pic/tool/',200,y,race,a);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy,race,b);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy*2,race,c);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy*3,race,d);
+    loadAndDrawImages(dy-18,'pic/tool/',200,y+dy*4,race,e);
+  }
+  else if(race==2){}
+  else if(race==3){}
+  else if(race==4){}
+  else if(race==5){}
 
   /*
   //ダイアグラム1
@@ -304,7 +357,7 @@ function drawCharacter(chara) {
   }
   */
 }
-//キャラ生成、パラメータ決定
+//キャラ生成、パラメータ決定、画像描画
 function generateRandomCharacter() {
   text += "　　説明：\n\n　";
   //入力
@@ -312,11 +365,11 @@ function generateRandomCharacter() {
     for (var i = 0; i < bias0.length; i++){
       bias0[i][1]=getRandomNumber(bias0[i][1],(bias0[i][1]/10)**2);
     }
-    var a=getRandomValue([0,1,0,1,2,3,4,5,6,7,8,9,4,5,6,7,8,9,10,11,12]); 
-    var b=getRandomValue([0,1,2,4,5,6,7,8,9,10,11,12]); 
-    var c=getRandomValue([0,1,4,5]); 
-    var d=getRandomValue([6,7,8,9]); 
-    var e=getRandomValue([10,11,12,13]); 
+    a=getRandomValue([0,1,0,1,2,3,4,5,6,7,8,9,4,5,6,7,8,9,10,11,12]); 
+    b=getRandomValue([0,1,2,4,5,6,7,8,9,10,11,12]); 
+    c=getRandomValue([0,1,4,5]); 
+    d=getRandomValue([6,7,8,9]); 
+    e=getRandomValue([10,11,12,13]); 
     text += bias0[a][4];text +="\n\n　"
     text += bias0[b][4];text +="\n\n　"
     text += bias0[c][4];text +="\n\n　"
@@ -353,11 +406,11 @@ function generateRandomCharacter() {
     for (var i = 0; i < bias1.length; i++){
       bias1[i][1]=getRandomNumber(bias1[i][1],(bias1[i][1]/10)**2);
     }
-    var a=getRandomValue([0,1,2,3,4,5,6]); 
-    var b=getRandomValue([1,2,3,4,6]); 
-    var c=getRandomValue([1,2,3,4,6]);  
-    var d=getRandomValue([1,2,3,4,6]);  
-    var e=getRandomValue([1,2,3,4,6]);  
+    a=getRandomValue([0,1,2,3,4,5,6]); 
+    b=getRandomValue([1,2,3,4,6]); 
+    c=getRandomValue([1,2,3,4,6]);  
+    d=getRandomValue([1,2,3,4,6]);  
+    e=getRandomValue([1,2,3,4,6]);  
     text += bias1[a][4];text +="\n\n　"
     text += bias1[b][4];text +="\n\n　"
     text += bias1[c][4];text +="\n\n　"
@@ -394,11 +447,11 @@ function generateRandomCharacter() {
     for (var i = 0; i < bias2.length; i++){
       bias2[i][1]=getRandomNumber(bias2[i][1],(bias2[i][1]/10)**2);
     }
-    var a=getRandomValue([0,1,0,1,2,3,2,3,4]); 
-    var b=getRandomValue([0,1]); 
-    var c=getRandomValue([0,1]); 
-    var d=getRandomValue([0,1]);  
-    var e=getRandomValue([0,1]);  
+    a=getRandomValue([0,1,0,1,2,3,2,3,4]); 
+    b=getRandomValue([0,1]); 
+    c=getRandomValue([0,1]); 
+    d=getRandomValue([0,1]);  
+    e=getRandomValue([0,1]);  
     text += bias2[a][4];text +="\n\n　"
     text += bias2[b][4];text +="\n\n　"
     text += bias2[c][4];text +="\n\n　"
@@ -501,11 +554,11 @@ function generateRandomCharacter() {
     for (var i = 0; i < bias3.length; i++){
       bias3[i][1]=getRandomNumber(bias3[i][1],(bias3[i][1]/10)**2);
     }
-    var a=getRandomValue([0,1,2,3,4,5,6]); 
-    var b=getRandomValue([0,1,2,3,4,5,6]);
-    var c=getRandomValue([0,1,2,3,4]);
-    var d=getRandomValue([0,1,2,3,4]);
-    var e=getRandomValue([0,1,2,3,4]);
+    a=getRandomValue([0,1,2,3,4,5,6]); 
+    b=getRandomValue([0,1,2,3,4,5,6]);
+    c=getRandomValue([0,1,2,3,4]);
+    d=getRandomValue([0,1,2,3,4]);
+    e=getRandomValue([0,1,2,3,4]);
     text += bias3[a][4];text +="\n\n　"
     text += bias3[b][4];text +="\n\n　"
     text += bias3[c][4];text +="\n\n　"
@@ -540,7 +593,7 @@ function generateRandomCharacter() {
   }
   if(race==4){
     var b1=[];var b2=[];var b3=[];
-    var a=getRandomValue([0,1,2,3,4]); 
+    a=getRandomValue([0,1,2,3,4]); 
     for (var i = 1; i < bias4[a].length; i++){
       b1[i]=getRandomNumber(bias4[a][i],(bias4[a][i]/4)**2);
     }
@@ -707,7 +760,7 @@ function generateRandomCharacter() {
     text +=b1[7];
     text +="\n\n　"
 
-    var b=getRandomValue([0,1,2,3,4]);
+    b=getRandomValue([0,1,2,3,4]);
     for (var i = 1; i < bias4[b].length; i++){
       b2[i]=getRandomNumber(bias4[b][i],(bias4[b][i]/4)**2);
     }
@@ -811,7 +864,7 @@ function generateRandomCharacter() {
     text +=b2[7];
     text +="\n\n　"
 
-    var c=getRandomValue([0,1,2,3,4]);
+    c=getRandomValue([0,1,2,3,4]);
     for (var i = 1; i < bias4[c].length; i++){
       b3[i]=getRandomNumber(bias4[c][i],(bias4[c][i]/4)**2);
     }
@@ -943,7 +996,7 @@ function generateRandomCharacter() {
   }
   if(race==5){
     var b1=[];var b2=[];var b3=[];
-    var a=getRandomValue([0,1,2,3,4,5]); 
+    a=getRandomValue([0,1,2,3,4,5]); 
     for (var i = 1; i < bias5[a].length; i++){
       b1[i]=getRandomNumber(bias5[a][i],(bias5[a][i]/4)**2);
     }
@@ -1227,7 +1280,7 @@ function generateRandomCharacter() {
     text +=b1[7];
     text +="\n\n　"
 
-    var b=getRandomValue([3,4,2,3,4,5,3,4,2,3,4]);
+    b=getRandomValue([3,4,2,3,4,5,3,4,2,3,4]);
     for (var i = 1; i < bias5[b].length; i++){
       b2[i]=getRandomNumber(bias5[b][i],(bias5[b][i]/4)**2);
     }
@@ -1450,7 +1503,7 @@ function generateRandomCharacter() {
     text +=b2[7];
     text +="\n\n　"
 
-    var c=getRandomValue([0,1,2,0,1,5,0,1,2,0,1]); 
+    c=getRandomValue([0,1,2,0,1,5,0,1,2,0,1]); 
     for (var i = 1; i < bias5[c].length; i++){
       b3[i]=getRandomNumber(bias5[c][i],(bias5[c][i]/4)**2);
     }
