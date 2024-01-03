@@ -94,36 +94,9 @@ var ctx = canvas.getContext("2d");
 CharacterName = 0; //アイテム名
 gndr = getRandomValue([0,1]); //なんかのパレメータ１,
 race = getRandomValue([0,1,2,3,4,5]); //アイテムの種類
-role = getRandomValue([0,1,2,3,4,5,6,7,8]); //なんかのパラメータ３
 let text = "　";
 var a=0;var b=1;var c=2;var d=3;var e=4;
 
-stats = {
-  fam: 0,
-  hp: 0, 
-  mp: 0, 
-  sp: 0, 
-  hei: 0,
-  wei: 0,
-  chr: 0,
-  ext: 50, 
-  col: 50,
-  ope: 50,  
-  dil: 50,
-  cop: 0,
-  str: 0,
-  int: 0,
-  dur: 0,
-  mag: 0,
-  dex: 0,
-  spe: 0,
-  div: 300, 
-  cha: 50, 
-  rep: 50, 
-  abs: 50,  
-  ord: 50,
-  def: 50,
-}
 var chara = {};
 
 //種族固有値の行列
@@ -137,12 +110,12 @@ var bias0 =[
   ["テント",100,"SP -"+10,5,"テントを使えば、街の外で安全に泊まることができる"],
   ["マキビシ",10,0,1,"マキビシを巻けば、追いかけてくる敵から逃げ切れる。"],
   ["方位磁針",5,0,"∞","マップだけでは方向に迷う。方位磁針が必要だ。"],
-  ["お洒落品",30,0,1,"時にはお洒落をして、心を癒そう。"],
+  ["お洒落品",10,0,1,"時にはお洒落をして、心を癒そう。"],
   ["飴ちゃん",1,0,1,"甘いものを食べて心を落ち着かせよう"],
-  ["矢",1,0,10,"矢は弓弩に使う。10本セット。稀に矢を使わない弓弩もある。"],
-  ["弾丸",10,0,1,"弾丸は銃に使う。稀に弾丸を使わない銃もある。"],
+  ["矢",10,0,10,"矢は弓弩に使う。10本セット。稀に矢を使わない弓弩もある。"],
+  ["弾丸",100,0,10,"弾丸は銃に使う。稀に弾丸を使わない銃もある。"],
   ["銀の弾頭",100,0,1,"銀の弾頭は矢や弾丸の先頭に付ける。威力の向上と破魔の力がある。"],
-  ["爆薬(レア)",10,0,1,"城壁を崩すほどの威力がある。出回ってはけない..."]
+  ["爆薬(レア)",100,0,1,"城壁を崩すほどの威力がある。出回ってはけない..."]
 ];
 var bias1 =[
   //名前 金額 回復量 正気度 説明
@@ -177,9 +150,9 @@ var bias3 =[
   ["呪毒",10,"正気度 -"+30,1,"呪毒を相手に飲ませ、呪う。呪った相手のHPを半分にする。人を呪わば穴二つ。"],
   ["緊箍児",200,"正気度 -"+30,1,"緊箍児(きんこじ)を相手の頭に括り付け、呪文を唱える。相手に絶え間ない苦痛を与えて自由意志を剥奪し、意のままに操る。緊箍児が外れれば相手は自由になる(無事とは言っていない)"],
   ["藁人形",100,"正気度 -"+30,3,"相手の血を藁人形に垂らして釘を打って呪う。呪った相手に大ダメージ。人を呪わば穴二つ。"],
-  ["呪いの人形",100,"流血状態","∞","呪いの人形は勝手に動き、敵を殲滅する。使用するとあなたのHPは常に減少する。人を呪わば穴二つ。"],
-  ["輝く頭蓋骨",10,"正気度 -"+30,1,"輝く頭蓋骨を使うとランダムに転移する。逃げる時に使おう。"],
-  ["呪いの金貨(レア)",1,"狂気状態","∞","呪いの金貨を所持すると正気と理性を失い狂気状態となるが、不死身となる。最後の手。"],
+  ["呪いの人形",100,"流血状態",1,"呪いの人形は勝手に動き、敵を殲滅する。使用するとあなたのHPは常に減少する。人を呪わば穴二つ。"],
+  ["輝く頭蓋骨",10,"正気度 -"+5,1,"輝く頭蓋骨を使うとランダムに転移する。逃げる時に使おう。"],
+  ["呪いの金貨(レア)",1,"狂気状態","∞","呪いの金貨を長い時間所持すると正気と理性を失い狂気状態となるが、不死身となる。最後の手。"],
   ["紫の鏡(レア)",200,"不運","∞","紫の鏡は、真実を映し出す。映した対象の呪いを解く力があるが、行き場を失った怨嗟を溜め、持ち主に不運をもたらす。"]
 ];
 var bias4 =[
@@ -212,9 +185,9 @@ async function loadImage(imagePath) {
 function resizeImage(img, targetSize) {
   const aspectRatio = img.width / img.height;
   let newWidth, newHeight;
-  if (img.width > img.height) {
-    newWidth = targetSize;
-    newHeight = targetSize / aspectRatio;
+  if(img.width > img.height*1.2){
+    newWidth = targetSize*1.2;
+    newHeight = targetSize / aspectRatio*1.2;
   } else {
     newWidth = targetSize * aspectRatio;
     newHeight = targetSize;
@@ -278,84 +251,6 @@ function drawCharacter(chara) {
   else if(race==3){}
   else if(race==4){}
   else if(race==5){}
-
-  /*
-  //ダイアグラム1
-  if(race>=4){
-    var statusm = [bias[race][14], bias[race][16], bias[race][18], bias[race][20], bias[race][22]];
-    var status = [stats.ext, stats.col, stats.ope, stats.dil, stats.cop];
-    var centerX = 240; 
-    var centerY = 440;
-    var sides = statusm.length; // 頂点の数＝データの要素数
-    var radius = 30;
-    ctx.fillStyle = 'black';
-    ctx.font = "12px Arial";
-    ctx.globalAlpha = 1/2;
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
-    for (var i = 0; i < sides; i++) {
-      var angle = i/sides*2*Math.PI-Math.PI/2;
-      var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
-      var value = statusm[i];
-      var x = centerX + radius * Math.cos(angle)*2;
-      var y = centerY + radius * Math.sin(angle)*2;
-      var x1 = centerX + radius * Math.cos(angle1)*2;
-      var y1 = centerY + radius * Math.sin(angle1)*2;
-      let stat;
-      if(i==0){stat="外向性";}
-      else if(i==1){stat="神経質";}
-      else if(i==2){stat="開放性";}
-      else if(i==3){stat="誠実性";}
-      else if(i==4){stat="協調性";}
-      ctx.fillText(stat, x-10, y+5);
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(x, y);
-      ctx.lineTo(x1, y1);
-      ctx.closePath();
-      ctx.stroke();
-      for (var n = 0; n < 3; n++){
-        x = centerX + radius * Math.cos(angle)*(1/2+n/2);
-        y = centerY + radius * Math.sin(angle)*(1/2+n/2);
-        x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
-        y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x1, y1);
-        ctx.closePath();
-        ctx.stroke();
-      }
-    }
-    ctx.beginPath();
-    for (var i = 0; i < sides; i++) {
-      var angle = i/sides*2*Math.PI-Math.PI/2;
-      var value = statusm[i];
-      var x = centerX + radius * Math.cos(angle) * (value / 50);
-      var y = centerY + radius * Math.sin(angle) * (value / 50);
-      if (i === 0) {ctx.moveTo(x, y);} 
-      else {ctx.lineTo(x, y);}
-    }
-    ctx.closePath();
-    ctx.strokeStyle = "rgba(255,200,100,0.5)"
-    ctx.stroke();
-    ctx.beginPath();
-    for (var i = 0; i < sides; i++) {
-      var angle = i/sides*2*Math.PI-Math.PI/2;
-      var value = status[i];
-      var x = centerX + radius * Math.cos(angle) * (value / 50);
-      var y = centerY + radius * Math.sin(angle) * (value / 50);
-      if (i === 0) {ctx.moveTo(x, y);} 
-      else {ctx.lineTo(x, y);}
-    }
-    ctx.closePath();
-    ctx.globalAlpha = 1/4;
-    ctx.fillStyle = 'orange';
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,100, 0.3)"
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  }
-  */
 }
 //キャラ生成、パラメータ決定、画像描画
 function generateRandomCharacter() {
@@ -1769,12 +1664,12 @@ function initialize(){
     ["テント",100,"SP -"+10,5,"テントを使えば、街の外で安全に泊まることができる"],
     ["マキビシ",10,0,1,"マキビシを巻けば、追いかけてくる敵から逃げ切れる。"],
     ["方位磁針",5,0,"∞","マップだけでは方向に迷う。方位磁針が必要だ。"],
-    ["お洒落品",30,0,1,"時にはお洒落をして、心を癒そう。"],
+    ["お洒落品",10,0,1,"時にはお洒落をして、心を癒そう。"],
     ["飴ちゃん",1,0,1,"甘いものを食べて心を落ち着かせよう"],
-    ["矢",1,0,10,"矢は弓弩に使う。10本セット。稀に矢を使わない弓弩もある。"],
-    ["弾丸",10,0,1,"弾丸は銃に使う。稀に弾丸を使わない銃もある。"],
+    ["矢",10,0,10,"矢は弓弩に使う。10本セット。稀に矢を使わない弓弩もある。"],
+    ["弾丸",100,0,10,"弾丸は銃に使う。稀に弾丸を使わない銃もある。"],
     ["銀の弾頭",100,0,1,"銀の弾頭は矢や弾丸の先頭に付ける。威力の向上と破魔の力がある。"],
-    ["爆薬(レア)",10,0,1,"城壁を崩すほどの威力がある。出回ってはけない..."]
+    ["爆薬(レア)",100,0,1,"城壁を崩すほどの威力がある。出回ってはけない..."]
   ];
   bias1 =[
     //名前 金額 回復量 正気度 説明
@@ -1809,9 +1704,9 @@ function initialize(){
     ["呪毒",10,"正気度 -"+30,1,"呪毒を相手に飲ませ、呪う。呪った相手のHPを半分にする。人を呪わば穴二つ。"],
     ["緊箍児",200,"正気度 -"+30,1,"緊箍児(きんこじ)を相手の頭に括り付け、呪文を唱える。相手に絶え間ない苦痛を与えて自由意志を剥奪し、意のままに操る。緊箍児が外れれば相手は自由になる(無事とは言っていない)"],
     ["藁人形",100,"正気度 -"+30,3,"相手の血を藁人形に垂らして釘を打って呪う。呪った相手に大ダメージ。人を呪わば穴二つ。"],
-    ["呪いの人形",100,"流血状態","∞","呪いの人形は勝手に動き、敵を殲滅する。使用するとあなたのHPは常に減少する。人を呪わば穴二つ。"],
-    ["輝く頭蓋骨",10,"正気度 -"+30,1,"輝く頭蓋骨を使うとランダムに転移する。逃げる時に使おう。"],
-    ["呪いの金貨(レア)",1,"狂気状態","∞","呪いの金貨を所持すると正気と理性を失い狂気状態となるが、不死身となる。最後の手。"],
+    ["呪いの人形",100,"流血状態",1,"呪いの人形は勝手に動き、敵を殲滅する。使用するとあなたのHPは常に減少する。人を呪わば穴二つ。"],
+    ["輝く頭蓋骨",10,"正気度 -"+5,1,"輝く頭蓋骨を使うとランダムに転移する。逃げる時に使おう。"],
+    ["呪いの金貨(レア)",1,"狂気状態","∞","呪いの金貨を長い時間所持すると正気と理性を失い狂気状態となるが、不死身となる。最後の手。"],
     ["紫の鏡(レア)",200,"不運","∞","紫の鏡は、真実を映し出す。映した対象の呪いを解く力があるが、行き場を失った怨嗟を溜め、持ち主に不運をもたらす。"]
   ];
   bias4 =[
@@ -1890,7 +1785,6 @@ function move2(){window.location.href = 'index.html';}
 function rerandom(){
   gndr = getRandomValue([0,1]); //性別,0→女,1→男
   race = getRandomValue([0,1,2,3,4,5]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
-  role = getRandomValue([0,1,2,3,4,5]);
   initialize();
   generateRandomCharacter();
   drawCharacter(chara);

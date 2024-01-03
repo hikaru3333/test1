@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Monster Stats</title>
+  <style>
+    body {
+      background-color: rgb(229, 219, 245);
+      margin: 1;
+    }
+    canvas {
+      display: block;
+      border: 1px solid #000;
+    }
+    h1 {
+      text-align: center;
+      font-size: 15px;
+    }
+    h2 {
+      font-size: 12px;
+    }
+    h3 {
+      font-size: 10px;
+    }
+    .textContainer {
+      font-size: 12px;
+    }
+    #canvasContainer {
+      font-size: 12px;
+      background-color: white;
+      width: 313px; /* 幅を設定 */
+      height: 650px; /* 高さを設定 */
+      overflow: auto;
+      margin: auto;
+    }
+    .button {
+      padding: 3px;
+      background-color: indigo;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: color 0.3s ease;
+    }
+    .button:hover {
+      color: darkviolet;
+    }
+  </style>
+</head>
+<body>
+  <h1>ランダムMonsterメーカー</h1>
+  <div class="textContainer">
+    <h2>　E→まるでダメ<br>　D→ボチボチ<br>　C→普通<br>　B→強い<br>　A→最強<br>　S→ネ申<br></h2>
+    <label for="selectInput2">ロール：</label>
+    <select id="selectInput2">
+        <option value=0>カスレベル</option>
+        <option value=1>普通レベル</option>
+        <option value=2>小ボスレベル</option>
+        <option value=3>中ボスレベル</option>
+        <option value=4>大ボスレベル</option>
+    </select>
+    <label for="selectInput">性別：</label>
+    <select id="selectInput">
+        <option value=0>♀</option>
+        <option value=1>♂</option>
+    </select>
+    <br><label for="selectInput1">種族：</label>
+    <select id="selectInput1">
+        <option value=0>スライム</option>
+        <option value=1>フィッシュ</option>
+        <option value=2>ラビット</option>
+        <option value=3>バード</option>
+        <option value=4>ボア</option>
+        <option value=5>スネーク</option>
+        <option value=6>ウルフ</option>
+        <option value=7>ベア</option>
+        <option value=8>ゴブリン</option>
+        <option value=9>ドラゴン</option>
+    </select>
+    <button onclick="changeVariable()">決定＆再生成</button><br>
+    <button onclick="rerandom()">完全ランダム再生成</button>
+  </div>
+  <div id="canvasContainer">
+    <br>
+    <canvas id="characterCanvas" width="310" height="585"></canvas>
+    <button onclick="changeVariable()">決定＆再生成</button>
+    <h2 id="generatedText"></h2>
+    <br><br><br><br>
+    <h1>乱数生成用</h1><br>
+    <label for="mean">平均値：</label>
+    <input type="number" id="mean" value="50"><br>
+    <label for="stdDev">標準偏差：</label>
+    <input type="number" id="stdDev" value="17">
+    <button onclick="generateRandomNumbers()">正規乱数生成</button><br>
+    <h1 id="generatedText1"></h1><br>
+    <label for="min">最小値：</label>
+    <input type="number" id="min" value="0"><br>
+    <label for="max">最大値：</label>
+    <input type="number" id="max" value="99">
+    <button onclick="generateRandomNumbers2()">一様乱数生成</button><br>
+    <h1 id="generatedText2"></h1><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  </div>
+  <br><button onclick="move1()" class="button">ランダム道具メーカー</button>
+  <button onclick="move2()" class="button">ランダムキャラメーカー</button>
+  <br><br><br><h3>hikaru 2023</h3>
+<script>
+var canvas = document.getElementById("characterCanvas");
+var ctx = canvas.getContext("2d");
+
+//入力欄*********************
+Name = getRandomValue(["ヒトガ・ゴミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
+gndr = getRandomValue([0,1]); //性別,0→女,1→男
+race = getRandomValue([0,1,2,3,4,5,6,7,8,9]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+role = getRandomValue([0,1,2,3,4]);
+let text = "　";
+
+stats = {
+  fam: 0,
+  hp: 0, 
+  mp: 0, 
+  sp: 0, 
+  hei: 0,
+  wei: 0,
+  chr: 0,
+  str: 0,
+  int: 0,
+  dur: 0,
+  mag: 0,
+  dex: 0,
+  spe: 0,
+}
+var chara = {};
+
+//種族固有値の行列
+var bias =[
+   //地位 hp  mp sp 身長 体重 魅力  力  智 耐久 魔法 器用 俊敏　
+    [50, 25, 10, 50, 20,  5, 50, 10, 10, 10, 10, 10, 30], //スライム
+    [50, 30, 20,110, 40, 10, 50, 20, 10, 30, 20, 10, 60], //フィッシュ
+    [50, 40, 20, 90, 50, 15, 70, 25, 35, 30, 20, 30, 75], //ラビット
+    [50, 50, 50,100, 80, 25, 50, 40, 45, 30, 40, 45, 70], //バード
+    [50,120, 50,100,120, 70, 40, 70, 10, 70, 10, 10, 60], //ボア
+    [50, 80, 60, 90,250, 60, 60, 60, 65, 50, 50, 45, 30], //スネーク
+    [50,100, 80,105,140, 50, 60, 60, 60, 60, 45, 30, 60], //ウルフ
+    [50,130, 90,120,200,120, 50, 80, 60, 70, 50, 40, 55], //ベア
+    [50,100,100,100,150, 60, 35, 60, 60, 60, 50, 60, 50], //ゴブリン
+    [50,150,120,130,400,1500,60,200, 65,150,120, 10, 70]  //ドラゴン
+];
+var type = 0; //属性　１２３４５６：光炎雷風地冷闇
+
+//描画
+function drawCharacter(chara) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // ヘッダー
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = 'black';
+  // キャラクターの性格と能力を描画
+  ctx.font = "14px Arial";
+  var y = 20;
+  for (var prop in chara) {
+    if (chara.hasOwnProperty(prop)) {
+      ctx.fillStyle = 'black';
+      ctx.globalAlpha = 1;
+      ctx.fillText(prop, 10, y);
+      ctx.fillText(chara[prop], 70, y);
+      if (!isNaN(chara[prop]) && y>200){
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = 'gray';
+        if(chara[prop]<2){ctx.fillText("err", 110, y);}
+        else if(chara[prop]<15){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 110, y);}
+        else if(chara[prop]<30){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
+        else if(chara[prop]<45){ctx.fillStyle = 'lightgreen';ctx.fillText("D-", 110, y);}
+        else if(chara[prop]<60){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 110, y);}
+        else if(chara[prop]<75){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 110, y);}
+        else if(chara[prop]<90){ctx.fillStyle = 'yellowgreen';ctx.fillText("C+", 110, y);}
+        else if(chara[prop]<100){ctx.fillStyle = 'gold';ctx.fillText("B-", 110, y);}
+        else if(chara[prop]<110){ctx.fillStyle = 'gold';ctx.fillText("B", 110, y);}
+        else if(chara[prop]<120){ctx.fillStyle = 'gold';ctx.fillText("B+", 110, y);}
+        else if(chara[prop]<130){ctx.fillStyle = 'crimson';ctx.fillText("A-", 110, y);}
+        else if(chara[prop]<140){ctx.fillStyle = 'crimson';ctx.fillText("A", 110, y);}
+        else if(chara[prop]<150){ctx.fillStyle = 'crimson';ctx.fillText("A+", 110, y);}
+        else if(chara[prop]<160){ctx.fillStyle = 'purple';ctx.fillText("S-", 110, y);}
+        else if(chara[prop]<170){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
+        else if(chara[prop]<180){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
+        else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("err", 110, y);}
+      }
+      y += 18;
+    }
+  }
+  
+  //ダイアグラム1
+  var statusm = [bias[race][1]/2, bias[race][2]/2, bias[race][6], bias[race][4]/17*5, bias[race][5]/13*10, bias[race][3]/2];
+  var status = [stats.hp/2, stats.mp/2, stats.chr, stats.hei/17*5, stats.wei/13*10, stats.sp/2];
+  var centerX = 240; 
+  var centerY = 100;
+  var sides = statusm.length; // 頂点の数＝データの要素数
+  var radius = 30;
+  ctx.fillStyle = 'black';
+  ctx.font = "12px Arial";
+  ctx.globalAlpha = 1/2;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
+    var value = statusm[i];
+    var x = centerX + radius * Math.cos(angle)*2;
+    var y = centerY + radius * Math.sin(angle)*2;
+    var x1 = centerX + radius * Math.cos(angle1)*2;
+    var y1 = centerY + radius * Math.sin(angle1)*2;
+    let stat;
+    if(i==0){stat="HP";}
+    else if(i==1){stat="MP";}
+    else if(i==2){stat="魅力";}
+    else if(i==3){stat="身長";}
+    else if(i==4){stat="体重";}
+    else if(i==5){stat="SP";}
+    ctx.fillText(stat, x-10, y+5);
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x1, y1);
+    ctx.closePath();
+    ctx.stroke();
+    for (var n = 0; n < 3; n++){
+      x = centerX + radius * Math.cos(angle)*(1/2+n/2);
+      y = centerY + radius * Math.sin(angle)*(1/2+n/2);
+      x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
+      y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x1, y1);
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+  ctx.beginPath();
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var value = statusm[i];
+    if(value>110){value=110;}
+    var x = centerX + radius * Math.cos(angle) * (value / 50);
+    var y = centerY + radius * Math.sin(angle) * (value / 50);
+    if (i === 0) {ctx.moveTo(x, y);} 
+    else {ctx.lineTo(x, y);}
+  }
+  ctx.closePath();
+  ctx.strokeStyle = "rgba(255,0,100,0.5)"
+  ctx.stroke();
+  //status
+  ctx.beginPath();
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var value = status[i];
+    if(value>125){value=125;}
+    var x = centerX + radius * Math.cos(angle) * (value / 50);
+    var y = centerY + radius * Math.sin(angle) * (value / 50);
+    if (i === 0) {ctx.moveTo(x, y);} 
+    else {ctx.lineTo(x, y);}
+  }
+  ctx.closePath();
+  ctx.globalAlpha = 1/4;
+  ctx.fillStyle = 'red';
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,0,0, 0.3)"
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  //ダイアグラム2
+  var statusm = [bias[race][7], bias[race][8], bias[race][10], bias[race][12], bias[race][11], bias[race][9]];
+  var status = [stats.str, stats.int, stats.mag, stats.spe, stats.dex, stats.dur];
+  var centerX = 240; 
+  var centerY = 250;
+  var sides = statusm.length; // 頂点の数＝データの要素数
+  var radius = 30;
+  ctx.fillStyle = 'black';
+  ctx.font = "12px Arial";
+  ctx.globalAlpha = 1/2;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var angle1 = (i-1)/sides*2*Math.PI-Math.PI/2;
+    var value = statusm[i];
+    var x = centerX + radius * Math.cos(angle)*2;
+    var y = centerY + radius * Math.sin(angle)*2;
+    var x1 = centerX + radius * Math.cos(angle1)*2;
+    var y1 = centerY + radius * Math.sin(angle1)*2;
+    let stat;
+    if(i==0){stat="力";}
+    else if(i==1){stat="智";}
+    else if(i==2){stat="魔法";}
+    else if(i==3){stat="俊敏";}
+    else if(i==4){stat="器用";}
+    else if(i==5){stat="耐久";}
+    ctx.fillText(stat, x-10, y+5);
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x1, y1);
+    ctx.closePath();
+    ctx.stroke();
+    for (var n = 0; n < 3; n++){
+      x = centerX + radius * Math.cos(angle)*(1/2+n/2);
+      y = centerY + radius * Math.sin(angle)*(1/2+n/2);
+      x1 = centerX + radius * Math.cos(angle1)*(1/2+n/2);
+      y1 = centerY + radius * Math.sin(angle1)*(1/2+n/2);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x1, y1);
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+  ctx.beginPath();
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var value = statusm[i];
+    if(value>110){value=110;}
+    var x = centerX + radius * Math.cos(angle) * (value / 50);
+    var y = centerY + radius * Math.sin(angle) * (value / 50);
+    if (i === 0) {ctx.moveTo(x, y);} 
+    else {ctx.lineTo(x, y);}
+  }
+  ctx.closePath();
+  ctx.strokeStyle = "rgba(255,200,100,0.5)"
+  ctx.stroke();
+  ctx.beginPath();
+  for (var i = 0; i < sides; i++) {
+    var angle = i/sides*2*Math.PI-Math.PI/2;
+    var value = status[i];
+    if(value>125){value=125;}
+    var x = centerX + radius * Math.cos(angle) * (value / 50);
+    var y = centerY + radius * Math.sin(angle) * (value / 50);
+    if (i === 0) {ctx.moveTo(x, y);} 
+    else {ctx.lineTo(x, y);}
+  }
+  ctx.closePath();
+  ctx.globalAlpha = 1/4;
+  ctx.fillStyle = 'orange';
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,100, 0.3)"
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+//キャラ生成、パラメータ決定
+function generateRandomCharacter() {
+  //性別補正
+  if(gndr==0){Sex = "♀";bias[race][7]-=5;bias[race][10]+=5;bias[race][11]+=5;bias[race][9]-=5;}
+  else{Sex = "♂";bias[race][7]+=5;bias[race][10]-=5;bias[race][11]-=5;bias[race][9]+=5;}
+  //地位補正
+  var chr_initial=bias[race][6];
+  stats.fam=getRandomNumber(bias[race][0], (bias[race][0]/4)**2);
+  if(stats.fam<25){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=2/3;
+    }
+  }
+  else if(stats.fam<40){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=4/5;
+    }
+  }
+  else if(stats.fam<60){}
+  else if(stats.fam<75){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=5/4;
+    }
+  }
+  else {
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=2;
+    }
+  }
+  //role補正
+  var sides = bias[race].length;
+  if(role==0){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=1/2;
+    }
+  }
+  else if(role==1){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=3/4;
+    }
+  }
+  else if(role==3){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=5/3;
+    }
+  }
+  else if(role==4){
+    for (var i = 0; i < bias[race].length; i++){
+      bias[race][i]*=5/2;
+    }
+  }
+  bias[race][6]=chr_initial;
+  //ステータス生成
+  stats.str=getRandomNumber(bias[race][7], (bias[race][7]/4)**2);if(stats.str<1){stats.str=1};
+  stats.int=getRandomNumber(bias[race][8], (bias[race][8]/4)**2);if(stats.int<1){stats.int=1};
+  stats.mag=getRandomNumber(bias[race][10], (bias[race][10]/4)**2);if(stats.mag<0){stats.mag=0};
+  stats.dur=getRandomNumber(bias[race][9], (bias[race][9]/4)**2);if(stats.dur<1){stats.dur=1};
+  stats.dex=getRandomNumber(bias[race][11], (bias[race][11]/4)**2);if(stats.dex<0){stats.dex=0};
+  stats.spe=getRandomNumber(bias[race][12], (bias[race][12]/4)**2);if(stats.spe<1){stats.spe=1};
+  stats.hp = getRandomNumber(bias[race][1], (bias[race][1]/4)**2);if(stats.hp<1){stats.hp=1};
+  stats.mp = getRandomNumber(bias[race][2], (bias[race][2]/4)**2);if(stats.mp<1){stats.mp=1};
+  stats.sp = getRandomNumber(bias[race][3], (bias[race][3]/4)**2);if(stats.sp<1){stats.sp=1};
+  stats.chr = getRandomNumber(bias[race][6], (bias[race][6]/4)**2);if(stats.chr<1){stats.chr=1};
+  stats.hei = getRandomNumber(bias[race][4], (bias[race][4]/4)**2);if(stats.hei<1){stats.hei=1};
+  stats.wei = getRandomNumber(bias[race][5], (bias[race][5]/4)**2);if(stats.wei<1){stats.wei=1};
+  
+
+  text += "　";
+  text += "評価：\n\n";
+  //地位
+  if(stats.fam<25){Name="ベイビー";text+="　幼体の"}
+  else if(stats.fam<40){Name="レッサー";text+=getRandomValue(["　弱小な"])}
+  else if(stats.fam<60){Name="";text+=getRandomValue(["　"])}
+  else if(stats.fam<75){Name="グレーター";text+=getRandomValue(["　強大な"])}
+  else{if(gndr==1){Name="キング"}else{Name="クイーン";}text+="　最強レベルの"}
+  //名前
+  var dead=Math.random();if(dead<1/10){Name+="アンデッド";}
+  if(stats.mag>bias[race][10]*1.6){Name+= "クリスタル";stats.mag*=2;text+="かなりの魔法力を持つ"}
+  else if(stats.mag>bias[race][10]*1.4){Name+= "ゴールデン";text+="魔法が使える"}
+  else if(stats.mag>bias[race][10]*1.1){Name+= "シルバー";stats.mag*=1/2;text+="稀に魔法を使う"}
+  else{stats.mag=0;}
+  var n = Math.random();
+  if(stats.str/bias[race][7]>stats.mag/bias[race][10]){
+    if(stats.str>bias[race][7]){
+      if(n<1/5){Name+= "ウォー";stats.mag*=2;text+="かなり攻撃的な"}
+      else if(n<1/2){Name+= "ホーン";stats.mag*=2;text+="攻撃的な"}
+    }
+  }
+  else{
+    if(n<=0.05){Name+= "セイクリッド";text+="光属性の"}
+    else if(n<0.23){Name+= "ファイア";text+="炎属性の"}
+    else if(n<0.41){Name+= "サンダー";text+="電気属性の"}
+    else if(n<0.59){Name+= "エア";text+="風属性の"}
+    else if(n<0.77){Name+= "アース";text+="地面属性の"}
+    else if(n<0.95){Name+= "フローズン";text+="氷属性の"}
+    else{Name+= "ダーク";text+="闇属性の"}
+  }
+
+  //種族
+  if(race==0){
+    Name+= "スライム";
+    text+="スライムだ！"+getRandomValue(["この個体は体に酸を持つ。触るのは危険だ。","この個体は体に毒を持つ。体液を採取し、暗殺用に使おう！","基本的に害のない個体のようだ、愛玩用に適する。"]);
+  }
+  else if(race==1){
+    Name+= "フィッシュ";
+    text+="魚介類だ！"+getRandomValue(["",""]);
+    if(Math.random()<1/10){
+      stats.hp*=10;stats.mp*=10;stats.sp*=4;stats.hei*=15;stats.wei*=500;
+      stats.str*=10;stats.int*=5;stats.dur*=10;stats.dex*=10;stats.spe*=2;stats.mag+=50;
+      if(stats.hp<400){
+        Name= "＊クラーケン＊";
+        text="クラーケンだ！！海でクラーケン出会ったら、戦闘を諦めて逃げた方がいい...　"
+      }
+      else{
+        Name= "＊リヴァイアサン＊";
+        text="リヴァイアサン！！！！出会ったら、即転移で逃げよう！転移がなければ祈りを捧げよう...　来世で幸せになれるように、と...　"
+      }
+    }
+  }
+  else if(race==2){
+    Name+= "ラビット";
+    text+="丸いもふもふだ！(兎)　"+getRandomValue(["愛玩用に高額で買い取る人が多い。","その幼体は特に人気あり、城が買えるほどの金額で取引されることも多い。"])
+  }
+  else if(race==3){
+    Name+= "バード";
+    text+="鳥類だ！"+getRandomValue(["郊外で突然襲い掛かる。食べ物をあげると去る。"])
+  }
+  else if(race==4){
+    Name+= "ボア";
+    text+="猪だ！"+getRandomValue(["突進で襲い掛かる。"])
+  }
+  else if(race==5){
+    Name+= "スネーク";
+    text+="大蛇だ！"+getRandomValue(["自然に溶け込み、獲物を奇襲する。猛毒を持つので、噛まれないように気をつけよう。"])
+  }
+  else if(race==6){
+    Name+= "ウルフ";
+    text+="狼だ！"+getRandomValue(["群れで行動する。一匹見つけたら、周囲にあと十匹いると思え...　"])
+    if(Math.random()<1/10){
+      stats.hp*=4;stats.mp*=4;stats.sp*=4;stats.hei*=4;stats.wei*=40;
+      stats.str*=5;stats.int*=4;stats.dur*=5;stats.dex*=2;stats.spe*=4;stats.mag+=100;
+      if(stats.hp<400){
+        Name= "＊フェンリル＊";
+        text="　フェンリルだ！！山の神だ... 戦闘を諦めて逃げた方がいい...　"
+      }
+      else{
+        stats.hp*=4;stats.mp*=4;stats.sp*=4;stats.hei*=4;stats.wei*=40;
+        stats.str*=5;stats.int*=4;stats.dur*=5;stats.dex*=2;stats.spe*=4;stats.mag+=100;
+        Name= "＊?????狼＊";
+        text="　...ッ！！！！　逃げよう。　よく見たら..."
+      }
+    }
+  }
+  else if(race==7){
+    Name+= "ベア";
+    text+="熊だ！"+getRandomValue(["威嚇して追い返そう！ダメそうなら逃げよう。死んだふりしても、食べられるだけだから、頑張れ！"])
+  }
+  else if(race==8){
+    text += "　";
+    text += "評価：\n\n";
+    //地位
+    if(stats.fam<25){Name="ベイビー";text="　幼体の"}
+    else if(stats.fam<40){Name="レッサー";text=getRandomValue(["　弱小な"])}
+    else if(stats.fam<60){Name="";text=getRandomValue(["　"])}
+    else if(stats.fam<75){Name="グレーター";text=getRandomValue(["　強大な"])}
+    else{if(gndr==1){Name="キング"}else{Name="クイーン";}text="　最強レベルの"}
+    if(stats.mag>bias[race][10]*1.6){Name+= "強力な魔法力を持つ";}
+    else if(stats.mag>bias[race][10]*1.4){Name+= "魔法が使える";}
+    else if(stats.mag>bias[race][10]*1.1/2){Name+= "稀に魔法を使う";}
+    Name+= "ゴブリン";
+    if(stats.mag>bias[race][10]*1.6){Name+= "ソーサラー";}
+    else if(stats.mag>bias[race][10]*1.4){Name+= "メイジ";}
+    if(stats.str>bias[race][7]){
+      if(n<1/5){Name+= "ウォリアー";stats.mag*=2;text+="かなり攻撃的な"}
+      else if(n<1/2){Name+= "ファイター";stats.mag*=2;text+="攻撃的な"}
+    }
+    text+="ゴブリンだ！"+getRandomValue(["",""])
+  }
+  else if(race==9){
+    Name+= "ドラゴン";
+    text+="齧歯類だ！"+getRandomValue(["",""])
+    if(Math.random()<1/20){
+      stats.hp*=10;stats.mp*=10;stats.sp*=10;stats.hei*=2;stats.wei*=5;
+      stats.str*=10;stats.int*=10;stats.dur*=10;stats.dex*=10;stats.spe*=4;stats.mag+=300;
+      Name= "＊?????龍＊";
+      text="　...ッ！！！！　逃げよう。　よく見たら..."
+    }
+  }
+  if(stats.mag<=bias[race][10]*1.1/2){text+="　この個体は魔法を使えないようだ。\n"}
+
+  //ロール
+  if(role==0){role_status="カス";}
+  else if(role==1){role_status="普通";}
+  else if(role==2){role_status="小ボス";}
+  else if(role==3){role_status="中ボス";}
+  else if(role==4){role_status="大ボス";}
+
+  //体
+  text += "\n"
+  if(stats.hei<bias[race][4]*0.7){text+="　小さめの個体で、"}
+  else if(stats.hei<bias[race][4]*1.3){text+="　普通サイズの個体で、"}
+  else{text+="　大きめの個体で、"}
+  if(stats.hei/stats.wei<bias[race][4]/bias[race][5]/2){text+="丸っこい体型だ";}
+  else if(stats.hei/stats.wei<bias[race][4]/bias[race][5]/3*2){text+="ぽっちゃり体型だ";}
+  else if(stats.hei/stats.wei>bias[race][4]/bias[race][5]*2){text+="痩せ気味のようだ"}
+  else if(stats.hei/stats.wei>bias[race][4]/bias[race][5]/2*3){text+="骨と皮しかない体型だ"}
+  else {text+="健康的だ。"}
+  //chr
+  if(stats.chr>75){text+="\n　とても美しい個体だ！";}
+  else if(stats.chr>60){text+="\n　可愛い見た目の個体だ。";}
+  else if(stats.chr>40){text+="";}
+  else if(stats.chr>25){text+="\n　この個体は醜い...";}
+  else{text+="\n　...この個体の見た目はおぞましい...";}
+  //飼い慣らし
+  if(stats.fam<25){text+="\n\n　この個体は幼体であるため、飼い慣らせば仲間となるだろう！"}
+  //アンデッド
+  if(dead<1/10){text+="\n\n　...この個体はすでに死んでおり、アンデッド化しているようだ...　通常の攻撃では倒すことは不可能だ、銀か聖なる何かで撃退しよう！";}
+  
+  //入力
+  chara = {
+    種族: Name,
+    性別: Sex,
+    ロール: role_status,
+    __状態値: "______",
+    身長: stats.hei,
+    体重: stats.wei,
+    HP: stats.hp,
+    MP: stats.mp,
+    SP: stats.sp,
+    魅力: stats.chr,
+    __能力値: "______",
+    力: stats.str,
+    智: stats.int,
+    耐久: stats.dur,
+    魔法: stats.mag,
+    器用: stats.dex,
+    俊敏: stats.spe,
+  };
+}
+
+
+//初期化
+function initialize(){
+  text = "　";
+  bias =[
+    //地位 hp  mp sp 身長 体重 魅力  力  智 耐久 魔法 器用 俊敏　
+      [50, 25, 10, 50, 20,  5, 50, 10, 10, 10, 10, 10, 30], //スライム
+      [50, 30, 20,110, 40, 10, 50, 20, 10, 30, 20, 10, 60], //フィッシュ
+      [50, 40, 20, 90, 50, 15, 70, 25, 35, 30, 20, 30, 75], //ラビット
+      [50, 50, 50,100, 80, 25, 50, 40, 45, 30, 40, 45, 70], //バード
+      [50,120, 50,100,120, 70, 40, 70, 10, 70, 10, 10, 60], //ボア
+      [50, 80, 60, 90,250, 60, 60, 60, 65, 50, 50, 45, 30], //スネーク
+      [50,100, 80,105,140, 50, 60, 60, 60, 60, 45, 30, 60], //ウルフ
+      [50,130, 90,120,200,120, 50, 80, 60, 70, 50, 40, 55], //ベア
+      [50,100,100,100,150, 60, 35, 60, 60, 60, 50, 60, 50], //ゴブリン
+      [50,150,120,130,400,1500,60,200, 65,150,120, 10, 70]  //ドラゴン
+  ];
+}
+//文字列の中で等確率で要素を決定
+function getRandomValue(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+//平均値分散を入力し正規分布整数乱数を生成
+function getRandomNumber(mean, variance) {
+  // Box-Muller変換
+  var u1 = Math.random();
+  var u2 = Math.random();
+
+  var z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+
+  // z0が標準正規分布に従うため、平均と分散を適用
+  var randomValue = mean + Math.sqrt(variance) * z0;
+
+  //整数化
+  randomValue = Math.round(randomValue)
+
+  return randomValue;
+}
+//canvasのサイズ合わせ　→ しない
+function resizeCanvas() {
+  //実行内容を更新
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');;
+  drawCharacter(chara);
+}
+//変数入力
+function changeVariable(){
+  gndr = document.getElementById('selectInput').value;
+  race = document.getElementById('selectInput1').value;
+  role = document.getElementById('selectInput2').value;
+  initialize();
+  generateRandomCharacter();
+  drawCharacter(chara);
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');;
+}
+
+//乱数の生成と描画
+function generateRandomNumbers(){
+  const mean = parseFloat(document.getElementById('mean').value);
+  const stdDev = parseFloat(document.getElementById('stdDev').value);
+  const randomNumbers = getRandomNumber(mean, stdDev**2);
+  document.getElementById("generatedText1").innerHTML = randomNumbers;
+}
+function generateRandomNumbers2(){
+  const min = parseFloat(document.getElementById('min').value);
+  const max = parseFloat(document.getElementById('max').value);
+  const randomNumbers = Math.floor(Math.random()*(max-min+1))+min;
+  document.getElementById("generatedText2").innerHTML = randomNumbers;
+}
+
+//サイト移動
+function move1(){window.location.href = 'weapon.html';}
+function move2(){window.location.href = 'index.html';}
+
+//ランダム再生成
+function rerandom(){
+  gndr = getRandomValue([0,1]); //性別,0→女,1→男
+  race = getRandomValue([0,1,2,3,4,5,6,7,8,9]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
+  role = getRandomValue([0,1,2,3,4]);
+  initialize();
+  generateRandomCharacter();
+  drawCharacter(chara);
+  document.getElementById("generatedText").innerHTML = text.replace(/\n/g, '<br>');; 
+}
+
+generateRandomCharacter();
+//canvasサイズ変更
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+</script>
+</body>
+</html>
