@@ -139,12 +139,12 @@ var bias =[
     [50, 30, 20,110, 40, 10, 50, 20, 10, 30, 20, 10, 60], //フィッシュ
     [50, 40, 20, 90, 50, 15, 70, 25, 35, 30, 20, 30, 75], //ラビット
     [50, 50, 50,100, 80, 25, 50, 40, 45, 30, 40, 45, 70], //バード
-    [50,120, 50,100,120, 70, 40, 70, 10, 70, 10, 10, 60], //ボア
+    [50,120, 50,120,120, 70, 40, 70, 10, 70, 10, 10, 65], //ボア
     [50, 80, 60, 90,250, 60, 60, 60, 65, 50, 50, 45, 30], //スネーク
     [50,100, 80,105,140, 50, 60, 60, 60, 60, 45, 30, 60], //ウルフ
     [50,130, 90,120,200,120, 50, 80, 60, 70, 50, 40, 55], //ベア
     [50,100,100,100,150, 60, 35, 60, 60, 60, 50, 60, 50], //ゴブリン
-    [50,150,120,130,400,1500,60,200, 65,150,120, 10, 70]  //ドラゴン
+    [50,150,120,130,400,1500,60,200, 65,150,120, 20, 70]  //ドラゴン
 ];
 var type = 0; //属性　１２３４５６：光炎雷風地冷闇
 
@@ -349,52 +349,70 @@ function generateRandomCharacter() {
   if(gndr==0){Sex = "♀";bias[race][7]-=5;bias[race][10]+=5;bias[race][11]+=5;bias[race][9]-=5;}
   else{Sex = "♂";bias[race][7]+=5;bias[race][10]-=5;bias[race][11]-=5;bias[race][9]+=5;}
   //地位補正
-  var chr_initial=bias[race][6];
   stats.fam=getRandomNumber(bias[race][0], (bias[race][0]/4)**2);
   if(stats.fam<25){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=2/3;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=2/3;
+      }
     }
   }
   else if(stats.fam<40){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=4/5;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=4/5;
+      }
     }
   }
   else if(stats.fam<60){}
   else if(stats.fam<75){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=5/4;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=5/4;
+      }
+      else{bias[race][i]*=1.1;}
     }
   }
   else {
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=2;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=2;
+      }
+      else{bias[race][i]*=1.2;}
     }
   }
   //role補正
   var sides = bias[race].length;
   if(role==0){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=1/2;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=1/2;
+      }
     }
   }
   else if(role==1){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=3/4;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=3/4;
+      }
     }
   }
   else if(role==3){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=5/3;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=5/3;
+      }
+      else{bias[race][i]*=1.1;}
     }
   }
   else if(role==4){
     for (var i = 0; i < bias[race].length; i++){
-      bias[race][i]*=5/2;
+      if(i!=12 && i!=6 && i!=8){
+        bias[race][i]*=5/2;
+      }
+      else{bias[race][i]*=1.2;}
     }
   }
-  bias[race][6]=chr_initial;
   //ステータス生成
   stats.str=getRandomNumber(bias[race][7], (bias[race][7]/4)**2);if(stats.str<1){stats.str=1};
   stats.int=getRandomNumber(bias[race][8], (bias[race][8]/4)**2);if(stats.int<1){stats.int=1};
@@ -413,11 +431,11 @@ function generateRandomCharacter() {
   text += "　";
   text += "評価：\n\n";
   //地位
-  if(stats.fam<25){Name="ベイビー";text+="　幼体の"}
-  else if(stats.fam<40){Name="レッサー";text+=getRandomValue(["　弱小な"])}
+  if(stats.fam<25){Name="ベイビー";text+="　幼体の、"}
+  else if(stats.fam<40){Name="レッサー";text+=getRandomValue(["　弱小な、"])}
   else if(stats.fam<60){Name="";text+=getRandomValue(["　"])}
-  else if(stats.fam<75){Name="グレーター";text+=getRandomValue(["　強大な"])}
-  else{if(gndr==1){Name="キング"}else{Name="クイーン";}text+="　最強レベルの"}
+  else if(stats.fam<75){Name="グレーター";text+=getRandomValue(["　強大な、"])}
+  else{if(gndr==1){Name="キング"}else{Name="クイーン";}text+="　最強レベルの、"}
   //名前
   var dead=Math.random();if(dead<1/10){Name+="アンデッド";}
   if(stats.mag>bias[race][10]*1.6){Name+= "クリスタル";stats.mag*=2;text+="かなりの魔法力を持つ"}
@@ -451,7 +469,7 @@ function generateRandomCharacter() {
     text+="魚介類だ！"+getRandomValue(["",""]);
     if(Math.random()<1/10){
       stats.hp*=10;stats.mp*=10;stats.sp*=4;stats.hei*=15;stats.wei*=500;
-      stats.str*=10;stats.int*=5;stats.dur*=10;stats.dex*=10;stats.spe*=2;stats.mag+=50;
+      stats.str*=10;stats.int*=5;stats.dur*=10;stats.dex*=10;stats.mag+=50;
       if(stats.hp<400){
         Name= "＊クラーケン＊";
         text="クラーケンだ！！海でクラーケン出会ったら、戦闘を諦めて逃げた方がいい...　"
@@ -468,11 +486,11 @@ function generateRandomCharacter() {
   }
   else if(race==3){
     Name+= "バード";
-    text+="鳥類だ！"+getRandomValue(["郊外で突然襲い掛かる。食べ物をあげると去る。"])
+    text+="鳥類だ！"+getRandomValue(["郊外で突然襲い掛かる。食べ物をあげると飛び去る。"])
   }
   else if(race==4){
     Name+= "ボア";
-    text+="猪だ！"+getRandomValue(["突進で襲い掛かる。"])
+    text+=getRandomValue(["牛","馬","猪"])+"だ！"+getRandomValue(["突進で襲い掛かる。"])
   }
   else if(race==5){
     Name+= "スネーク";
@@ -483,14 +501,14 @@ function generateRandomCharacter() {
     text+="狼だ！"+getRandomValue(["群れで行動する。一匹見つけたら、周囲にあと十匹いると思え...　"])
     if(Math.random()<1/10){
       stats.hp*=4;stats.mp*=4;stats.sp*=4;stats.hei*=4;stats.wei*=40;
-      stats.str*=5;stats.int*=4;stats.dur*=5;stats.dex*=2;stats.spe*=4;stats.mag+=100;
+      stats.str*=5;stats.int*=4;stats.dur*=5;stats.dex*=2;stats.mag+=100;
       if(stats.hp<400){
         Name= "＊フェンリル＊";
         text="　フェンリルだ！！山の神だ... 戦闘を諦めて逃げた方がいい...　"
       }
       else{
         stats.hp*=4;stats.mp*=4;stats.sp*=4;stats.hei*=4;stats.wei*=40;
-        stats.str*=5;stats.int*=4;stats.dur*=5;stats.dex*=2;stats.spe*=4;stats.mag+=100;
+        stats.str*=5;stats.int*=4;stats.dur*=5;stats.dex*=2;stats.mag+=100;
         Name= "＊?????狼＊";
         text="　...ッ！！！！　逃げよう。　よく見たら..."
       }
@@ -505,28 +523,28 @@ function generateRandomCharacter() {
     text += "評価：\n\n";
     //地位
     if(stats.fam<25){Name="ベイビー";text="　幼体の"}
-    else if(stats.fam<40){Name="レッサー";text=getRandomValue(["　弱小な"])}
+    else if(stats.fam<40){Name="レッサー";text=getRandomValue(["　弱小な、"])}
     else if(stats.fam<60){Name="";text=getRandomValue(["　"])}
-    else if(stats.fam<75){Name="グレーター";text=getRandomValue(["　強大な"])}
+    else if(stats.fam<75){Name="グレーター";text=getRandomValue(["　強大な、"])}
     else{if(gndr==1){Name="キング"}else{Name="クイーン";}text="　最強レベルの"}
-    if(stats.mag>bias[race][10]*1.6){Name+= "強力な魔法力を持つ";}
-    else if(stats.mag>bias[race][10]*1.4){Name+= "魔法が使える";}
-    else if(stats.mag>bias[race][10]*1.1/2){Name+= "稀に魔法を使う";}
-    Name+= "ゴブリン";
+    if(stats.mag>bias[race][10]*1.6){text+= "強力な魔法力を持つ";}
+    else if(stats.mag>bias[race][10]*1.4){text+= "魔法が使える";}
+    else if(stats.mag>bias[race][10]*1.1/2){text+= "稀に魔法を使う";}
+    Name+= getRandomValue(["ゴブリン","オーガ","オーク"]);
     if(stats.mag>bias[race][10]*1.6){Name+= "ソーサラー";}
     else if(stats.mag>bias[race][10]*1.4){Name+= "メイジ";}
     if(stats.str>bias[race][7]){
       if(n<1/5){Name+= "ウォリアー";stats.mag*=2;text+="かなり攻撃的な"}
       else if(n<1/2){Name+= "ファイター";stats.mag*=2;text+="攻撃的な"}
     }
-    text+="ゴブリンだ！"+getRandomValue(["",""])
+    text+="人型モンスターだ！"+getRandomValue(["",""])
   }
   else if(race==9){
     Name+= "ドラゴン";
-    text+="齧歯類だ！"+getRandomValue(["",""])
+    text+="ドラゴンだ！"+getRandomValue(["圧倒的な生命力と、巨大な体を持つ。空を飛ぶ。"])
     if(Math.random()<1/20){
       stats.hp*=10;stats.mp*=10;stats.sp*=10;stats.hei*=2;stats.wei*=5;
-      stats.str*=10;stats.int*=10;stats.dur*=10;stats.dex*=10;stats.spe*=4;stats.mag+=300;
+      stats.str*=10;stats.int*=10;stats.dur*=10;stats.dex*=10;stats.mag+=300;
       Name= "＊?????龍＊";
       text="　...ッ！！！！　逃げよう。　よく見たら..."
     }
@@ -583,7 +601,6 @@ function generateRandomCharacter() {
   };
 }
 
-
 //初期化
 function initialize(){
   text = "　";
@@ -593,7 +610,7 @@ function initialize(){
       [50, 30, 20,110, 40, 10, 50, 20, 10, 30, 20, 10, 60], //フィッシュ
       [50, 40, 20, 90, 50, 15, 70, 25, 35, 30, 20, 30, 75], //ラビット
       [50, 50, 50,100, 80, 25, 50, 40, 45, 30, 40, 45, 70], //バード
-      [50,120, 50,100,120, 70, 40, 70, 10, 70, 10, 10, 60], //ボア
+      [50,120, 50,120,120, 70, 40, 70, 10, 70, 10, 10, 65], //ボア
       [50, 80, 60, 90,250, 60, 60, 60, 65, 50, 50, 45, 30], //スネーク
       [50,100, 80,105,140, 50, 60, 60, 60, 60, 45, 30, 60], //ウルフ
       [50,130, 90,120,200,120, 50, 80, 60, 70, 50, 40, 55], //ベア

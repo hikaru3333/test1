@@ -105,7 +105,7 @@ var canvas = document.getElementById("characterCanvas");
 var ctx = canvas.getContext("2d");
 
 //入力欄*********************
-CharacterName = getRandomValue(["ヒトガ・ゴミノヨーダ","ダガ・コトワル","命を燃やせ！","ザワ・ザワ","ナニヤ・テンダ・オマエ","キッショ","アンタ・バカァ？","ニゲチャ・ダメダ"]); //キャラ名 
+CharacterName = getRandomValue(["ヒトガ・ゴミノヨーダ","ダガ・コトワル","ザワ・ザワ","ナニヤ・テンダ・オマエ","ニゲチャ・ダメダ"]); //キャラ名 
 gndr = getRandomValue([0,1]); //性別,0→女,1→男
 race = getRandomValue([0,1,2,3,4,5,6,7,8,9,10]); //性別,0→人間,1→エルフ,2→魔族,3→ドワーフ,4→竜人,5→羽人,6→悪魔,7→魚人,8→妖精
 let text = "　";
@@ -172,7 +172,7 @@ function drawCharacter(chara) {
         ctx.globalAlpha = 1;
         if(n>4 && (n<6 || n>10)){
           ctx.fillStyle = 'gray';
-          if(chara[prop]<1){ctx.fillText("測定不能", 110, y);}
+          if(chara[prop]<1){ctx.fillText("err", 110, y);}
           else if(chara[prop]<10){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 110, y);}
           else if(chara[prop]<20){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
           else if(chara[prop]<30){ctx.fillStyle = 'lightgreen';ctx.fillText("D-", 110, y);}
@@ -188,7 +188,7 @@ function drawCharacter(chara) {
           else if(chara[prop]<95){ctx.fillStyle = 'purple';ctx.fillText("S-", 110, y);}
           else if(chara[prop]<100){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
           else if(chara[prop]<105){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
-          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 110, y);}
+          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("err", 110, y);}
         }
         else if(n<3){
           if(chara[prop]<75){ctx.fillStyle = 'lightblue';ctx.fillText("E", 110, y);}
@@ -198,18 +198,49 @@ function drawCharacter(chara) {
           else if(chara[prop]<130){ctx.fillStyle = 'crimson';ctx.fillText("A", 110, y);}
           else if(chara[prop]<140){ctx.fillStyle = 'purple';ctx.fillText("S", 110, y);}
           else if(chara[prop]<150){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 110, y);}
-          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("測定不能", 110, y);}
+          else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("err", 110, y);}
         }
       }
       else{n -= 1;}
       y += 18; n ++;
     }
   }
+  for (var prop in chara2) {
+    if (chara2.hasOwnProperty(prop)) {
+      ctx.fillStyle = 'black';
+      ctx.globalAlpha = 1;
+      ctx.font = "8px Arial";
+      ctx.fillText(prop, 10, y);
+      ctx.fillText(chara2[prop], 45, y);
+      if (!isNaN(chara2[prop])){
+        ctx.fillStyle = 'gray';
+        if(chara2[prop]<1){ctx.fillText("err", 60, y);}
+        else if(chara2[prop]<10){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 60, y);}
+        else if(chara2[prop]<20){ctx.fillStyle = 'lightblue';ctx.fillText("E", 60, y);}
+        else if(chara2[prop]<30){ctx.fillStyle = 'lightgreen';ctx.fillText("D-", 60, y);}
+        else if(chara2[prop]<40){ctx.fillStyle = 'lightgreen';ctx.fillText("D", 60, y);}
+        else if(chara2[prop]<50){ctx.fillStyle = 'yellowgreen';ctx.fillText("C", 60, y);}
+        else if(chara2[prop]<60){ctx.fillStyle = 'yellowgreen';ctx.fillText("C+", 60, y);}
+        else if(chara2[prop]<65){ctx.fillStyle = 'gold';ctx.fillText("B-", 60, y);}
+        else if(chara2[prop]<70){ctx.fillStyle = 'gold';ctx.fillText("B", 60, y);}
+        else if(chara2[prop]<75){ctx.fillStyle = 'gold';ctx.fillText("B+", 60, y);}
+        else if(chara2[prop]<80){ctx.fillStyle = 'crimson';ctx.fillText("A-", 60, y);}
+        else if(chara2[prop]<85){ctx.fillStyle = 'crimson';ctx.fillText("A", 60, y);}
+        else if(chara2[prop]<90){ctx.fillStyle = 'crimson';ctx.fillText("A+", 60, y);}
+        else if(chara2[prop]<95){ctx.fillStyle = 'purple';ctx.fillText("S-", 60, y);}
+        else if(chara2[prop]<100){ctx.fillStyle = 'purple';ctx.fillText("S", 60, y);}
+        else if(chara2[prop]<105){ctx.fillStyle = 'rebeccapurple';ctx.fillText("S+ ", 60, y);}
+        else{ctx.fillStyle = 'rebeccapurple';ctx.fillText("err", 60, y);}
+      }
+      y += 10;
+    }
+  }  
+
   //ダイアグラム１
   var statusm = [bias[race][24], bias[race][26], bias[race][30], bias[race][34], bias[race][32], bias[race][28]];
   var status = [stats.str, stats.int, stats.mag, stats.spe, stats.dex, stats.dur];
   var centerX = 220; 
-  var centerY = 355;
+  var centerY = 240;
   var sides = statusm.length; // 頂点の数＝データの要素数
   var radius = 30;
   ctx.font = "12px Arial";
@@ -285,7 +316,7 @@ function drawCharacter(chara) {
   var statusm = [bias[race][2]/2, bias[race][4]/2, bias[race][12], bias[race][8]/17*5, bias[race][10]/13*10, bias[race][6]/2];
   var status = [stats.hp/2, stats.mp/2, stats.chr, stats.hei/17*5, stats.wei/13*10, stats.sp/2];
   var centerX = 220; 
-  var centerY = 90;
+  var centerY = 100;
   var sides = statusm.length; // 頂点の数＝データの要素数
   var radius = 30;
   ctx.fillStyle = 'black';
@@ -360,12 +391,12 @@ function drawCharacter(chara) {
   //ダイアグラム3
   var statusm = [bias[race][36], bias[race][38], bias[race][40], bias[race][46], bias[race][44], bias[race][42]];
   var status = [stats.div, stats.cha, stats.rep, stats.def, stats.ord, stats.abs];
-  var centerX = 220; 
-  var centerY = 495;
+  var centerX = 115; 
+  var centerY = 440;
   var sides = statusm.length; // 頂点の数＝データの要素数
-  var radius = 30;
+  var radius = 15;
   ctx.fillStyle = 'black';
-  ctx.font = "12px Arial";
+  ctx.font = "8px Arial";
   ctx.globalAlpha = 1/2;
   ctx.lineWidth = 2;
   ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
@@ -435,12 +466,12 @@ function drawCharacter(chara) {
   //ダイアグラム4
   var statusm = [bias[race][14], bias[race][16], bias[race][18], bias[race][20], bias[race][22]];
   var status = [stats.ext, stats.col, stats.ope, stats.dil, stats.cop];
-  var centerX = 220; 
-  var centerY = 230;
+  var centerX = 115; 
+  var centerY = 370;
   var sides = statusm.length; // 頂点の数＝データの要素数
-  var radius = 30;
+  var radius = 15;
   ctx.fillStyle = 'black';
-  ctx.font = "12px Arial";
+  ctx.font = "8px Arial";
   ctx.globalAlpha = 1/2;
   ctx.lineWidth = 2;
   ctx.strokeStyle = "rgba(100, 100, 100, 0.2)"
@@ -552,13 +583,13 @@ function generateRandomCharacter() {
   else if(race==3){species = "ドワーフ";text+=getRandomValue(["　あなたはドワーフだ! お酒が大好きだ!\n","　あなたはドワーフだ! お酒は好きでない...\n"])}
   else if(race==4){species = "竜人";text+="　あなたは竜人だ! 角と飛膜が生えてて鱗もあるよ!\n"}
   else if(race==5){species = "羽人";text+="　あなたは羽人だ! 翼が生えてて天使みたいだ!\n"}
-  else if(race==6){species = "悪魔";text+="　あなたは悪魔だ! 見た目を変えられる!\n"}
+  else if(race==6){species = "悪魔";text+="　あなたは悪魔だ! 見た目を変えられる！人間社会に溶け込んでいる、正体がバレないように気をつけよう！\n"}
   else if(race==7){species = "魚人";text+=getRandomValue(["　あなたは魚人だ! 人魚型で足がない...\n","　あなたは魚人だ! 鰓呼吸できる人型だ！\n","　あなたは魚人だ! ...エイリアンのようだ...\n"])}
   else if(race==8){species = "妖精";text+="　あなたは妖精だ! 小さくて羽が生えている\n"}
   else if(race==9){species = "獣人";text+=getRandomValue(["　あなたは猫獣人だ! 猫耳可愛い...! \n","　あなたは犬獣人だ! 鼻がいい！あと犬耳可愛い...! ！\n","　あなたは人狼だ! 普段は人間の姿だが...満月の夜に注意...　人間の天敵である。\n","　あなたは狸獣人だ! 化けるのが得意だ！\n"])}
   else if(race==10){species = "巨人";text+="　あなたは巨人だ! 見上げるほどの巨体である。\n"}
   //デステ
-  if(Math.random()<1/20){text+="　あなたは生来のブラッドフィリアだ...　犬歯が長く、生き血を吸うと回復する。世間は吸血鬼と呼ばれる。\n"}
+  if(Math.random()<1/20){text+="　あなたは生来のブラッドフィリアだ...　犬歯が長く、生き血を吸うと回復する。世間では吸血鬼と呼ばれる。\n"}
   else if(Math.random()<1/10){text+="　...お前はもう、死んでいる...が、アンデットとして蘇り、"+getRandomValue(["ゾンビ","レイス","スケルトン","悪霊"])+"のようだ...　世間で極めて忌み嫌われる存在だ。死ぬことはない。銀や聖なる何かに触れると浄化されるので注意。\n"}
   //地位
   if(stats.fam<25){family_status="奴隷";text+="　...奴隷のようだ...人は皆、何かの奴隷だ...\n"}
@@ -876,12 +907,6 @@ function generateRandomCharacter() {
     身長: stats.hei,
     体重: stats.wei,
     魅力: stats.chr,
-    _____気質: "______",
-    外向性: stats.ext,
-    神経質: stats.col,
-    開放性: stats.ope,
-    誠実性: stats.dil,
-    協調性: stats.cop,
     __基礎能力値: "______",
     力: stats.str,
     智: stats.int,
@@ -889,6 +914,14 @@ function generateRandomCharacter() {
     魔法: stats.mag,
     器用: stats.dex,
     俊敏: stats.spe,
+  };
+  chara2={
+    _____気質: "______",
+    外向性: stats.ext,
+    神経質: stats.col,
+    開放性: stats.ope,
+    誠実性: stats.dil,
+    協調性: stats.cop,
     _____属性: "______",
     発散: stats.div,
     混沌: stats.cha,
@@ -896,7 +929,6 @@ function generateRandomCharacter() {
     収束: stats.def,
     秩序: stats.ord,
     干渉: stats.abs,
-    _________: "______",
   };
 }
 
