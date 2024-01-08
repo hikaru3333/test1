@@ -170,7 +170,7 @@ function drawCharacter(chara) {
       ctx.fillText(chara[prop], 80, y);
       if (!isNaN(chara[prop]) && y>100){
         ctx.globalAlpha = 1;
-        if(n>4 && (n<6 || n>10)){
+        if(n>4){
           ctx.fillStyle = 'gray';
           if(chara[prop]<1){ctx.fillText("err", 110, y);}
           else if(chara[prop]<10){ctx.fillStyle = 'lightblue';ctx.fillText("E-", 110, y);}
